@@ -14739,3 +14739,242 @@ de la tâche `instance.create`, colonne du dossier, formulaire, exécutant)
 n'est pas fait dans ce lot : il touche le protocole de l'exécutant
 (`API_VERSION` 2.1.0), le modèle et les formulaires de l'administration, et
 suppose des paquets à jour sur les serveurs. À faire avec `partiduo-perso`.
+
+== Outils absorbés par le cœur (9 octobre 2026)
+
+Mission de l'utilisateur du 9 octobre 2026 : compléter le cœur avec les
+outils que l'ADR-003 déclare « absorbés par le cœur » (table « Sort des
+extensions amont » : IMPCARD, TOOLPCMN, TOOLS, MODOP) et y ajouter
+`import_account`. Source fonctionnelle : les extensions legacy
+`import_card`, `tool_pcmn`, `tools`, `modop`, `import_account` (fonctions
+portées, code non repris). Contrat : link:doc/api/outils.adoc[]. Préfixe :
+`D-OUT-`. Migrations : cards `0005`, accounting `0014`. ADR-003 corrigé
+(partiduo-docs).
+
+=== D-OUT-001 — Inventaire, fonction par fonction : porté, ajouté, refusé
+
+*Choix.* Chaque fonction des cinq extensions est rangée ainsi. Une
+fonction qui modifie une écriture validée est refusée : les écritures du
+cœur sont validées dès leur enregistrement (pas de brouillard), leur
+numéro de pièce et leur code interne sont attribués sans retour, le FEC
+doit pouvoir les relire à l'identique, et l'extourne est la seule
+correction (`cancel_entry`, droit `accounting.entry.cancel`).
+
+[cols="2,1,4",options="header"]
+|===
+|Fonction legacy |Sort |Où, ou pourquoi
+
+|`import_card` : import de fiches CSV (catégorie, séparateur, délimiteur,
+encodage, lignes à ignorer, association des colonnes, aperçu, mise à jour
+par quick code)
+|Ajouté
+|`Cards.preview_card_import`, `import_cards`, `export_cards` (D-OUT-003) ;
+écran « Importer des fiches »
+
+|`import_card` : formats enregistrés (`importcard.format`)
+|Remplacé
+|En-tête reconnu (libellés ou clés, en fr, en, nl) et export au format de
+l'import : le fichier porte lui-même son association (D-OUT-003)
+
+|`tool_pcmn` : import du plan comptable (numéro ; libellé ; parent ;
+type), refus des doublons
+|Ajouté
+|`Accounting.preview_chart_import`, `import_chart` (D-OUT-004)
+
+|`tool_pcmn` : « supprimer le plan comptable s'il n'y a aucune opération »
+|Refusé
+|Un plan neuf est déjà chargé au provisionnement selon le régime ; les
+comptes sont cités par les fiches, catégories, journaux, comptes par
+défaut et taux de TVA, et l'effacement d'un compte reste un par un, avec
+ses refus (`delete_account`). La mise à jour d'un compte existant
+(`update_existing`) couvre le besoin de reprendre des libellés (D-OUT-004)
+
+|`tool_pcmn` : export du plan comptable
+|Ajouté
+|`Accounting.export_chart`, au format de l'import
+
+|`tools` : changer le compte de lignes d'opérations choisies
+|Refusé
+|Modifie des écritures validées (lignes, FEC) ; à la place : extourne de
+l'écriture puis nouvelle saisie (D-OUT-006)
+
+|`tools` : changer la fiche, ou « poste → fiche », d'opérations choisies
+|Refusé
+|Idem : tiers et compte de la ligne font partie de l'écriture validée,
+le lettrage et les éditions en dépendent (D-OUT-006)
+
+|`tools` : déplacer des opérations dans un autre journal
+|Refusé
+|Le journal fixe la numérotation des pièces et le code interne ;
+déplacer casserait la suite sans trou du journal d'origine et le FEC
+(D-OUT-006)
+
+|`tools` : renuméroter les pièces d'un journal sur une période
+|Refusé
+|Numérotation irréversible (D-OUT-006) ; déjà écarté par D-ACC-014
+(« renuméroter en silence une pièce saisie déjà prise »)
+
+|`tools` : télécharger les pièces jointes d'opérations en ZIP
+|Ajouté
+|`Accounting.receipts_archive` : lecture seule, période et journal, index
+avec empreintes (D-OUT-005) ; écran « Archive des pièces »
+
+|`tools` : exporter les opérations d'une période en CSV (date, journal,
+code interne, pièce, compte, fiche, libellé, montant, sens, lettrage)
+|Déjà porté
+|FEC (`Accounting.fec`, colonnes de lettrage comprises), journaux et grand
+livre en CSV (`Accounting.export`), lot 3
+
+|`tools` : modifier l'analytique d'opérations choisies
+|Déjà porté
+|`Analytic.distribute_entry` (ventilation d'une écriture, hors FEC), lot 5 ;
+écriture extournée non reventilable (D-ANA-014)
+
+|`tools` : grand livre analytique et export des pièces en PDF
+|Déjà porté
+|Grand livre analytique et exports CSV du module Analytique (lot 5) ;
+pièces : archive ZIP ci-dessus
+
+|`tools` : étiquettes d'opérations (ajout, retrait en masse)
+|Sans objet
+|Le cœur n'a pas d'étiquettes d'écritures (seul le Suivi en a, sur ses
+actions) ; à décider par l'utilisateur (D-OUT-008)
+
+|`modop` : modifier une opération enregistrée (montants, comptes, date,
+journal, pièce), y compris en la supprimant puis la recréant
+|Refusé
+|Modification et effacement d'écritures validées ; l'extension legacy le
+déconseillait elle-même et se refusait en mode strict. À la place :
+« Annuler (extourne) » sur l'écriture puis nouvelle saisie (D-OUT-006)
+
+|`import_account` : correspondance des codes de TVA d'un fichier
+d'écritures avec les taux du dossier
+|Hors du cœur
+|Ce fragment ne sert que l'import d'écritures, qui relève de
+`partiduo-import` (successeur d'IMPOP2, ADR-003) : il y sera la
+correspondance des codes de TVA ; le cœur n'importe pas d'écritures hors
+`partiduo-migrate` (FEC, base d'origine). ADR-003 complété
+|===
+
+*Alternative écartée.* Porter les outils de modification « derrière un
+droit » ou « seulement en période ouverte » : une écriture validée, même
+en période ouverte, a déjà un numéro, peut avoir été lettrée, déclarée en
+TVA ou transmise ; seule l'extourne laisse une piste d'audit.
+
+=== D-OUT-002 — Parcours commun des imports : aperçu à blanc, rien d'office
+
+*Choix.* Types communs dans `Partiduo::Api::Core` (`CsvFormat`,
+`ImportSource`, `ImportFieldView`, `ImportRowView`, `ImportView`), lecture
+dans `Partiduo::Core::CsvImport`. Chaque ligne passe par la commande
+ordinaire du contrat (création ou modification), avec tous ses contrôles
+et ses événements ; l'aperçu exécute le même traitement dans
+`Transaction.dry_run`, qui annule tout à la fin (point de sauvegarde si une
+transaction est ouverte ; effets `after_commit` abandonnés). L'import
+rejoue le traitement dans une seule transaction et échoue, sans rien
+enregistrer, si une ligne est refusée (`core.errors.import.has_refused`) —
+sauf `skip_refused: true`, confirmation explicite que l'interface ne passe
+que si la case « Importer seulement les lignes acceptées » est cochée.
+Lecture : UTF-8 (marque d'ordre retirée, fichier non UTF-8 refusé avec le
+conseil de choisir Windows-1252) ou Windows-1252 ; séparateurs `;`, `,`,
+tabulation, `|` ; 5 Mo et 10 000 lignes au plus ; nombres décimaux sans
+flottant (`1 234,56`, `1,234.56`), dates `AAAA-MM-JJ` ou `JJ/MM/AAAA`,
+booléens en fr, en, nl. En-tête reconnu (au moins la moitié des cellules
+non vides égales à une clé ou un libellé de champ, accents et casse
+ignorés), retiré des données même quand l'association est donnée.
+
+*Alternative écartée.* Valider chaque ligne par une règle propre à
+l'import : deux règles divergeraient ; et importer les lignes valides en
+écartant les autres sans le dire (comportement legacy, une transaction
+par ligne).
+
+=== D-OUT-003 — Import de fiches
+
+*Choix.* Une catégorie par import. Champs : nom (exigé, sauf fournisseur :
+personne physique possible), quick code, description, active, champs de la
+nature (tiers et adresse principale, ou article : unité, prix décimaux,
+taux de TVA par son code), nature du client, nature et identité du
+fournisseur, attributs propres (`extra.<clé>`, fiche citée par son quick
+code), compte comptable (`account`, création seulement, exige
+`accounting.account.write`, Comptabilité active). Un quick code existant
+est refusé (`code_exists`) ; avec « Mettre à jour les fiches existantes »,
+la fiche est modifiée par ses seules cellules non vides (une cellule vide
+ne vide rien), dans la même catégorie (`other_category`), sans changer son
+compte (`account_on_update`). Fournisseur sans nature mais avec nom ou
+prénoms : personne physique. Export d'une catégorie au même format
+(en-tête de libellés, cellules protégées contre les formules relues sans
+l'apostrophe). Permission `cards.card.import` (en plus de
+`cards.card.write`), accordée par la migration cards `0005` aux profils
+qui ont `cards.card.write`.
+
+*Alternative écartée.* Conserver des formats enregistrés en base comme
+l'extension legacy : l'en-tête du fichier et l'export suffisent, sans
+table ni nettoyage des formats temporaires.
+
+=== D-OUT-004 — Import et export du plan comptable
+
+*Choix.* Champs : numéro, libellé (exigés), parent, type, utilisation
+directe. Sans en-tête : numéro ; libellé ; parent ; type, l'ordre legacy,
+parent `0` lu comme « aucun » (sauf compte `0` réel). Types : code
+(`asset`…), code legacy `ACT`, `PAS`, `PRO`, `CHA`, `CON` suffixé `INV`
+pour le compte inversé, ou libellé ; vide : celui du parent. Lignes
+traitées des numéros courts aux longs (un parent avant ses comptes quel
+que soit l'ordre du fichier), compte rendu dans l'ordre du fichier. Numéro
+existant refusé (`number_exists`) ; avec « Mettre à jour les comptes
+existants » : libellé, parent, type, utilisation directe des cellules non
+vides, numéro inchangé. Export du plan entier dans l'ordre de l'arbre, au
+même format. Permission `accounting.account.import`, accordée par la
+migration accounting `0014` aux profils qui ont `accounting.account.write`.
+Pas de remplacement du plan entier (D-OUT-001).
+
+=== D-OUT-005 — Archive des pièces jointes
+
+*Choix.* `Accounting.receipts_archive(actor, date_from, date_to,
+ledger_id = nil)` : ZIP des pièces jointes des écritures de la période,
+journaux visibles de l'acteur ou un seul, fichiers nommés
+`<code interne>-<nom du fichier>` (numérotés en cas de doublon) et
+`index.csv` (code interne, date, journal, pièce, libellé, fichier,
+SHA-256). Droits `accounting.entry.read` et `core.attachment.read` ;
+empreinte vérifiée à la lecture (`AttachmentCorrupted`). Échec explicite
+sans pièce (`accounting.errors.receipts.none`).
+
+=== D-OUT-006 — Corrections d'écritures : l'extourne, jamais la modification
+
+*Choix.* Les fonctions legacy de changement de compte, de fiche, de
+journal, de numéro de pièce et de modification d'opération ne sont pas
+portées (D-OUT-001). La correction d'une écriture validée passe par
+« Annuler (extourne) » (`cancel_entry`, écriture inverse datée, lien
+`reversal_of`) puis une nouvelle saisie ; la ventilation analytique, qui
+n'entre pas dans l'écriture, se corrige par `distribute_entry`.
+
+*Alternative écartée.* Un outil de « reclassement en masse » qui
+passerait une écriture de reclassement par compte : proposable plus tard
+comme saisie guidée, mais il ne remplace pas les fonctions legacy (qui
+réécrivaient l'historique) et n'a pas été demandé.
+
+=== D-OUT-007 — Écrans des imports et de l'archive (interface)
+
+*Choix.* Écran commun `ImportScreen` (partiduo-ui-bulma) : fichier
+(1,5 Mo au plus, limite des requêtes de Marten) ou contenu collé, format,
+« Mettre à jour les … existants » ; « Aperçu » montre le compte, une liste
+par colonne pour changer l'association (« Reconnaître les colonnes » pour
+revenir à l'en-tête), chaque ligne avec sa suite et ses motifs (refusées
+toutes affichées, acceptées 100 au plus) ; « Importer » ; avec des lignes
+refusées, la case « Importer seulement les lignes acceptées » est exigée.
+Le contenu voyage en base64 dans un champ caché : aucun fichier
+temporaire sur le serveur. Routes `cards:import`, `cards:export`,
+`accounting:chart_import`, `accounting:chart_export`,
+`accounting:receipts_archive` ; actions « Importer » et « Exporter (CSV) »
+sur les tiers et le plan comptable, « Archive des pièces » sur les
+écritures. Pas d'entrée de menu nouvelle.
+
+=== D-OUT-008 — Questions laissées à l'utilisateur
+
+. Étiquettes d'écritures : le cœur n'en a pas ; faut-il les introduire
+  (avec ajout et retrait en masse, comme l'outil legacy), sachant qu'elles
+  ne modifient pas l'écriture validée ?
+. Profils existants : la migration accorde les deux permissions d'import
+  aux profils qui ont déjà le droit d'écriture correspondant ; un profil
+  personnalisé sans ce droit ne les reçoit pas. À confirmer.
+
+Version du contrat : les ajouts de D-OUT-002 à D-OUT-005 sont
+rétrocompatibles ; `API_VERSION` passe de 0.7.0 à 0.8.0.

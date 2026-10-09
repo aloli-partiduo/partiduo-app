@@ -16,8 +16,10 @@ module Partiduo
   # versionnage sémantique : toute rupture du contrat incrémente la majeure ;
   # un ajout incrémente la mineure (0.7.0 : `incompatible_with` du manifeste
   # et de `ModuleView`, types de dossier de `InitialData`, `kind` de
-  # `SettingsView` et `ProvisionInput`, ADR-011 A1 et A3).
-  API_VERSION = "0.7.0"
+  # `SettingsView` et `ProvisionInput`, ADR-011 A1 et A3 ; 0.8.0 : imports
+  # CSV de fiches et du plan comptable, export du plan, archive des pièces,
+  # `Transaction.dry_run`, D-OUT-002 à D-OUT-005).
+  API_VERSION = "0.8.0"
 end
 
 module Partiduo
