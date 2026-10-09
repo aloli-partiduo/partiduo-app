@@ -11131,13 +11131,19 @@ SHA-256 du DER de la clé publique, identique à celle d'`openssl`.
 === D-CHF-003 — Clé du serveur dans l'état de l'exécutant
 
 *Choix.* 32 octets aléatoires, en hexadécimal, dans
-`/var/lib/partiduo-agent/backup-server.key` (0600, `--server-key`), créés au
+`/var/db/partiduo-agent/backup-server.key` (0600, `--server-key`), créés au
 premier usage (création exclusive) ou par `partiduo-agent server-key`, qui
 affiche l'empreinte (HMAC-SHA256 de la clé, rien n'en fuit). Jamais sous le
 répertoire des sauvegardes ni dans l'administration : une copie hors site
 des sauvegardes est illisible sans elle ; le serveur restaure seul. Pas de
 rotation dans cette version : une clé changée rend illisibles les
 sauvegardes qu'elle chiffrait (l'exécutant le dit, empreinte à l'appui).
+
+*Correction (9 octobre 2026).* Le chemin est `/var/db/partiduo-agent/`
+(état d'un démon, hier(7)), comme dans le code et le port, et non
+`/var/lib/…` comme écrit d'abord. *Remplacée par D-CHF-015* (9 octobre
+2026) : la clé du serveur, symétrique et posée sur le serveur de
+production, disparaît.
 
 === D-CHF-004 — Enveloppe hybride, format 1, en flux
 
@@ -11151,6 +11157,10 @@ déjà présent (aucune dépendance nouvelle, pas d'`age`). `pg_dump`, `tar` et
 `pg_restore` écrivent et lisent par un tube (geste `-` des enveloppes de
 sudo) : le clair ne touche jamais le disque, un fichier partiel n'est
 jamais laissé sous son nom définitif.
+
+*Remplacée par D-CHF-013 et D-CHF-014* (9 octobre 2026) :
+fichiers au format `age`, ce qui fait entrer la dépendance (`security/age`)
+écartée ici ; le tube reste.
 
 === D-CHF-005 — Restaurer avec la clé du cabinet : la clé privée reste dans le navigateur
 
@@ -11208,6 +11218,9 @@ dans les specs ; `openssl pkeyutl` pour la clé de données et `openssl kdf`
 pour la clé de fichier. `openssl enc` refusant AES-GCM, la ligne de commande
 `openssl` seule ne déchiffre pas le contenu : c'est dit dans le README.
 
+*Remplacée par D-CHF-020* (9 octobre 2026) : `age` et
+`openssl` suffisent, sans Partiduo ni script ; le script Python est retiré.
+
 === D-CHF-010 — API de l'exécutant 1.1.0
 
 *Choix.* Ajouts seulement, d'où la mineure : `encryption`,
@@ -11232,6 +11245,421 @@ légale revérifiée par le serveur (D-CRA-007).
 après, mode effectif), `backup_key.deposit` (empreinte, empreinte
 précédente, taille), `backup.restore` et `backup.test_restore` (mode de la
 sauvegarde, clé fournie ou non) ; jamais une clé de données.
+
+== Clé d'exploitation et signature des sauvegardes (9 octobre 2026)
+
+Décision de l'utilisateur (9 octobre 2026), sur la proposition ci-dessous :
+clés *post-quantiques* plutôt que clé matérielle (B-CHF-001), retrait du
+format 1, implémentation, et sauvegardes *hors du serveur de production*
+(`quantas` ou autre, D-CHF-024). Code dans `../partiduo-admin` (exécutant :
+`src/shared/backup_crypto.cr`, `src/agent/store.cr`, `plans.cr`,
+`system.cr`, `tools.cr` ; administration : migration
+`0006_exploitation_key`, `BackupEncryption`, écrans « Clé de la sauvegarde
+requise » et « Serveurs ») ; specs `spec/agent/backup_crypto_spec.cr`,
+`spec/agent/encryption_spec.cr`, `spec/admin/encryption_spec.cr` ;
+procédures dans son README (« Sauvegardes et chiffrement »).
+
+Principe d'exploitation : les sauvegardes ne restent jamais sur le serveur
+de production ; elles partent sur le serveur de sauvegarde (`quantas`),
+lui-même copié tel quel sur un ou plusieurs NAS.
+
+*Constat.* La « clé du serveur » (D-CHF-003) est symétrique et se trouve
+sur le serveur de production. (1) Un serveur compromis rend lisibles
+*toutes* ses sauvegardes, passées comprises, partout où elles ont été
+copiées (`quantas`, NAS), et permet d'en fabriquer de fausses qui
+passeraient pour authentiques. (2) La restauration croisée est impossible :
+si `loulou` tombe, l'exécutant de `bibou` refuse ses sauvegardes (« chiffrée
+par une autre clé du serveur », `keyring.cr`). L'utilisateur demande un
+système à clé publique et clé privée, « comme OpenPGP ou équivalent ».
+
+=== D-CHF-013 — Format `age` pour les fichiers des sauvegardes
+
+*Choix.* Les fichiers d'une sauvegarde chiffrée sont des fichiers `age`
+(spécification C2SP `age-encryption.org/v1`) : `….dump.age` et
+`….media.tar.gz.age`. Ils sont écrits et lus par l'outil `age` 1.3 ou
+suivant (port `security/age`, Go, construit par poudriere avec le reste du
+parc), lancé par l'exécutant comme filtre dans le tube actuel
+(`pg_dump | age … > fichier`, `age -d … | pg_restore`) : le clair ne touche
+toujours pas le disque. L'exécutant ne fait plus lui-même de chiffrement
+du contenu ; il garde l'orchestration, les empreintes, la signature
+(D-CHF-018) et les vérifications.
+
+Critères et comparaison (étude du 9 octobre 2026) :
+
+[cols="2,3,3,3",options="header"]
+|===
+|Critère |OpenPGP (`gpg`) |`age` |Format 1 étendu (X25519 ou RSA dans `backup_crypto.cr`)
+
+|Restauration hors Partiduo, outil standard
+|oui (`gpg -d`)
+|oui (`age -d`), outil unique et petit
+|non : `partiduo-agent` ou un script (aujourd'hui en Python)
+
+|FreeBSD
+|`security/gnupg` (lourd : agent, trousseau, pinentry)
+|`security/age` 1.3.2 (8 octobre 2026), binaire Go autonome ; aussi `security/rage-encryption`
+|rien à installer
+
+|Clé matérielle
+|carte OpenPGP / YubiKey, mûr
+|`age-plugin-yubikey` (PIV, P-256) sur le poste de restauration ; pas de port FreeBSD, inutile sur les serveurs (destinataires `p256tag` natifs en 1.3)
+|à écrire (PKCS#11)
+
+|Post-quantique
+|RFC 9580 et ses suites ML-KEM pas prises par GnuPG (scission LibrePGP)
+|natif en 1.3 : `mlkem768x25519` (X-Wing), `age-keygen -pq`
+|à écrire soi-même (à proscrire)
+
+|Coût en Crystal
+|élevé (paquets OpenPGP) ou appel à `gpg` et à son trousseau sur chaque serveur
+|faible : appel d'un filtre ; aucune primitive à écrire
+|moyen, mais un format maison de plus à maintenir et à faire relire
+
+|Flux, gros fichiers
+|oui
+|oui (segments de 64 Kio, ChaCha20-Poly1305, même schéma STREAM que le format 1)
+|oui
+|===
+
+*Alternatives écartées.* *OpenPGP* : format et outillage lourds, trousseau
+à tenir sur chaque serveur, état incertain du post-quantique dans GnuPG ;
+son seul avantage net, la carte OpenPGP, ne compte que sur le poste de
+restauration. *Étendre le format 1* : la restauration hors Partiduo reste
+liée à notre code ou à un script, et le post-quantique serait une
+construction maison. *Écrire `age` en Crystal* (X25519 et ChaCha20-Poly1305
+sont dans libcrypto) : possible pour X25519, pas pour X-Wing ; l'outil
+officiel est plus sûr qu'une seconde implémentation. Les specs vérifient
+le résultat avec `age` lui-même.
+
+=== D-CHF-014 — Une clé de sauvegarde éphémère par sauvegarde, et sa capsule
+
+*Choix.* Pour chaque sauvegarde, l'exécutant tire une *identité `age`
+éphémère* post-quantique (`age-keygen -pq` : `AGE-SECRET-KEY-PQ-1…`,
+77 caractères), la *clé de sauvegarde* ; ses deux fichiers sont chiffrés
+pour son destinataire (`age1pq1…`). La clé de sauvegarde n'est jamais
+écrite en clair : elle est mise dans une *capsule*, chiffrée pour la ou les
+clés qui ont le droit de lire la sauvegarde :
+
+* mode `exploitation` : capsule `….key.age`, fichier `age` chiffré pour les
+  clés d'exploitation actives du serveur (D-CHF-015) ;
+* mode `cabinet` : capsule `….key.rsa`, RSA-OAEP (SHA-256, MGF1-SHA-256,
+  sans étiquette) de la clé de sauvegarde pour la clé publique du cabinet
+  (D-CHF-002, inchangée).
+
+La capsule est déposée à côté des fichiers et conservée par
+l'administration (`admin_backup`, quelques centaines d'octets à 2 Kio).
+L'identité éphémère reste, le temps de la tâche, dans le journal de reprise
+(`secret.*`, 0600, D-CHF-006), puis est oubliée.
+
+Conséquences voulues :
+
+* les gros fichiers ne changent jamais : une rotation ne réécrit que des
+  capsules (D-CHF-019), les empreintes et la signature restent valables ;
+* la clé de sauvegarde se contrôle *sans secret* : son destinataire,
+  déduit par `age-keygen -y`, doit être celui inscrit dans le manifeste
+  signé ; il remplace l'engagement HMAC du format 1 ;
+* un serveur compromis ne lit *aucune* sauvegarde passée, pas même les
+  siennes : il n'a que des clés publiques et les clés éphémères oubliées ;
+* restauration hors Partiduo en deux commandes standard (D-CHF-020).
+
+Essayé le 9 octobre 2026 avec `age` 1.3.2 : chiffrement d'un fichier pour
+une identité éphémère `-pq`, capsule `age` et capsule RSA-OAEP 3072
+(`openssl pkeyutl`), déchiffrement par les deux voies, re-chiffrement
+d'une capsule sans toucher au fichier.
+
+*Alternative écartée.* Chiffrer directement chaque gros fichier pour les
+clés d'exploitation : une rotation obligerait à réécrire l'en-tête de
+chaque fichier (possible avec la clé de fichier, mais aucun outil standard
+ne le fait) et changerait leurs empreintes.
+
+=== D-CHF-015 — Mode « clé d'exploitation », qui remplace la clé du serveur
+
+*Choix.* Le mode `server` est retiré ; `exploitation` le remplace et devient
+le défaut (cabinets existants compris). Une *clé d'exploitation* est une
+paire `age` post-quantique (`age-keygen -pq`) :
+
+* la *clé publique* (`age1pq1…`) est posée sur chaque serveur de production
+  par beryl (D-CHF-022) ; elle ne sert qu'à chiffrer des capsules ;
+* la *clé privée* n'est sur *aucun* serveur : ni de production, ni
+  `quantas`, ni NAS, ni administration. Elle est gardée hors ligne, chiffrée
+  par phrase de passe (`age-keygen -pq | age -p > exploitation-AAAA.age`,
+  fichier d'identité chiffré que `age -d -i` lit directement), en au moins
+  deux exemplaires sur des supports séparés, tenus par au moins deux
+  personnes de l'exploitation. Chaque capsule étant chiffrée pour
+  plusieurs clés, chaque détenteur peut avoir *sa* clé (« une parmi N ») ;
+  un partage à seuil (k parmi N) n'est pas retenu dans cette version.
+
+Elle n'est apportée que sur le *poste* de l'exploitant, le temps d'une
+restauration ou d'une campagne de restauration test (D-CHF-016, D-CHF-017),
+comme la clé du cabinet reste dans le navigateur (D-CHF-005).
+
+*Clé matérielle.* Écartée par l'utilisateur le 9 octobre 2026 (B-CHF-001) :
+une YubiKey (`age-plugin-yubikey`) donne des destinataires `p256tag`, non
+post-quantiques, que la spécification déconseille de mêler aux autres.
+L'exécutant refuse toute clé d'exploitation qui n'est pas `age1pq1…`.
+
+=== D-CHF-016 — Restaurer sur n'importe quel serveur avec la clé d'exploitation
+
+*Choix.* Comme D-CHF-005, la clé privée ne quitte pas le poste de
+l'exploitant ; seule la clé de sauvegarde de *cette* sauvegarde voyage :
+
+. La page « Clé d'exploitation requise » donne la capsule (`….key.age`) et
+  la commande à lancer sur le poste :
+  `age -d -i exploitation-AAAA.age backup-….key.age`.
+. L'exploitant colle la clé de sauvegarde obtenue (`AGE-SECRET-KEY-PQ-1…`).
+. L'administration en déduit le destinataire (`age-keygen -y`) et le compare
+  à celui de la sauvegarde : une mauvaise clé est refusée sans tâche.
+. La suite est celle de D-CHF-005 : `admin_task.data_keys`, remise une seule
+  fois par `secrets.data_keys`, gardée en mémoire par l'exécutant, effacée,
+  tâche non rejouable.
+
+L'exécutant qui restaure n'a besoin d'aucune clé propre : tout serveur
+restaure toute sauvegarde dont on lui remet la clé et le manifeste signé
+(D-CHF-018) : il ramène les fichiers du stockage (D-CHF-024) le temps de la
+tâche.
+
+=== D-CHF-017 — Restauration test : à la prise, puis par campagnes
+
+*Choix.* Sans clé d'exploitation, le serveur ne peut plus relire une
+sauvegarde ancienne. D'où deux temps :
+
+* *à la prise* : la tâche qui vient d'écrire la sauvegarde, détenant
+  encore la clé éphémère, la relit en entier (`age -d`, authentifiée) vers
+  `pg_restore --list` et `tar -t`, comme l'archive de fin de vie
+  (D-CHF-007), pour tous les modes. Restaurer chaque sauvegarde dans une
+  base de test doublerait la charge de PostgreSQL à chaque prise : la
+  restauration complète reste celle de la restauration test périodique ;
+* *ensuite, sans clé* : signature du manifeste, tailles et empreintes,
+  structure de l'en-tête (`age-inspect --json` : version, type
+  `mlkem768x25519`, post-quantique) — « enveloppe seule », comme D-CHF-007 ;
+* *campagne avec la clé* : l'administration exporte les capsules d'un lot
+  de sauvegardes ; l'exploitant les ouvre sur son poste (une boucle de
+  `age -d`), réimporte les clés de sauvegarde, et l'administration lance
+  les restaurations test complètes. Une campagne prouve aussi que la clé
+  privée et sa phrase de passe sont encore là. Fréquence à régler par
+  l'exploitation (un lot par trimestre proposé). *Pas encore dans
+  l'administration* (B-CHF-003) : une sauvegarde à la fois, par « Tester
+  avec la clé ».
+
+=== D-CHF-018 — Manifeste signé par le serveur
+
+*Constat.* Avec une clé publique, n'importe qui peut fabriquer une
+sauvegarde chiffrée valide.
+
+*Choix.* Chaque sauvegarde a un manifeste texte `….manifest`, signé par
+une *clé de signature propre au serveur* (Ed25519), au format `sshsig`
+(`ssh-keygen -Y sign -n partiduo-backup`), vérifiable partout par
+`ssh-keygen -Y verify` (système de base de FreeBSD, macOS, Linux) :
+
+----
+partiduo-backup/2
+server loulou
+dossier <sous-domaine>
+backup <identifiant> <horodatage UTC>
+mode exploitation
+recipient age1pq1…                     (destinataire de la clé de sauvegarde)
+capsule-for <empreinte> …              (clés d'exploitation visées, pour information)
+file <nom>.dump.age <taille> <sha256>
+file <nom>.media.tar.gz.age <taille> <sha256>
+----
+
+La capsule n'est pas dans le manifeste : elle peut être re-chiffrée
+(D-CHF-019) ; une capsule altérée donne une clé dont le destinataire n'est
+pas celui du manifeste, refusée.
+
+La clé publique de signature de chaque serveur est connue de
+l'administration (`admin_signing_key` : serveur, clé, date de déclaration,
+date de révocation). L'administration en tire les lignes `allowed_signers`
+du serveur d'origine (`valid-before` pour une clé révoquée ; pas de
+`valid-after` : une clé déclarée après ses premières sauvegardes les
+authentifie) ; la vérification d'une sauvegarde ancienne se fait à sa date
+de prise (`-Overify-time`).
+
+*Ordre des vérifications avant toute restauration ou restauration test*
+(articulation avec D-CHF-011) :
+
+. signature du manifeste par la clé du serveur d'origine, valable à la date
+  de prise ;
+. manifeste conforme à l'enregistrement de l'administration (serveur,
+  dossier, identifiant) ;
+. tailles et SHA-256 des fichiers tels que conservés : celles du manifeste
+  *et* celles de l'administration (D-CHF-011, inchangé) ;
+. clé de sauvegarde remise : son destinataire est celui du manifeste ;
+. déchiffrement authentifié de chaque fichier en entier (`age -d` vers
+  rien) avant tout remplacement, comme D-CHF-011.
+
+Les empreintes de D-CHF-011 ont pour référence la base de l'administration ;
+le manifeste signé en donne une seconde, indépendante d'elle : elle sert
+quand l'administration est perdue ou compromise, et contre un `quantas` ou
+un NAS altéré.
+
+*Limite.* Un serveur compromis signe valablement avec sa propre clé : la
+signature prouve *de quel serveur* vient une sauvegarde, pas qu'il était
+sain. Un serveur ne peut pas forger les sauvegardes d'un autre ; une clé de
+signature révoquée à la date T rend suspectes les sauvegardes signées après
+T, et seul l'enregistrement de l'administration (antérieur à T) départage
+celles d'avant, la date d'un manifeste étant écrite par le serveur.
+
+=== D-CHF-019 — Plusieurs clés d'exploitation, rotation, compromission
+
+*Choix.* L'administration tient la liste des clés d'exploitation :
+destinataire (`age1pq1…`), empreinte (SHA-256 du destinataire, affichée par
+groupes de 4), groupe de serveurs, période, état (`active`, `retirée`,
+`compromise`). Chaque capsule est chiffrée pour toutes les clés actives du
+groupe du serveur ; le manifeste et `admin_backup` les nomment.
+
+*Mis en œuvre le 9 octobre 2026.* L'exécutant chiffre chaque capsule pour
+toutes les clés de `exploitation.recipients` (post-quantiques seulement)
+et rend leurs empreintes, gardées par `admin_backup.capsule_keys` et
+montrées par la page « Clé de la sauvegarde requise ». La liste des clés
+d'exploitation, leurs états et l'import de capsules re-chiffrées ne sont
+pas encore dans l'administration (B-CHF-003) : la rotation suit la
+procédure ci-dessous, à la main, avec `age`.
+
+*Rotation.* (1) Nouvelle paire produite hors ligne ; (2) clé publique
+ajoutée dans le coffre de beryl et posée sur les serveurs du groupe ;
+(3) déclarée dans l'administration, l'ancienne passe `retirée` : les
+sauvegardes suivantes ne visent que la nouvelle. (4) Facultatif ou, en cas
+de compromission, obligatoire : *re-chiffrement des capsules* sur le poste
+de l'exploitant (`age -d -i ancienne | age -R nouvelles`), réimport dans
+l'administration, réécriture des capsules auprès des fichiers. Les gros
+fichiers, leurs empreintes et leurs signatures ne changent pas. Une clé
+retirée est gardée hors ligne tant qu'une capsule non re-chiffrée la vise.
+
+*Compromission d'une clé privée d'exploitation.* Elle passe `compromise` ;
+rotation immédiate avec re-chiffrement de toutes les capsules qui la
+visent ; les anciennes capsules sont détruites partout où l'exploitation
+les tient (`quantas`, NAS, administration).
+
+*Limite, écrite noir sur blanc.* Un attaquant qui a *déjà* copié une
+sauvegarde (fichiers et capsule) *et* qui obtient la clé privée qui
+ouvrait cette capsule lit ce qu'il a copié. Aucune rotation n'y peut
+rien : elle protège les copies qu'il n'a pas encore, pas celles qu'il a.
+Même chose pour une clé de sauvegarde remise lors d'une restauration : elle
+ouvre cette sauvegarde-là pour toujours.
+
+=== D-CHF-020 — Mode « clé du cabinet » conservé, au format `age`
+
+*Choix.* Le mode `cabinet` reste, avec ses droits (D-CHF-008) : même
+l'exploitant ne lit pas ces sauvegardes. Seule l'enveloppe change : fichiers
+`age` pour la clé éphémère, capsule RSA-OAEP pour la clé du cabinet
+(D-CHF-014). La clé du cabinet (D-CHF-002) et la page du navigateur
+(D-CHF-005) restent : le navigateur déchiffre la capsule (RSA-OAEP,
+WebCrypto) et n'envoie que la clé de sauvegarde.
+
+Restauration hors de Partiduo, outils standard seulement :
+
+----
+openssl pkeyutl -decrypt -inkey cabinet-prive.pem -pkeyopt rsa_padding_mode:oaep \
+  -pkeyopt rsa_oaep_md:sha256 -pkeyopt rsa_mgf1_md:sha256 -in backup-….key.rsa -out backup.key
+age -d -i backup.key -o backup.dump backup-….dump.age
+----
+
+et, pour le mode `exploitation` :
+`age -d -i exploitation-AAAA.age backup-….key.age > backup.key`, puis la même
+seconde commande. `partiduo-agent decrypt` et `inspect` restent, au nouveau
+format ; le script Python et le format 1 sont retirés (D-CHF-021).
+
+=== D-CHF-021 — Retrait du format 1 et migration
+
+*Choix.* Aucune sauvegarde réelle n'existe au format 1 (serveur de test
+`loulou` seulement) : le format 1 (`PDUOBAK`), la clé du serveur, la
+commande `server-key`, l'option `--server-key` et le script
+`scripts/dechiffrer-sauvegarde.py` sont retirés, sans lecture de
+compatibilité. Les sauvegardes de test de `loulou` sont effacées (ou
+déchiffrées puis reprises au nouveau format avant la bascule, au choix de
+l'exploitant). Migration de l'administration : `server` devient
+`exploitation` dans `admin_firm.backup_encryption` et
+`admin_dossier.backup_encryption`, défaut `exploitation` ; tables des clés
+des clés de signature des serveurs (`admin_signing_key`) ; capsule,
+manifeste et sa signature, destinataire, serveur d'origine dans
+`admin_backup` (l'engagement HMAC et la clé enveloppée disparaissent).
+Migration `0006_exploitation_key` : les sauvegardes enregistrées avant
+(chemins absolus, ou mode `server`) sont marquées élaguées.
+
+*API de l'exécutant 3.0.0* : la valeur `server` est retirée et
+`commitment` remplacé par `recipient` (majeure) ; `path` et `media_path`
+sont des emplacements du stockage (D-CHF-024) ; ajouts : `signers` (lignes
+`allowed_signers` du serveur d'origine) dans `params` ; `server`,
+`manifest`, `signature`, `signing_key`, `encryption.capsule`,
+`encryption.capsule_keys` et, pour l'élagage, `kept` dans le résultat. Les
+clés d'exploitation ne passent pas par l'API : chaque serveur lit les
+siennes (beryl). Un exécutant 2.x qui reçoit `exploitation` échoue proprement
+(« mode de chiffrement inconnu »), il ne sauvegarde pas en clair.
+
+=== D-CHF-022 — Déploiement par beryl
+
+*Choix.* La recette privée `partiduo-agent` de beryl pose, par serveur :
+
+* les clés publiques d'exploitation du groupe du serveur :
+  `/usr/local/etc/partiduo-agent/exploitation.recipients` (root:partiduo-agent,
+  0644 ; une ligne `age1pq1…` par clé, commentaires permis), lu à chaque
+  sauvegarde ;
+* la clé privée de signature du serveur :
+  `/usr/local/etc/partiduo-agent/backup-signing.key` (partiduo-agent, 0600),
+  variable du coffre propre à l'hôte (suffixe `__<HÔTE>`, `secret-file`
+  avec `per_host: true`, beryl 0.6.22.40), et sa publique `.pub` à côté ;
+* la clé ssh du stockage : `/usr/local/etc/partiduo-agent/store.key`
+  (partiduo-agent, 0600, propre à l'hôte), et l'option `--store-command` ;
+  côté `quantas`, la ligne `authorized_keys` du compte `partiduo-store`
+  qui force `partiduo-agent store-serve --client <hôte>` (D-CHF-024) ;
+* le paquet `age` (≥ 1.3) ; `ssh-keygen` est dans le système de base. Le
+  serveur de l'administration a aussi besoin d'`age` (`age-keygen -y`
+  contrôle une clé de sauvegarde remise).
+
+La clé publique de signature est déclarée à la main par le super-admin,
+écran « Serveurs » (empreinte `SHA256:…`, celle de `ssh-keygen -l`) ; sans
+elle, aucune sauvegarde de ce serveur n'est relue. La clé privée d'exploitation
+ne passe *jamais* par beryl ni par son coffre.
+
+=== D-CHF-023 — Journal d'audit
+
+*Choix.* En plus de D-CHF-012 : `signing_key.add`, `signing_key.revoke`
+(serveur, empreinte), `backup.capsule` (capsule téléchargée par
+l'exploitant). Une signature refusée l'est par l'exécutant : la tâche
+échoue, son motif au journal de la tâche. Jamais une clé de sauvegarde ni
+une capsule. Avec B-CHF-003 viendront `exploitation_key.*` et l'export et
+l'import de capsules.
+
+=== D-CHF-024 — Sauvegardes hors du serveur de production
+
+*Constat.* L'exécutant écrivait les sauvegardes sous `--backup-dir` du
+serveur de production et ne restaurait que de là : contraire au principe
+d'exploitation, et pas de restauration sur un autre serveur.
+
+*Choix.* Un *stockage* d'emplacements `<serveur>/<dossier>/<fichier>`
+(noms en liste fermée) :
+
+* l'exécutant prépare la sauvegarde dans son répertoire de sauvegarde, la
+  relit, la signe, l'envoie (base, pièces jointes, capsule, manifeste,
+  signature), vérifie le SHA-256 calculé par le stockage, puis efface tout
+  sur le serveur ; une lecture ramène les fichiers le temps de la tâche ;
+* en production, `--store-command` (obligatoire) : `ssh` vers le serveur
+  de sauvegarde, dont `authorized_keys` force `partiduo-agent store-serve
+  --root … --client <hôte>` : une commande par connexion (`PUT`, `GET`,
+  `STAT`, `LIST`, `DEL`) ; hors production, un répertoire (`--store-dir`) ;
+* le serveur client n'écrit que sous son répertoire, une seule fois
+  (jamais d'écrasement), lit tout (restauration ailleurs), n'efface que le
+  sien ; une archive dans sa durée légale n'est jamais effacée, quel que
+  soit le client (D-CRA-007, vérifié par le stockage lui-même) ;
+* l'élagage par un autre serveur des sauvegardes d'un dossier déplacé les
+  garde (`kept`) ; l'administration ne les marque pas élaguées ; une
+  suppression définitive qui en compte est refusée avant tout geste ;
+* une reprise qui a perdu la clé de sauvegarde avant la fin de l'envoi
+  repart sous un nouvel horodatage (le stockage n'écrase jamais) ;
+* l'emplacement reçu de l'administration doit être celui du dossier de la
+  tâche (D-CRA-001) ; un chemin absolu du répertoire de sauvegarde du
+  dossier reste accepté et désigne le fichier de ce serveur.
+
+Un serveur compromis peut encore effacer ses propres sauvegardes récentes
+du stockage : les instantanés ZFS de `quantas` et les copies des NAS en
+protègent l'historique.
+
+*Alternatives écartées.* `rsync` ou SFTP : un serveur compromis pourrait
+écraser des fichiers (SFTP n'interdit pas l'ouverture en troncature) ;
+`quantas` qui tire : la restauration sur un autre serveur demande de toute
+façon un chemin de retour, et la sauvegarde resterait sur la production
+jusqu'au passage suivant.
 
 == Validation à deux au choix (29 septembre 2026)
 

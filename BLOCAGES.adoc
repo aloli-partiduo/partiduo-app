@@ -1422,3 +1422,62 @@ par TELEDEC : envoi, acceptation, rejet).
   série (B0 à B3 : lien ouvert, puis liste et suivi).
 * *Greffe* — inchangé : droit `stage/nouvelle-declaration` en attente de
   TELEDEC (D-TDC11-004).
+
+== Clé d'exploitation des sauvegardes (9 octobre 2026, D-CHF-013 à D-CHF-024)
+
+== B-CHF-001 — Clé matérielle ou post-quantique
+
+*Constat.* La clé privée d'exploitation pouvait vivre sur une YubiKey
+(`age-plugin-yubikey`, PIV P-256, destinataire `p256tag`), mais `p256tag`
+n'est pas post-quantique et la spécification `age` déconseille de le mêler
+aux destinataires post-quantiques ; le type matériel post-quantique
+(`mlkem768p256tag`) n'est pas encore proposé par le greffon, qui n'a pas de
+port FreeBSD.
+
+*Levé* (9 octobre 2026, décision de l'utilisateur) : post-quantique.
+Clés `age1pq` en fichiers d'identité chiffrés par phrase de passe, hors
+ligne, deux détenteurs au moins (D-CHF-015). Passer plus tard à une clé
+matérielle post-quantique ne demandera que de re-chiffrer les capsules.
+
+== B-CHF-002 — Acheminement des sauvegardes vers et depuis `quantas`
+
+*Constat.* L'exécutant écrivait les sauvegardes sur le serveur de
+production et ne restaurait que de là.
+
+*Levé* (9 octobre 2026, D-CHF-024) : stockage hors du serveur, joint par
+`ssh` (`partiduo-agent store-serve` forcé côté `quantas`), écriture une
+seule fois, lecture par tout serveur, rien ne reste sur la production.
+
+== B-CHF-003 — Rotation et campagnes de restauration test : à la main
+
+*Constat.* D-CHF-017 et D-CHF-019 prévoient, dans l'administration, la
+liste des clés d'exploitation (états `active`, `retirée`, `compromise`),
+l'export des capsules d'un lot de sauvegardes et l'import de capsules
+re-chiffrées ou de clés de sauvegarde pour une campagne. Ce n'est pas fait.
+
+*Contournement.* Une sauvegarde à la fois, par « Tester avec la clé » ;
+rotation à la main avec `age` sur le poste de l'exploitant (README de
+partiduo-admin, « Rotation »). Une capsule re-chiffrée se dépose au stockage
+sous un nom nouveau (le stockage n'écrase jamais) ; l'administration garde
+l'ancienne, qu'ouvre l'ancienne clé tant qu'elle est conservée.
+
+*Levée proposée.* Table `admin_exploitation_key`, écran d'export et
+d'import (JSON de capsules), tâche `backup.capsules` qui dépose les
+capsules re-chiffrées, audit `exploitation_key.*` et `backup.capsules_*`.
+
+== B-CHF-004 — Clé d'exploitation non essayée en réel
+
+*Constat.* Specs écrites ; celles sans base ni réseau (chiffrement,
+capsules, manifeste, signature, stockage, commandes locales) passent ;
+`partiduo-agent store-serve` essayé derrière le client du stockage. Les
+specs qui demandent PostgreSQL ou un port local (bout en bout de
+l'exécutant, administration) n'ont pas pu tourner dans la session de
+travail, dont la sandbox interdit ces connexions : à lancer. Rien n'est
+encore essayé sur un serveur (recette beryl `partiduo-agent` à compléter :
+clés publiques d'exploitation, clé de signature et clé ssh du stockage par
+hôte, paquet `age` ; compte `partiduo-store` et `authorized_keys` sur
+`quantas`).
+
+*Levée.* Suite complète verte ; essai sur `loulou` (pas `bi`) : sauvegarde
+au stockage, restauration test avec la clé, restauration sur un autre
+serveur.
