@@ -80,7 +80,32 @@ fr:
       eur: "Euro"
     exports:
       page: "Page %{page} sur %{count}"
+    imports:
+      actions:
+        create: "Création"
+        update: "Mise à jour"
+        refused: "Refusée"
     errors:
+      import:
+        separator: "Séparateur non reconnu : point-virgule, virgule, tabulation ou barre verticale."
+        quote: "Délimiteur de texte non reconnu : guillemet ou apostrophe."
+        encoding_unknown: "Encodage non reconnu : UTF-8 ou Windows-1252."
+        skip_rows: "Le nombre de lignes à ignorer doit être compris entre 0 et 1000."
+        too_large: "Le fichier dépasse %{max} Mo."
+        too_many_rows: "Le fichier dépasse %{max} lignes."
+        encoding: "Le fichier n'est pas en UTF-8 : choisissez l'encodage Windows-1252."
+        malformed: "Fichier CSV illisible vers l'enregistrement %{line} (délimiteur de texte non refermé ?)."
+        empty: "Le fichier ne contient aucune ligne."
+        column_unknown: "Colonne %{column} : champ inconnu (%{key})."
+        column_duplicate: "Le champ « %{field} » est associé à plusieurs colonnes."
+        column_missing: "Aucune colonne n'est associée au champ obligatoire « %{field} »."
+        decimal: "« %{value} » n'est pas un nombre."
+        date: "« %{value} » n'est pas une date (AAAA-MM-JJ ou JJ/MM/AAAA)."
+        boolean: "« %{value} » n'est ni oui ni non."
+        has_refused:
+          one: "%{count} ligne est refusée : corrigez le fichier, ou confirmez l'import des seules lignes acceptées."
+          other: "%{count} lignes sont refusées : corrigez le fichier, ou confirmez l'import des seules lignes acceptées."
+        nothing: "Aucune ligne à importer."
       table:
         title:
           blank: "Le tableau exporté doit avoir un titre."

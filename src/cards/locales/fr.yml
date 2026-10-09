@@ -6,6 +6,7 @@ fr:
       card:
         read: "Consulter les fiches"
         write: "Créer et modifier les fiches"
+        import: "Importer des fiches (CSV)"
       category:
         manage: "Gérer les catégories de fiches"
     menu:
@@ -85,7 +86,45 @@ fr:
       attributes:
         first_name: "Prénom"
         company: "Société"
+    import:
+      export_name: "fiches"
+      fields:
+        name: "Nom"
+        code: "Quick code"
+        description: "Description"
+        enabled: "Active"
+        vat_number: "Numéro de TVA"
+        siren: "SIREN"
+        siret: "SIRET"
+        routing_id: "Code de routage"
+        iban: "IBAN"
+        bic: "BIC"
+        email: "Courriel"
+        phone: "Téléphone"
+        contact_name: "Contact"
+        address_line1: "Adresse"
+        address_line2: "Complément d'adresse"
+        address_postcode: "Code postal"
+        address_city: "Localité"
+        address_country_code: "Pays"
+        unit_code: "Unité"
+        sale_price: "Prix de vente"
+        purchase_price: "Prix d'achat"
+        vat_rate: "Taux de TVA"
+        customer_nature: "Nature du client"
+        supplier_nature: "Nature du fournisseur"
+        last_name: "Nom de famille"
+        first_names: "Prénoms"
+        birth_date: "Date de naissance"
+        account: "Compte comptable"
     errors:
+      import:
+        code_exists: "La fiche %{code} existe déjà : cochez « Mettre à jour les fiches existantes » pour la modifier."
+        other_category: "La fiche %{code} existe déjà dans une autre catégorie."
+        account_on_update: "La fiche %{code} existe déjà : son compte comptable se change depuis la fiche, pas par l'import."
+        account_forbidden: "Vous n'avez pas le droit de choisir le compte comptable d'une fiche."
+        card_unknown: "Aucune fiche n'a le quick code « %{code} »."
+        vat_rate_unknown: "Aucun taux de TVA n'a le code « %{code} »."
       card:
         base:
           in_use: "Cette fiche est utilisée et ne peut être supprimée ; désactivez-la."

@@ -6,6 +6,7 @@ en:
       card:
         read: "View cards"
         write: "Create and edit cards"
+        import: "Import cards (CSV)"
       category:
         manage: "Manage card categories"
     menu:
@@ -85,7 +86,45 @@ en:
       attributes:
         first_name: "First name"
         company: "Company"
+    import:
+      export_name: "cards"
+      fields:
+        name: "Name"
+        code: "Quick code"
+        description: "Description"
+        enabled: "Enabled"
+        vat_number: "VAT number"
+        siren: "SIREN"
+        siret: "SIRET"
+        routing_id: "Routing code"
+        iban: "IBAN"
+        bic: "BIC"
+        email: "Email"
+        phone: "Phone"
+        contact_name: "Contact"
+        address_line1: "Address"
+        address_line2: "Address line 2"
+        address_postcode: "Postcode"
+        address_city: "City"
+        address_country_code: "Country"
+        unit_code: "Unit"
+        sale_price: "Sale price"
+        purchase_price: "Purchase price"
+        vat_rate: "VAT rate"
+        customer_nature: "Customer type"
+        supplier_nature: "Supplier type"
+        last_name: "Last name"
+        first_names: "First names"
+        birth_date: "Date of birth"
+        account: "Account"
     errors:
+      import:
+        code_exists: "Card %{code} already exists: tick “Update existing cards” to change it."
+        other_category: "Card %{code} already exists in another category."
+        account_on_update: "Card %{code} already exists: its account is changed from the card, not by the import."
+        account_forbidden: "You are not allowed to choose the account of a card."
+        card_unknown: "No card has the quick code “%{code}”."
+        vat_rate_unknown: "No VAT rate has the code “%{code}”."
       card:
         base:
           in_use: "This card is in use and cannot be deleted; disable it instead."

@@ -146,6 +146,7 @@ Référence par domaine (AsciiDoc) :
 * link:doc/api/liberal.adoc[]
 * link:doc/api/micro.adoc[]
 * link:doc/api/modules.adoc[]
+* link:doc/api/outils.adoc[] (imports CSV de fiches et du plan comptable, archive des pièces)
 * link:doc/api/socle-referentiel.adoc[]
 * link:doc/api/stock.adoc[]
 * link:doc/api/vat-returns.adoc[]

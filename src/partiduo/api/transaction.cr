@@ -39,6 +39,40 @@ module Partiduo
         result || raise "transaction interrompue sans résultat"
       end
 
+      # Essai à blanc : exécute le bloc puis annule *toutes* ses écritures,
+      # même réussies (aperçu d'un import, D-OUT-002). Les commandes appelées
+      # dans le bloc s'exécutent comme pour de vrai (contrôles de la base et
+      # abonnés d'événements compris) ; les effets extérieurs qu'elles
+      # enregistrent (`Events.after_commit`) sont abandonnés. Renvoie la
+      # valeur du bloc ; une exception est propagée après l'annulation.
+      def self.dry_run(& : -> T) : T forall T
+        connection = Marten::DB::Connection.default
+        name = @@mutex.synchronize { "partiduo_dry_#{@@savepoints += 1}" }
+        outer = connection.in_transaction?
+        value = nil
+        frames = current_frames
+        frames << [] of -> Nil
+        begin
+          if outer
+            connection.open(&.exec("SAVEPOINT #{name}"))
+            begin
+              value = yield
+            ensure
+              rollback_to(connection, name)
+            end
+          else
+            connection.transaction do
+              value = yield
+              raise Marten::DB::Errors::Rollback.new
+            end
+          end
+        ensure
+          frames.pop
+          @@mutex.synchronize { @@frames.delete(Fiber.current.object_id) if @@frames[Fiber.current.object_id]?.try(&.empty?) }
+        end
+        value.as(T)
+      end
+
       # Effet extérieur à exécuter à la validation : rattaché au point de
       # sauvegarde courant s'il y en a un (abandonné s'il est annulé), sinon à
       # la transaction. Appelé par `Partiduo::Events.after_commit`.

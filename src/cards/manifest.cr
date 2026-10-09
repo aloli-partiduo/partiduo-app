@@ -9,6 +9,8 @@ Partiduo::Modules.register do
 
   permission "cards.card.read"
   permission "cards.card.write"
+  # Import de fiches depuis un fichier CSV (D-OUT-003).
+  permission "cards.card.import"
   # Droit d'origine FICCAT : création, modification et effacement de catégorie de fiche.
   permission "cards.category.manage"
 

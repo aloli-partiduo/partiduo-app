@@ -21,6 +21,7 @@ fr:
       account:
         read: "Consulter le plan comptable"
         write: "Modifier le plan comptable"
+        import: "Importer le plan comptable (CSV)"
       ledger:
         read: "Consulter les journaux"
         write: "Créer et modifier les journaux"
@@ -120,7 +121,22 @@ fr:
       origins:
         off_platform: "Reçue hors plateforme"
         platform: "Reçue par la plateforme agréée"
+    import:
+      export_name: "plan-comptable"
+      fields:
+        number: "Numéro"
+        label: "Libellé"
+        parent: "Compte parent"
+        kind: "Type"
+        direct_use: "Utilisation directe"
+    receipts:
+      archive_name: "pieces"
     errors:
+      import:
+        number_exists: "Le compte %{number} existe déjà : cochez « Mettre à jour les comptes existants » pour le modifier."
+        kind: "Type de compte non reconnu : « %{value} »."
+      receipts:
+        none: "Aucune écriture de la période n'a de pièce jointe."
       received_invoice:
         number:
           blank: "Indiquez le numéro de la facture du fournisseur"

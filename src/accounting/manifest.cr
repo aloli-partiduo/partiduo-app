@@ -14,6 +14,8 @@ Partiduo::Modules.register do
   permission "accounting.entry.cancel"
   permission "accounting.account.read"
   permission "accounting.account.write"
+  # Import du plan comptable depuis un fichier CSV (D-OUT-004).
+  permission "accounting.account.import"
   permission "accounting.ledger.read"
   permission "accounting.ledger.write"
   permission "accounting.matching.write"

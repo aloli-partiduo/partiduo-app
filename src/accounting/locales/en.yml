@@ -21,6 +21,7 @@ en:
       account:
         read: "View the chart of accounts"
         write: "Edit the chart of accounts"
+        import: "Import the chart of accounts (CSV)"
       ledger:
         read: "View journals"
         write: "Create and edit journals"
@@ -120,7 +121,22 @@ en:
       origins:
         off_platform: "Received outside the platform"
         platform: "Received through the approved platform"
+    import:
+      export_name: "chart-of-accounts"
+      fields:
+        number: "Number"
+        label: "Label"
+        parent: "Parent account"
+        kind: "Type"
+        direct_use: "Direct use"
+    receipts:
+      archive_name: "receipts"
     errors:
+      import:
+        number_exists: "Account %{number} already exists: tick “Update existing accounts” to change it."
+        kind: "Unknown account type: “%{value}”."
+      receipts:
+        none: "No entry of the period has an attachment."
       received_invoice:
         number:
           blank: "Enter the supplier's invoice number"

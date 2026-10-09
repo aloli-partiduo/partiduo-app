@@ -80,7 +80,32 @@ en:
       eur: "Euro"
     exports:
       page: "Page %{page} of %{count}"
+    imports:
+      actions:
+        create: "Create"
+        update: "Update"
+        refused: "Refused"
     errors:
+      import:
+        separator: "Unknown separator: semicolon, comma, tab or vertical bar."
+        quote: "Unknown text delimiter: double or single quote."
+        encoding_unknown: "Unknown encoding: UTF-8 or Windows-1252."
+        skip_rows: "The number of rows to skip must be between 0 and 1000."
+        too_large: "The file exceeds %{max} MB."
+        too_many_rows: "The file exceeds %{max} rows."
+        encoding: "The file is not UTF-8: choose the Windows-1252 encoding."
+        malformed: "Unreadable CSV file around record %{line} (unclosed text delimiter?)."
+        empty: "The file contains no row."
+        column_unknown: "Column %{column}: unknown field (%{key})."
+        column_duplicate: "The field “%{field}” is mapped to several columns."
+        column_missing: "No column is mapped to the required field “%{field}”."
+        decimal: "“%{value}” is not a number."
+        date: "“%{value}” is not a date (YYYY-MM-DD or DD/MM/YYYY)."
+        boolean: "“%{value}” is neither yes nor no."
+        has_refused:
+          one: "%{count} row is refused: fix the file, or confirm importing the accepted rows only."
+          other: "%{count} rows are refused: fix the file, or confirm importing the accepted rows only."
+        nothing: "No row to import."
       table:
         title:
           blank: "The exported table needs a title."

@@ -6,6 +6,7 @@ nl:
       card:
         read: "Fiches raadplegen"
         write: "Fiches aanmaken en wijzigen"
+        import: "Fiches importeren (CSV)"
       category:
         manage: "Fichecategorieën beheren"
     menu:
@@ -85,7 +86,45 @@ nl:
       attributes:
         first_name: "Voornaam"
         company: "Onderneming"
+    import:
+      export_name: "fiches"
+      fields:
+        name: "Naam"
+        code: "Snelcode"
+        description: "Omschrijving"
+        enabled: "Actief"
+        vat_number: "Btw-nummer"
+        siren: "SIREN"
+        siret: "SIRET"
+        routing_id: "Routeringscode"
+        iban: "IBAN"
+        bic: "BIC"
+        email: "E-mail"
+        phone: "Telefoon"
+        contact_name: "Contactpersoon"
+        address_line1: "Adres"
+        address_line2: "Adresaanvulling"
+        address_postcode: "Postcode"
+        address_city: "Plaats"
+        address_country_code: "Land"
+        unit_code: "Eenheid"
+        sale_price: "Verkoopprijs"
+        purchase_price: "Aankoopprijs"
+        vat_rate: "Btw-tarief"
+        customer_nature: "Soort klant"
+        supplier_nature: "Soort leverancier"
+        last_name: "Familienaam"
+        first_names: "Voornamen"
+        birth_date: "Geboortedatum"
+        account: "Rekening"
     errors:
+      import:
+        code_exists: "Fiche %{code} bestaat al: vink „Bestaande fiches bijwerken” aan om ze te wijzigen."
+        other_category: "Fiche %{code} bestaat al in een andere categorie."
+        account_on_update: "Fiche %{code} bestaat al: haar rekening wijzigt u vanuit de fiche, niet via de import."
+        account_forbidden: "U mag de rekening van een fiche niet kiezen."
+        card_unknown: "Geen enkele fiche heeft de snelcode „%{code}”."
+        vat_rate_unknown: "Geen enkel btw-tarief heeft de code „%{code}”."
       card:
         base:
           in_use: "Deze fiche wordt gebruikt en kan niet worden verwijderd; deactiveer ze."

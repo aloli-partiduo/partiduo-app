@@ -21,6 +21,7 @@ nl:
       account:
         read: "Het rekeningstelsel raadplegen"
         write: "Het rekeningstelsel wijzigen"
+        import: "Het rekeningstelsel importeren (CSV)"
       ledger:
         read: "Dagboeken raadplegen"
         write: "Dagboeken aanmaken en wijzigen"
@@ -120,7 +121,22 @@ nl:
       origins:
         off_platform: "Ontvangen buiten het platform"
         platform: "Ontvangen via het erkende platform"
+    import:
+      export_name: "rekeningstelsel"
+      fields:
+        number: "Nummer"
+        label: "Omschrijving"
+        parent: "Bovenliggende rekening"
+        kind: "Soort"
+        direct_use: "Rechtstreeks gebruik"
+    receipts:
+      archive_name: "stukken"
     errors:
+      import:
+        number_exists: "Rekening %{number} bestaat al: vink „Bestaande rekeningen bijwerken” aan om ze te wijzigen."
+        kind: "Onbekende rekeningsoort: „%{value}”."
+      receipts:
+        none: "Geen enkele boeking van de periode heeft een bijlage."
       received_invoice:
         number:
           blank: "Vul het factuurnummer van de leverancier in"

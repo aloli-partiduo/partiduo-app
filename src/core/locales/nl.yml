@@ -80,7 +80,32 @@ nl:
       eur: "Euro"
     exports:
       page: "Pagina %{page} van %{count}"
+    imports:
+      actions:
+        create: "Aanmaak"
+        update: "Bijwerking"
+        refused: "Geweigerd"
     errors:
+      import:
+        separator: "Onbekend scheidingsteken: puntkomma, komma, tab of verticale streep."
+        quote: "Onbekend tekstteken: dubbel of enkel aanhalingsteken."
+        encoding_unknown: "Onbekende codering: UTF-8 of Windows-1252."
+        skip_rows: "Het aantal over te slaan regels moet tussen 0 en 1000 liggen."
+        too_large: "Het bestand is groter dan %{max} MB."
+        too_many_rows: "Het bestand telt meer dan %{max} regels."
+        encoding: "Het bestand is niet in UTF-8: kies de codering Windows-1252."
+        malformed: "Onleesbaar CSV-bestand rond record %{line} (tekstteken niet gesloten?)."
+        empty: "Het bestand bevat geen enkele regel."
+        column_unknown: "Kolom %{column}: onbekend veld (%{key})."
+        column_duplicate: "Het veld „%{field}” is aan meerdere kolommen gekoppeld."
+        column_missing: "Geen enkele kolom is aan het verplichte veld „%{field}” gekoppeld."
+        decimal: "„%{value}” is geen getal."
+        date: "„%{value}” is geen datum (JJJJ-MM-DD of DD/MM/JJJJ)."
+        boolean: "„%{value}” is ja noch nee."
+        has_refused:
+          one: "%{count} regel is geweigerd: verbeter het bestand, of bevestig de import van enkel de aanvaarde regels."
+          other: "%{count} regels zijn geweigerd: verbeter het bestand, of bevestig de import van enkel de aanvaarde regels."
+        nothing: "Geen enkele regel om te importeren."
       table:
         title:
           blank: "De geëxporteerde tabel heeft een titel nodig."
