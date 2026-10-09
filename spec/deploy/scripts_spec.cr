@@ -23,6 +23,13 @@ ensure
 end
 
 describe "bin/partiduo-provision" do
+  it "transmet le type de dossier à manage provision (ADR-011 A3, D-FOY-005)" do
+    code, output, _ = sh("bin/partiduo-provision", "--dry-run", "--name", "Foyer Martin", "--regime=fr",
+      "--kind", "household", "--modules", "accounting", "martin")
+    code.should eq(0)
+    output.should contain("'--name=Foyer Martin' --regime=fr --kind=household")
+  end
+
   it "déroule les étapes de l'ADR-001 D2 en simulation" do
     code, output, _ = sh("bin/partiduo-provision", "--dry-run", "--name", "Exemple SARL", "--regime=fr",
       "--modules", "accounting", "--with", "skel", "--owner", "partiduo", "--domain", "compta.example", "exemple-sarl")

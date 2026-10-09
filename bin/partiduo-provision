@@ -36,6 +36,8 @@ Crée l'instance <dossier> (minuscules, chiffres, tirets), servie en
 Société :
   --name TEXTE            raison sociale (obligatoire)
   --regime fr|be          régime fiscal (obligatoire) : plan comptable, taux
+  --kind company|household type de dossier (défaut : company) ; household :
+                          plan réduit d'un foyer, --modules=accounting
   --country CC            pays ISO 3166-1 (défaut : selon le régime)
   --locale fr|en|nl       langue par défaut (défaut : fr)
   --vat NUMÉRO            numéro de TVA intracommunautaire
@@ -215,7 +217,7 @@ while [ $# -gt 0 ]; do
       ;;
     --name | --regime | --country | --vat | --siren | --legal-form | --capital | --rcs | --street | \
       --street-number | --postcode | --city | --phone | --email | --auth-methods | --auth-level | \
-      --session | --admin-email)
+      --session | --admin-email | --kind)
       need_value "$@"
       add_provision_arg "$1" "$2"
       shift
