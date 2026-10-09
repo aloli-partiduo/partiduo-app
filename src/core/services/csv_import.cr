@@ -77,27 +77,21 @@ module Partiduo
         {records, [] of FieldError}
       end
 
-      # Association des colonnes : celle demandée ; sinon l'en-tête reconnu
-      # dans le premier enregistrement (retiré des données) ; sinon
-      # `defaults`. Complétée de colonnes ignorées jusqu'à la largeur du
-      # fichier. Renvoie l'association, les enregistrements de données et
-      # si un en-tête a été reconnu.
+      # Association des colonnes : celle demandée, sinon l'en-tête reconnu
+      # dans le premier enregistrement, sinon `defaults`. Un en-tête reconnu
+      # est retiré des données même quand l'association est demandée (elle
+      # a pu être corrigée après un premier aperçu). Complétée de colonnes
+      # ignorées jusqu'à la largeur du fichier. Renvoie l'association, les
+      # enregistrements de données et si un en-tête a été reconnu.
       def self.associate(records : Array(Record), fields : Array(Field), given : Array(String)?,
                          defaults : Array(String)) : {Array(String), Array(Record), Bool}
         width = records.max_of?(&.cells.size) || 0
-        header = false
-        columns = if given
-                    given.map(&.strip)
-                  elsif (first = records.first?) && (recognized = header_columns(first.cells, fields))
-                    header = true
-                    records = records[1..]
-                    recognized
-                  else
-                    defaults.dup
-                  end
+        recognized = records.first?.try { |first| header_columns(first.cells, fields) }
+        records = records[1..] if recognized
+        columns = given.try(&.map(&.strip)) || recognized || defaults.dup
         columns = columns.first(Math.max(width, given.try(&.size) || 0))
         columns.concat([""] * (width - columns.size)) if columns.size < width
-        {columns, records, header}
+        {columns, records, !recognized.nil?}
       end
 
       # Erreurs de l'association : champ inconnu, champ associé deux fois,

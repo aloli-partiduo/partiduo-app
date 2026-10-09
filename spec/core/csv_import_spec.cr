@@ -60,6 +60,14 @@ describe "Partiduo::Core::CsvImport — lecture des fichiers importés (D-OUT-00
       Csv.associate(records, FIELDS, ["label", "", "number"], %w[number label])[0].should eq(["label", "", "number"])
     end
 
+    it "retire l'en-tête reconnu même quand l'association est demandée" do
+      records, _ = Csv.read(source("Numéro;Libellé\n60;Achats\n"))
+      columns, data, header = Csv.associate(records, FIELDS, ["number", ""], %w[number label])
+      columns.should eq(["number", ""])
+      data.map(&.line).should eq([2])
+      header.should be_true
+    end
+
     it "signale champ inconnu, champ associé deux fois et champ obligatoire absent" do
       errors = Csv.column_errors(["number", "number", "zzz"], FIELDS)
       errors.map(&.key).should eq(["core.errors.import.column_unknown", "core.errors.import.column_duplicate",
