@@ -9,3 +9,11 @@ Partiduo::Api::InitialData.register("CORE", "base_currency", order: 2) do |conte
   end
   Partiduo::Api::Core.ensure_base_currency(context.actor, "EUR", name)
 end
+
+# Types de dossier du cœur (ADR-011 A3) : l'entreprise, plan du régime ; le
+# foyer, plan réduit, avec la Comptabilité et sans aucun module propre aux
+# entreprises (ADR-011 D2).
+Partiduo::Api::InitialData.register_kind(Partiduo::Api::InitialData::COMPANY, "CORE")
+Partiduo::Api::InitialData.register_kind(Partiduo::Api::InitialData::HOUSEHOLD, "CORE",
+  chart: Partiduo::Api::InitialData::HOUSEHOLD, required: %w[ACCOUNTING],
+  excluded: %w[INVOICING MICRO LIBERAL STOCK FOLLOWUP ANALYTIC])

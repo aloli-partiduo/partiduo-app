@@ -13,8 +13,11 @@ module Partiduo
             }}
 
   # Version du contrat `Partiduo::Api` (ADR-003 D6, ADR-005 D1). Elle suit le
-  # versionnage sémantique : toute rupture du contrat incrémente la majeure.
-  API_VERSION = "0.6.0"
+  # versionnage sémantique : toute rupture du contrat incrémente la majeure ;
+  # un ajout incrémente la mineure (0.7.0 : `incompatible_with` du manifeste
+  # et de `ModuleView`, types de dossier de `InitialData`, `kind` de
+  # `SettingsView` et `ProvisionInput`, ADR-011 A1 et A3).
+  API_VERSION = "0.7.0"
 end
 
 module Partiduo
@@ -23,5 +26,7 @@ module Partiduo
   # par l'exécutant de partiduo-admin. Versionnage sémantique : retirer ou
   # renommer une action, une clé JSON ou un code de sortie incrémente la
   # majeure ; en ajouter incrémente la mineure.
-  INSTANCE_CLI_VERSION = "1.1.0"
+  # 1.2.0 : clé `kind` de `status` et `incompatible_with` de ses modules
+  # (ADR-011 A1, A3).
+  INSTANCE_CLI_VERSION = "1.2.0"
 end

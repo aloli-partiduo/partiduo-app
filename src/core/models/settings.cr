@@ -34,6 +34,9 @@ module Partiduo
 
       # Dossier
       field :tax_regime, :string, max_size: 2
+      # Type de dossier (ADR-011 A3) : `company`, `household`… Choisi au
+      # provisionnement, jamais modifié.
+      field :kind, :string, max_size: 32, default: "company"
       field :default_locale, :string, max_size: 8
       field :domain, :string, max_size: 253
 

@@ -166,7 +166,7 @@ module Partiduo
 
         private def status : Hash(String, JSON::Any)
           prepare_database
-          settings = settings_row
+          settings = settings_summary
           pending = InstanceAdmin.pending_migrations
           read_only = InstanceAdmin.read_only?
           object({
@@ -175,8 +175,9 @@ module Partiduo
             "contract"       => Partiduo::INSTANCE_CLI_VERSION,
             "database"       => InstanceAdmin.database_name,
             "provisioned"    => !settings.nil?,
-            "domain"         => settings.try(&.domain.try(&.presence)) || Partiduo::Config.domain,
+            "domain"         => settings.try(&.domain.presence) || Partiduo::Config.domain,
             "tax_regime"     => settings.try(&.tax_regime),
+            "kind"           => settings.try(&.kind),
             "default_locale" => settings.try(&.default_locale),
             "read_only"      => read_only_json(read_only),
             "migrations"     => object({
@@ -409,6 +410,14 @@ module Partiduo
 
         # --- Lecture ---------------------------------------------------------------
 
+        # Configuration lue pour `status`, sans le modèle : `status` répond
+        # aussi quand une migration du socle reste à appliquer. Avant la
+        # migration `core.0004`, tout dossier est d'entreprise (`company`).
+        private def settings_summary : InstanceAdmin::SettingsSummary?
+          return unless InstanceAdmin.table_exists?(Partiduo::Core::Settings.db_table)
+          InstanceAdmin.settings_summary
+        end
+
         private def settings_row : Partiduo::Core::Settings?
           return unless InstanceAdmin.table_exists?(Partiduo::Core::Settings.db_table)
           Partiduo::Core::Settings.all.order(:id).first
@@ -440,6 +449,7 @@ module Partiduo
               "active"     => Partiduo::Modules.active_in?(manifest.code, active),
               "depends_on" => JSON::Any.new((manifest.depends_on + manifest.depends_on_any.map(&.join("|")))
                 .map { |code| JSON::Any.new(code) }),
+              "incompatible_with" => JSON::Any.new(manifest.incompatible_with.map { |code| JSON::Any.new(code) }),
             }))
           end)
         end

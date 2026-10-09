@@ -10,7 +10,7 @@ Contrat entre une instance Partiduo et l'*exécutant* de `partiduo-admin`
 traduit en appels, sans jamais entrer dans les données comptables du dossier
 (ADR-008 D3).
 
-*Version du contrat : 1.1.0* (`Partiduo::INSTANCE_CLI_VERSION`, rendue dans
+*Version du contrat : 1.2.0* (`Partiduo::INSTANCE_CLI_VERSION`, rendue dans
 chaque réponse). Versionnage sémantique, comme `Partiduo::Api` : retirer ou
 renommer une action, une option, une clé JSON, un code d'erreur ou un code de
 sortie incrémente la majeure ; en ajouter incrémente la mineure. L'exécutant
@@ -20,7 +20,10 @@ Historique : 1.0.0 (D-CLI-001 à D-CLI-005) ; 1.1.0 (29 septembre 2026,
 B-VAL2-001) — option `--approval-mode single|dual` d'`admin-invite`, clé
 `approval_mode` de sa réponse et du détail de sa trace, raisons d'erreur
 `usage.approval_mode` et `usage.approvers_single`. Ajouts seulement : un
-appel 1.0.0 (sans l'option) garde son sens, deux personnes distinctes.
+appel 1.0.0 (sans l'option) garde son sens, deux personnes distinctes ;
+1.2.0 (9 octobre 2026, ADR-011 A1 et A3, D-FOY-001, D-FOY-004) — clé `kind`
+de `status` (type de dossier) et clé `incompatible_with` de chacun de ses
+`modules`. Ajouts seulement.
 
 == Appel
 
@@ -163,7 +166,7 @@ base.*
 
 [source,json]
 ----
-{"version":"0.1.0","api_version":"0.6.0","contract":"1.1.0",
+{"version":"0.1.0","api_version":"0.7.0","contract":"1.2.0",
  "pieces":[{"code":"CORE","kind":"socle","version":"0.1.0"}, …]}
 ----
 
@@ -180,9 +183,10 @@ base.*
 |`provisioned` |la société (réglages) existe
 |`domain` |nom d'hôte de l'instance
 |`tax_regime`, `default_locale` |régime (`fr`, `be`) et langue ; `null` avant provisionnement
+|`kind` (1.2.0) |type de dossier (`company`, `household`, ou celui d'une extension, ADR-011 A3) ; `company` si la migration `core.0004` reste à appliquer ; `null` avant provisionnement
 |`read_only` |`{"active", "since", "reason"}` (voir `read-only`)
 |`migrations` |`{"applied", "pending"}` : nombres
-|`modules` |pièces : `code`, `kind` (`socle`, `module`, `extension`), `version`, `active`, `depends_on` (une alternative s'écrit `A\|B`)
+|`modules` |pièces : `code`, `kind` (`socle`, `module`, `extension`), `version`, `active`, `depends_on` (une alternative s'écrit `A\|B`), `incompatible_with` (1.2.0 : pièces qu'elle refuse à côté d'elle, ADR-011 A1)
 |===
 
 Ni raison sociale, ni utilisateur, ni donnée comptable.
@@ -204,7 +208,9 @@ permis sur une instance en lecture seule (D-CLI-003).
 
 Active ou désactive un module ou une extension (ADR-006 D2), par
 `Partiduo::Api::Modules.activate` / `deactivate` : mêmes règles que l'écran
-d'administration (dépendances, pièces du socle), mêmes clés d'erreur.
+d'administration (dépendances, incompatibilités, pièces du socle), mêmes clés
+d'erreur (`modules.errors.activation.incompatible_with` pour une pièce
+active incompatible, ADR-011 A1).
 Désactiver *conserve les données* (`"data": "kept"`) : rien n'est supprimé,
 et réactiver rend tout. Action inscrite au journal d'audit
 (`instance.module.enable` / `.disable`). Refusé (5) sur une instance en

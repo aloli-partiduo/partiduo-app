@@ -9,17 +9,27 @@ module Partiduo
       # ventes, financier, opérations diverses) du régime, noms des journaux
       # dans `locale`. Appelé par `partiduo-provision` (chargeur
       # `ACCOUNTING.reference_data`) ; refusé si le plan n'est pas vide.
-      def self.load_initial_data(actor : Actor, regime : String, locale : String = "fr") : Result(InitialDataView)
+      #
+      # `chart` : plan de base du type de dossier (`InitialData::Kind#chart`) ;
+      # `household` charge le plan réduit d'un foyer (ADR-011 A3) — trésorerie,
+      # placements, biens, dettes, catégories de recettes et de dépenses,
+      # libellés dans `locale` —, un journal financier et un journal
+      # d'opérations diverses, sans compte de TVA.
+      def self.load_initial_data(actor : Actor, regime : String, locale : String = "fr",
+                                 chart : String = InitialData::COMPANY) : Result(InitialDataView)
         Guard.authorize!(actor, "accounting.account.write", module_code: MODULE_CODE)
         Guard.authorize!(actor, "accounting.ledger.write", module_code: MODULE_CODE)
         Transaction.run do
           unless Partiduo::Accounting::ReferenceData.regimes.includes?(regime)
             next Result(InitialDataView).failure(FieldError.new("regime", "accounting.errors.initial_data.regime.invalid"))
           end
+          unless Partiduo::Accounting::ReferenceData.charts.includes?(chart)
+            next Result(InitialDataView).failure(FieldError.new("chart", "accounting.errors.initial_data.chart.invalid"))
+          end
           if Partiduo::Accounting::Account.all.exists? || Partiduo::Accounting::Ledger.all.exists?
             next Result(InitialDataView).failure(FieldError.base("accounting.errors.initial_data.not_empty"))
           end
-          Result(InitialDataView).success(Partiduo::Accounting::ReferenceData.load(actor, regime, locale))
+          Result(InitialDataView).success(Partiduo::Accounting::ReferenceData.load(actor, regime, locale, chart))
         end
       end
     end

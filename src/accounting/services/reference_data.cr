@@ -15,6 +15,23 @@ module Partiduo
         "fr" => {{ read_file("#{__DIR__}/../data/chart_fr.yml") }},
       }
 
+      # Plans réduits d'un dossier foyer (ADR-011 A3), par régime : libellés
+      # en clés i18n, traduits au chargement.
+      HOUSEHOLD_SOURCES = {
+        "be" => {{ read_file("#{__DIR__}/../data/household_be.yml") }},
+        "fr" => {{ read_file("#{__DIR__}/../data/household_fr.yml") }},
+      }
+
+      # Plans de base : celui des entreprises du régime (`company`), ou le
+      # plan réduit d'un foyer (`household`).
+      CHARTS = {
+        "company"   => SOURCES,
+        "household" => HOUSEHOLD_SOURCES,
+      }
+
+      # Préfixe des clés de libellé d'un plan traduit.
+      LABEL_SCOPE = "accounting.initial_data.household.accounts"
+
       record AccountRow, number : String, label : String, parent : String?, kind : String, direct_use : Bool
       record LedgerRow, kind : String, code : String, receipt_prefix : String, receipt_padding : Int32, bank_account : String?
       record CategoryRow, code : String, base_account : String, create_account : Bool
@@ -26,10 +43,19 @@ module Partiduo
         SOURCES.keys
       end
 
-      def self.for(regime : String) : Data
-        yaml = YAML.parse(SOURCES[regime]? || raise ArgumentError.new("régime inconnu : #{regime}"))
+      def self.charts : Array(String)
+        CHARTS.keys
+      end
+
+      # Données du plan `chart` pour `regime` ; libellés traduits dans la
+      # langue courante pour un plan dont les libellés sont des clés.
+      def self.for(regime : String, chart : String = "company") : Data
+        sources = CHARTS[chart]? || raise ArgumentError.new("plan de base inconnu : #{chart}")
+        yaml = YAML.parse(sources[regime]? || raise ArgumentError.new("régime inconnu : #{regime}"))
+        translated = yaml["translated"]?.try(&.as_bool) || false
         accounts = yaml["accounts"].as_a.map do |row|
-          AccountRow.new(row[0].as_s, row[1].as_s, row[2].as_s?, row[3].as_s, row[4].as_bool)
+          label = translated ? I18n.t("#{LABEL_SCOPE}.#{row[1].as_s}") : row[1].as_s
+          AccountRow.new(row[0].as_s, label, row[2].as_s?, row[3].as_s, row[4].as_bool)
         end
         defaults = yaml["default_accounts"].as_h.to_h { |code, number| {code.as_s, number.as_s} }
         categories = yaml["card_categories"].as_h.map do |code, row|
@@ -49,8 +75,10 @@ module Partiduo
       # de fiches du socle présentes (lues par `Partiduo::Api::Cards`, code
       # stable) et les journaux dans une instance vierge. Noms des journaux dans
       # la langue du dossier.
-      def self.load(actor : Partiduo::Api::Actor, regime : String, locale : String) : Partiduo::Api::Accounting::InitialDataView
-        data = self.for(regime)
+      def self.load(actor : Partiduo::Api::Actor, regime : String, locale : String,
+                    chart : String = "company") : Partiduo::Api::Accounting::InitialDataView
+        locale = Partiduo::LOCALES.includes?(locale) ? locale : "fr"
+        data = I18n.with_locale(locale) { self.for(regime, chart) }
         by_number = {} of String => Account
         data.accounts.each do |row|
           account = Account.new(number: row.number, label: row.label, kind: row.kind, direct_use: row.direct_use)
@@ -69,7 +97,6 @@ module Partiduo
           categories += 1
         end
         load_vat_accounts(data, by_number)
-        locale = Partiduo::LOCALES.includes?(locale) ? locale : "fr"
         I18n.with_locale(locale) do
           data.ledgers.each do |row|
             bank_card_id = row.bank_account.try { |number| bank_card(actor, by_number[number]) }

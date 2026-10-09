@@ -181,7 +181,7 @@ autoliquidé (`accounting.errors.vat_rate_account.*`).
 
 == Jeu de données initial
 
-`load_initial_data(actor, regime, locale = "fr") : Result(InitialDataView)`
+`load_initial_data(actor, regime, locale = "fr", chart = "company") : Result(InitialDataView)`
 (droits `accounting.account.write` et `accounting.ledger.write`), chargeur
 `ACCOUNTING.reference_data` (ordre 20) : plan comptable du régime
 (`src/accounting/data/chart_{be,fr}.yml`, produits par
@@ -192,3 +192,10 @@ financier (catégorie `BANK`, compte `510001` en FR, `550` en BE), journaux
 `A01`, `V01`, `F01`, `O01` nommés dans la langue du dossier. Types de compte
 corrigés par rapport aux modèles de NOALYSS (D-ACC-008). Refusé si le plan ou
 les journaux ne sont pas vides.
+
+`chart: "household"` charge à la place le plan réduit d'un dossier foyer
+(ADR-011 A3, `src/accounting/data/household_{fr,be}.yml`, libellés traduits
+sous `accounting.initial_data.household.accounts`), les journaux `F01`
+(fiche Banque sur `512001` en FR, `5501` en BE) et `O01`, sans compte de
+TVA ; comptes par défaut `bank`, `cash`, `internal_transfer`, `bank_fees`.
+Plan inconnu : `accounting.errors.initial_data.chart.invalid`.

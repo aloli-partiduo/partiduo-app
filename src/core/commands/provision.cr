@@ -12,6 +12,8 @@ module Partiduo
       # PARTIDUO_MODULES=accounting,invoicing crystal run manage.cr -- provision \
       #   --name="Exemple SARL" --regime=fr --domain=exemple.partiduo.localhost \
       #   --modules=accounting,invoicing
+      # PARTIDUO_MODULES=accounting crystal run manage.cr -- provision \
+      #   --name="Foyer Martin" --regime=fr --kind=household --modules=accounting
       # ```
       class Provision < Marten::CLI::Manage::Command::Base
         command_name :provision
@@ -21,6 +23,7 @@ module Partiduo
         getter modules = [] of String
         getter extensions = [] of String
         getter admin_email : String? = nil
+        getter kind = Partiduo::Api::InitialData::COMPANY
 
         TEXT_OPTIONS = {
           "name"          => "raison sociale",
@@ -54,6 +57,9 @@ module Partiduo
           on_option_with_arg("with", "codes", "extensions activées") { |value| @extensions = split(value) }
           on_option_with_arg("admin-email", "email", "adresse de l'administrateur à inviter") do |value|
             @admin_email = value
+          end
+          on_option_with_arg("kind", "type", "type de dossier : company (défaut) ou household") do |value|
+            @kind = value
           end
         end
 
@@ -106,7 +112,7 @@ module Partiduo
             session_duration_minutes: session,
           )
           Partiduo::Api::Core::ProvisionInput.new(
-            settings: settings, modules: @modules, extensions: @extensions, admin_email: @admin_email,
+            settings: settings, modules: @modules, extensions: @extensions, admin_email: @admin_email, kind: @kind,
           )
         rescue InvalidBigDecimalException | ArgumentError
           nil
@@ -116,6 +122,7 @@ module Partiduo
           settings = view.settings
           print(I18n.t("core.provision.done", name: settings.company_name, domain: settings.domain))
           print(I18n.t("core.provision.regime", regime: I18n.t(settings.tax_regime_key)))
+          print(I18n.t("core.provision.kind", kind: settings.kind))
           print(I18n.t("core.provision.modules", count: view.active_modules.size,
             codes: view.active_modules.join(", ")))
           print(I18n.t("core.provision.loaders", count: view.loaders.size, names: view.loaders.join(", ")))

@@ -55,6 +55,7 @@ module Partiduo
     #   requires_core "~> 0.1"
     #   depends_on "ACCOUNTING"
     #   depends_on_any "INVOICING", "ACCOUNTING"
+    #   incompatible_with "INVOICING", "MICRO"
     #   permission "skel.page.view"
     #   menu "SKEL", parent: "EXTENSION", order: 100, route: "skel:index", permission: "skel.page.view"
     #   ui "bulma", path: "ui/bulma"
@@ -66,6 +67,7 @@ module Partiduo
       getter permission_entries = [] of PermissionEntry
       getter dependencies = [] of Dependency
       getter depends_on_any = [] of Array(String)
+      getter incompatibilities = [] of String
       getter uis = [] of UiEntry
       getter subscriptions = {} of String => Array(Partiduo::Events::Handler)
 
@@ -143,6 +145,32 @@ module Partiduo
       def depends_on_any(*codes : String) : Nil
         raise ArgumentError.new("depends_on_any attend au moins deux pièces") if codes.size < 2
         @depends_on_any << codes.to_a
+      end
+
+      # Codes des pièces qui ne peuvent pas être actives en même temps que
+      # celle-ci (ADR-011 A1).
+      def incompatible_with : Array(String)
+        @incompatibilities
+      end
+
+      # Aucune des pièces citées ne peut être active avec celle-ci. Le contrôle
+      # joue dans les deux sens : activer l'une d'elles quand cette pièce est
+      # active est refusé, et inversement. Une pièce citée mais absente du
+      # registre (extension non installée) n'est pas une erreur.
+      def incompatible_with(*codes : String) : Nil
+        codes.each do |other|
+          unless other.matches?(/\A[A-Z][A-Z0-9_]*\z/)
+            raise ArgumentError.new("code de module invalide (majuscules, chiffres, _) : #{other}")
+          end
+          raise ArgumentError.new("#{code} ne peut pas être incompatible avec lui-même") if other == code
+          @incompatibilities << other unless @incompatibilities.includes?(other)
+        end
+      end
+
+      # Vrai si cette pièce déclare son incompatibilité avec `other`, ou
+      # `other` avec elle.
+      def incompatible?(other : Manifest) : Bool
+        incompatible_with.includes?(other.code) || other.incompatible_with.includes?(code)
       end
 
       # Noms des permissions déclarées.

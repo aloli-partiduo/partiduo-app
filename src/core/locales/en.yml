@@ -180,6 +180,11 @@ en:
           unknown: "Unknown extension: %{code}."
           wrong_kind: "%{code} is not an extension (use --modules)."
           inactive: "Extension %{code} is not active in the instance configuration."
+        kind:
+          unknown: "Unknown company file type: %{kind} (possible types: %{kinds})."
+          inactive: "Company file type %{kind} needs %{code}, which is not active."
+          required: "A company file of type %{kind} needs the %{code} module."
+          excluded: "The %{code} module is not allowed in a company file of type %{kind}."
       fiscal_year:
         year:
           out_of_range: "The fiscal year must be between %{min} and %{max}."
@@ -242,6 +247,7 @@ en:
     provision:
       done: "Company file “%{name}” created: %{domain}."
       regime: "Tax regime: %{regime}."
+      kind: "Company file type: %{kind}."
       modules:
         one: "%{count} module enabled: %{codes}."
         other: "%{count} modules enabled: %{codes}."

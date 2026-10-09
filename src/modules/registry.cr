@@ -85,6 +85,16 @@ module Partiduo
       end
     end
 
+    # Pièces actives incompatibles avec `code` (ADR-011 A1), quel que soit le
+    # côté qui déclare l'incompatibilité.
+    def self.conflicts(code : String, active_codes : Set(String) = State.active_codes) : Array(Manifest)
+      manifest = manifests[code]?
+      return [] of Manifest if manifest.nil?
+      manifests.values.select do |other|
+        other.code != code && active_in?(other.code, active_codes) && manifest.incompatible?(other)
+      end
+    end
+
     # ---------------------------------------------------------------------------
     # Permissions (ADR-003 D4)
     # ---------------------------------------------------------------------------
@@ -182,13 +192,21 @@ module Partiduo
             errors << "#{manifest.code} : menu #{menu.code} exige #{permission}, non déclarée"
           end
         end
+        manifest.incompatible_with.each do |other|
+          if manifest.depends_on.includes?(other) || manifest.depends_on_any.any?(&.includes?(other))
+            errors << "#{manifest.code} dépend de #{other} et s'en déclare incompatible"
+          elsif (target = manifests[other]?) && target.socle?
+            errors << "#{manifest.code} se déclare incompatible avec #{other}, du socle : toujours actif"
+          end
+        end
       end
 
       errors
     end
 
     # Défauts de l'ensemble actif : pièce inconnue, dépendance inactive ou de
-    # version incompatible, cœur hors de `requires_core`.
+    # version incompatible, cœur hors de `requires_core`, pièces incompatibles
+    # actives ensemble (ADR-011 A1).
     def self.activation_errors(active_codes : Set(String)) : Array(String)
       errors = [] of String
 
@@ -206,6 +224,23 @@ module Partiduo
         errors.concat(dependency_errors(manifest, active_codes))
       end
 
+      errors.concat(incompatibility_errors(active_codes))
+      errors
+    end
+
+    # Couples de pièces actives ensemble alors que l'une se déclare
+    # incompatible avec l'autre ; chaque couple n'est cité qu'une fois.
+    def self.incompatibility_errors(active_codes : Set(String)) : Array(String)
+      errors = [] of String
+      seen = Set(Set(String)).new
+      manifests.each_value do |manifest|
+        next unless active_in?(manifest.code, active_codes)
+        manifest.incompatible_with.each do |other|
+          next unless active_in?(other, active_codes)
+          next unless seen.add?(Set{manifest.code, other})
+          errors << "#{manifest.code} est incompatible avec #{other}, actifs ensemble"
+        end
+      end
       errors
     end
 

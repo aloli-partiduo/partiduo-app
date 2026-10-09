@@ -57,6 +57,7 @@ Partiduo::Modules.register do
   depends_on "ACCOUNTING"                   # toutes requises
   depends_on "DOCUMENT", version: ">= 1.0"  # avec contrainte de version
   depends_on_any "INVOICING", "ACCOUNTING"  # au moins une requise
+  incompatible_with "MICRO", "LIBERAL"      # jamais actives avec elle
 
   permission "skel.page.view"               # libellé : skel.permissions.page.view
   permission "skel.page.edit", label: "skel.rights.edit"
@@ -86,6 +87,16 @@ combinables par des virgules (`">= 0.1, < 1.0"`). `"0.1.0"` seul signifie `=`.
 
 |`depends_on_any`
 |Au moins deux pièces, dont *une* doit être active (module Stock, ADR-006 D1).
+
+|`incompatible_with`
+|Pièces qui ne peuvent pas être actives en même temps qu'elle (ADR-011 A1,
+amendement d'ADR-003 D2). Contrôle *dans les deux sens* : activer l'une
+d'elles quand la pièce est active est refusé, et inversement, que
+l'incompatibilité soit déclarée d'un côté ou des deux. Une pièce citée mais
+absente du registre (extension non installée) n'est pas une erreur. Codes en
+majuscules ; la pièce ne se cite pas elle-même. Exemple : l'extension des
+finances d'un foyer refuse la Facturation, la micro-entreprise, la
+profession libérale.
 
 |`permission`
 |`<préfixe>.<objet>.<action>` en minuscules. Unique dans tout le registre.
@@ -118,14 +129,18 @@ une par ligne) et *empêche le démarrage*, au lieu d'échouer à l'usage.
 Défauts de composition (toutes les pièces enregistrées) ::
 * version mal formée ;
 * permission ou code de menu déclaré par deux pièces ;
-* menu rattaché à une rubrique inconnue, ou exigeant une permission non déclarée.
+* menu rattaché à une rubrique inconnue, ou exigeant une permission non déclarée ;
+* pièce incompatible avec une pièce dont elle dépend, ou avec une pièce du
+  socle (toujours active).
 
 Défauts d'activation (pièces actives) ::
 * pièce active inconnue du registre (faute de frappe dans `PARTIDUO_MODULES`) ;
 * pièce du socle citée comme activable ;
 * dépendance (`depends_on`) inconnue, inactive ou de version incompatible ;
 * aucune pièce active parmi un `depends_on_any` ;
-* version du cœur hors de `requires_core`.
+* version du cœur hors de `requires_core` ;
+* deux pièces incompatibles actives ensemble (`incompatible_with`), chaque
+  couple cité une fois.
 
 == Activation par instance
 
@@ -147,6 +162,7 @@ Partiduo::Modules.active?("INVOICING")          # => Bool
 Partiduo::Modules.require_active!("INVOICING")  # lève Api::ModuleDisabled
 Partiduo::Modules.active_manifests              # => Array(Manifest), ordre d'enregistrement
 Partiduo::Modules.dependents("ACCOUNTING")      # pièces actives qui l'exigent
+Partiduo::Modules.conflicts("INVOICING")        # pièces actives incompatibles avec elle
 ----
 
 == Permissions et profils
@@ -191,7 +207,8 @@ citent pas de permission exigent un acteur authentifié (`Forbidden` sinon).
 |`list(actor)`
 |—
 |`Array(ModuleView)` : `code`, `name_key`, `kind` (`socle`, `module`,
-`extension`), `version`, `active`, `depends_on`, `depends_on_any`, `permissions`.
+`extension`), `version`, `active`, `depends_on`, `depends_on_any`, `permissions`,
+`incompatible_with` (`API_VERSION` 0.7.0).
 
 |`get(actor, code)`
 |—
@@ -201,8 +218,10 @@ citent pas de permission exigent un acteur authentifié (`Forbidden` sinon).
 |`core.modules.manage`
 |`Result(ModuleView)`. Erreurs sur le champ `code` :
 `modules.errors.activation.socle`, `.missing_dependency` (`%{module}`,
-`%{dependency}`), `.incompatible` (`%{module}`, `%{detail}`). Sans effet si
-la pièce est déjà active.
+`%{dependency}`), `.incompatible` (`%{module}`, `%{detail}`),
+`.incompatible_with` (`%{module}`, `%{other}` : une par pièce active
+incompatible, quel que soit le côté qui le déclare ; ADR-011 A1). Sans effet
+si la pièce est déjà active.
 
 |`deactivate(actor, code)`
 |`core.modules.manage`

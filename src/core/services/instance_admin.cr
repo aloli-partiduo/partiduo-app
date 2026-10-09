@@ -52,6 +52,35 @@ module Partiduo
         end
       end
 
+      # La colonne existe-t-elle déjà (migration appliquée) ?
+      def self.column_exists?(table : String, column : String) : Bool
+        Marten::DB::Connection.default.open do |db|
+          db.scalar(<<-SQL, table, column).as(Bool)
+            SELECT EXISTS (
+              SELECT 1 FROM information_schema.columns
+               WHERE table_schema = current_schema() AND table_name = $1 AND column_name = $2
+            )
+            SQL
+        end
+      end
+
+      # Configuration du dossier vue par `manage instance status`.
+      record SettingsSummary, domain : String, tax_regime : String, default_locale : String, kind : String
+
+      # Première ligne de `core_settings`, lue en SQL : le type de dossier
+      # vaut `company` tant que la migration `core.0004` n'est pas appliquée.
+      def self.settings_summary : SettingsSummary?
+        kind = column_exists?("core_settings", "kind") ? "kind" : "'company'"
+        Marten::DB::Connection.default.open do |db|
+          db.query_one?(
+            "SELECT domain, tax_regime, default_locale, #{kind} FROM core_settings ORDER BY id LIMIT 1",
+            as: {String?, String?, String?, String?}
+          ).try do |domain, tax_regime, default_locale, value|
+            SettingsSummary.new(domain.to_s, tax_regime.to_s, default_locale.to_s, value || "company")
+          end
+        end
+      end
+
       # --- Lecture seule ---------------------------------------------------------
 
       # La base est-elle en lecture seule pour les nouvelles sessions ?

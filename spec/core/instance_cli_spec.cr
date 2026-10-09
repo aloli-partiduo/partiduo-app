@@ -263,7 +263,9 @@ describe "manage instance (ADR-008 D4, doc/api/instance-cli.adoc)" do
     run = cli("admin-invite", "patron@exemple.test", "--reason", "passkey perdue", "--approval-ref", "DV-7",
       "--approval-mode", "single", "--approvers", "seule@cabinet.example")
     run.code.should eq(0)
-    run.json["contract"].should eq("1.1.0")
+    # Contrat 1.1.0 ou suivant de la même majeure (1.2.0 : ADR-011 A1, A3).
+    major, minor, _ = run.json["contract"].as_s.split('.').map(&.to_i)
+    {major, minor >= 1}.should eq({1, true})
     run.data["approval_mode"].should eq("single")
     detail = JSON.parse(audit_events("instance.admin_invitation").last.detail.to_s)
     detail["approvers"].should eq("seule@cabinet.example")

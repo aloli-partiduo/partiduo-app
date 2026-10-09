@@ -8,3 +8,4 @@ en:
         missing_dependency: "%{module} requires %{dependency}, which is not enabled."
         required_by: "%{dependent} requires %{module}: disable %{dependent} first."
         incompatible: "%{module} is not compatible with this instance: %{detail}"
+        incompatible_with: "%{module} cannot be enabled together with %{other}, which is enabled in this file: disable %{other} first."

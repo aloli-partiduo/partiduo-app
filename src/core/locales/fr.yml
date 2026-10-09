@@ -180,6 +180,11 @@ fr:
           unknown: "Extension inconnue : %{code}."
           wrong_kind: "%{code} n'est pas une extension (voir --modules)."
           inactive: "L'extension %{code} n'est pas active dans la configuration de l'instance."
+        kind:
+          unknown: "Type de dossier inconnu : %{kind} (types possibles : %{kinds})."
+          inactive: "Le type de dossier %{kind} demande %{code}, qui n'est pas actif."
+          required: "Un dossier de type %{kind} demande le module %{code}."
+          excluded: "Le module %{code} n'est pas admis dans un dossier de type %{kind}."
       fiscal_year:
         year:
           out_of_range: "L'exercice doit être compris entre %{min} et %{max}."
@@ -242,6 +247,7 @@ fr:
     provision:
       done: "Dossier « %{name} » créé : %{domain}."
       regime: "Régime fiscal : %{regime}."
+      kind: "Type de dossier : %{kind}."
       modules:
         one: "%{count} module activé : %{codes}."
         other: "%{count} modules activés : %{codes}."

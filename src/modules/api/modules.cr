@@ -18,7 +18,8 @@ module Partiduo
         active : Bool,
         depends_on : Array(String),
         depends_on_any : Array(Array(String)),
-        permissions : Array(String)
+        permissions : Array(String),
+        incompatible_with : Array(String)
 
       # Une permission cochable dans un profil. `label_key` : clé i18n du libellé.
       record PermissionView, name : String, label_key : String, module_code : String
@@ -51,8 +52,10 @@ module Partiduo
       #
       # Erreurs (champ `code`) : `modules.errors.activation.socle` (pièce du
       # socle, toujours active), `modules.errors.activation.missing_dependency`
-      # (`%{module}`, `%{dependency}`) et `modules.errors.activation.incompatible`
-      # (`%{module}`, `%{detail}`). Activer une pièce active ne change rien.
+      # (`%{module}`, `%{dependency}`), `modules.errors.activation.incompatible`
+      # (`%{module}`, `%{detail}`) et `modules.errors.activation.incompatible_with`
+      # (`%{module}`, `%{other}` : pièce active incompatible, quel que soit le
+      # côté qui le déclare, ADR-011 A1). Activer une pièce active ne change rien.
       def self.activate(actor : Actor, code : String) : Result(ModuleView)
         Guard.authorize!(actor, MANAGE_MODULES, module_code: MODULE_CODE)
         manifest = Partiduo::Modules[code.upcase]? || raise NotFound.new("module", code)
@@ -153,6 +156,10 @@ module Partiduo
               {"module" => manifest.code, "detail" => detail})
           end
         end
+        Partiduo::Modules.conflicts(manifest.code, wanted).each do |other|
+          errors << FieldError.new("code", "modules.errors.activation.incompatible_with",
+            {"module" => manifest.code, "other" => other.code})
+        end
         errors
       end
 
@@ -166,6 +173,7 @@ module Partiduo
           depends_on: manifest.depends_on,
           depends_on_any: manifest.depends_on_any,
           permissions: manifest.permissions,
+          incompatible_with: manifest.incompatible_with,
         )
       end
     end

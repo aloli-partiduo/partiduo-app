@@ -14192,3 +14192,122 @@ O, créé par le dossier ; contre-passation et frais passés en banque ;
 relance proposée). Bases de test : `partiduo_test_ret_app`,
 `partiduo_test_ret_ui`, `partiduo_test_ret_einv`, `partiduo_test_ret_demo`,
 supprimées à la fin.
+
+== Amendements A1 à A3 d'ADR-011 : incompatibilités, mode simplifié ouvert, dossier foyer (9 octobre 2026)
+
+Amendements adoptés par l'utilisateur le 9 octobre 2026 (ADR-011, section
+« Amendements adoptés ») ; ADR-003 D2, ADR-005 et ADR-008 amendés en
+conséquence. Préparent `partiduo-bankimport` puis `partiduo-perso`.
+
+=== D-FOY-001 — `incompatible_with` au manifeste, contrôlé dans les deux sens (A1)
+
+*Choix.* `incompatible_with "CODE", …` dans le manifeste, à côté de
+`depends_on` et `depends_on_any` (codes en majuscules, sans doublon ; la
+pièce ne se cite pas elle-même). Le contrôle est *symétrique* : une seule
+déclaration suffit, d'un côté ou de l'autre (`Manifest#incompatible?`,
+`Partiduo::Modules.conflicts`). Trois points de contrôle :
+
+* `Partiduo::Api::Modules.activate` : une erreur
+  `modules.errors.activation.incompatible_with` (`%{module}`, `%{other}`)
+  par pièce active incompatible, après les dépendances ; fr, en, nl. Le
+  même refus vaut pour `manage instance enable` (même contrat).
+* `check!` au démarrage : deux pièces incompatibles actives ensemble
+  (couple cité une fois) empêchent le démarrage, comme une dépendance
+  manquante.
+* défauts de composition : une pièce incompatible avec une pièce dont elle
+  dépend, ou avec une pièce du socle (toujours active).
+
+Une pièce citée mais absente du registre (extension non installée) n'est
+pas une erreur : contrairement à une dépendance, l'absence satisfait
+l'incompatibilité. `ModuleView#incompatible_with` et la clé
+`incompatible_with` de `manage instance status` exposent la déclaration.
+`API_VERSION` 0.7.0, `INSTANCE_CLI_VERSION` 1.2.0 (ajouts).
+
+*Alternative écartée.* Une seule direction (refuser seulement l'activation
+de la pièce qui déclare) : un dossier foyer actif pourrait recevoir la
+Facturation par l'autre bout, ce que A1 veut justement empêcher.
+
+=== D-FOY-002 — Variantes du mode simplifié déclarées par les extensions (A2, partiduo-ui-bulma)
+
+*Choix.* `PartiduoUi::Extensions.simple_mode(code, read:, menu:, labels:,
+offer:, hidden_menus:, tiles:, settings_route:, settings_permission:,
+settings_label:)` déclare une `SimpleMode::Flavor`. La variante porte :
+menu réduit (`SimpleMode::Entry`, comme `MENU` et `LIBERAL_MENU`) ;
+vocabulaire (`SimpleMode::Labels` : noms des deux interfaces, raccourcis,
+aide et phrase des préférences, `Labels.under(scope)` pour une extension ;
+par défaut `ui.simple_mode.*`, « Recettes et dépenses » / « Comptabilité ») ;
+interfaces offertes (`offer`, bloc du rôle et des pièces actives, les deux
+par défaut) ; tuiles de son tableau de bord simplifié (`tiles`, sur le
+tableau de bord commun, sans dernières factures ni écritures) ; menus
+écartés *dans les deux interfaces* (`hidden_menus`, avec
+`SimpleMode::BUSINESS_ACCOUNTING_MENUS` : déclaration et réglages de TVA,
+FEC, clôture). `MICRO` et `LIBERAL` passent par la même structure
+(`FLAVORS`, leurs offres et leurs clés d'avant) et gardent la priorité :
+les variantes d'extension suivent, dans l'ordre de déclaration. Leurs
+tableaux de bord propres (`MicroDashboard`, `LiberalDashboard`) restent
+choisis par le handler. La préférence d'interface reste celle de chaque
+utilisateur, enregistrée par le cœur (D-UI-077) ; écarter un menu ne change
+que la présentation, la route reste joignable selon les droits du contrat.
+
+*Alternative écartée.* Laisser l'extension remplacer tout le tableau de
+bord par son propre gabarit : il aurait fallu un type commun aux trois
+tableaux de bord ; les tuiles suffisent au foyer (ADR-011 D4).
+
+=== D-FOY-003 — Type de dossier au provisionnement, plan réduit du foyer (A3)
+
+*Choix.* Type de dossier `kind` : `company` (défaut) ou `household`,
+déclarés par le cœur (`Partiduo::Api::InitialData.register_kind`), choisi
+par `ProvisionInput#kind` et `manage provision --kind`, retenu par la
+société (colonne `core_settings.kind`, migration `core.0004`, défaut
+`company` pour les dossiers existants ; `SettingsView#kind`,
+`household?`), jamais modifié. Un type déclare son plan de base (`chart`),
+les modules requis et exclus. Foyer : Comptabilité requise ; Facturation,
+Micro-entreprise, Profession libérale, Stock, Suivi, Analytique exclus
+(ADR-011 D2) — refus `core.errors.provision.kind.*`, champ `kind`, rien
+n'est écrit. Les extensions d'entreprise (télédéclaration, facturation
+électronique, CRM, modèles) seront écartées par les `incompatible_with` de
+`PERSO` (D-FOY-001), pas par le type.
+
+Plan réduit (`src/accounting/data/household_{fr,be}.yml`, chargé par
+`load_initial_data(…, chart: "household")`) : patrimoine d'ouverture,
+emprunts immobiliers et autres dettes, biens (résidence, autres biens
+immobiliers, véhicules, autres biens), placements (assurance-vie, PEA en
+France, compte-titres, autres), trésorerie (compte courant, livrets sous
+`514`/`551` pour les comptes que créera l'extension, espèces, virements
+entre comptes), sommes à recevoir ou à payer, et les catégories d'ADR-011
+D3 en classes 6 et 7, à deux niveaux. Numérotation inspirée du PCG ou du
+PCMN (classes 1, 2, 5) pour qu'un comptable s'y retrouve ; l'utilisateur ne
+voit que les libellés, *traduits* dans la langue du dossier (clés
+`accounting.initial_data.household.accounts.*`, fr, en, nl), à la
+différence des plans d'entreprise repris tels quels. Journaux `F01` (fiche
+Banque sur le compte courant) et `O01` ; ni achats ni ventes ; aucun compte
+de TVA ; comptes par défaut `bank`, `cash`, `internal_transfer`,
+`bank_fees` (`604`). Les taux de TVA du socle restent chargés, inutilisés.
+
+*Alternative écartée.* Faire dépendre le plan du régime seul (`fr`, `be`)
+ou d'un troisième régime : un foyer belge et un foyer français n'ont ni la
+même numérotation ni les mêmes placements (PEA), et le régime fiscal reste
+utile au foyer.
+
+=== D-FOY-004 — Accroche des données initiales par type, contrat d'instance 1.2.0 (A3)
+
+*Choix.* Les chargeurs reçoivent `context.kind` et `context.chart` ;
+`InitialData.register(…, kinds: [...])` limite un chargeur à des types
+(tous par défaut, ce qui garde le comportement des chargeurs existants).
+Une extension fournit ainsi les données initiales d'un dossier, ou déclare
+son propre type (`register_kind`, proposé seulement si elle est active)
+sur l'un des deux plans de base, qu'elle complète par ses chargeurs.
+`manage instance status` rend `kind` ; il lit la société en SQL
+(`InstanceAdmin.settings_summary`) pour répondre aussi avant la migration
+`core.0004` (type `company`). Contrat d'instance 1.2.0 (ajouts).
+
+=== D-FOY-005 — `--kind` transmis par `bin/partiduo-provision`, console d'administration reportée (A3)
+
+*Choix.* Le type passe par la commande du cœur (`manage provision
+--kind`) ; `bin/partiduo-provision` ne fait que transmettre l'option, comme
+`--regime` (une ligne, commit isolé : le script appartient au déploiement
+FreeBSD). Le choix du type depuis la console de `partiduo-admin` (paramètre
+de la tâche `instance.create`, colonne du dossier, formulaire, exécutant)
+n'est pas fait dans ce lot : il touche le protocole de l'exécutant
+(`API_VERSION` 2.1.0), le modèle et les formulaires de l'administration, et
+suppose des paquets à jour sur les serveurs. À faire avec `partiduo-perso`.

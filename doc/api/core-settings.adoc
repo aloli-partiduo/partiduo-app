@@ -128,6 +128,56 @@ end
 Ordres conseillés : 10 plan comptable, 20 taux de TVA, 30 journaux,
 40 catégories de fiches, 90 profils et invitation de l'administrateur.
 
+=== Types de dossier (ADR-011 A3)
+
+Un dossier a un *type*, choisi au provisionnement (`ProvisionInput#kind`,
+`manage provision --kind`), retenu par la société (`SettingsView#kind`,
+`household?`) et jamais modifié. Le cœur déclare :
+
+[cols="1,1,3",options="header"]
+|===
+|Type |Plan de base |Règles
+
+|`company` (défaut)
+|`company` : PCG ou PCMN du régime
+|Aucune.
+
+|`household`
+|`household` : plan réduit d'un foyer
+|La Comptabilité doit être active ; Facturation, Micro-entreprise,
+Profession libérale, Stock, Suivi et Analytique ne le peuvent pas
+(ADR-011 D2).
+|===
+
+Le chargeur `ACCOUNTING.reference_data` lit `context.chart` : le plan réduit
+(`src/accounting/data/household_{fr,be}.yml`) porte la trésorerie (compte
+courant, livrets, espèces, virements entre comptes), les placements
+(assurance-vie, PEA en France, compte-titres), les biens, les dettes et les
+catégories de recettes et de dépenses d'ADR-011 D3 (classes 6 et 7) ;
+libellés traduits dans la langue du dossier ; un journal financier et un
+journal d'opérations diverses ; aucun compte de TVA. Les taux de TVA du
+socle restent chargés, inutilisés.
+
+*Accroche des extensions.* Une extension fournit les données initiales d'un
+dossier :
+
+[source]
+----
+# Chargeur limité à certains types (tous si `kinds` est omis).
+Partiduo::Api::InitialData.register("PERSO", "categories", order: 30, kinds: ["household"]) do |context|
+  # context.kind ("household"), context.chart ("household"), etc.
+end
+
+# Type de dossier propre à l'extension : plan de base, modules requis et exclus.
+Partiduo::Api::InitialData.register_kind("association", "ASSO", chart: "company",
+  required: %w[ACCOUNTING], excluded: %w[MICRO LIBERAL])
+----
+
+Un type n'est proposé que si sa pièce est active (`InitialData.kinds`).
+Refus de `provision`, champ `kind` : `core.errors.provision.kind.unknown`
+(`%{kind}`, `%{kinds}`), `.inactive`, `.required`, `.excluded` (`%{kind}`,
+`%{code}`).
+
 == Ligne de commande
 
 `manage provision` (commande Marten, `src/core/commands/provision.cr`) est la
@@ -139,6 +189,8 @@ PARTIDUO_MODULES=accounting,invoicing crystal run manage.cr -- provision \
   --name="Exemple SARL" --regime=fr --domain=exemple.partiduo.localhost \
   --modules=accounting,invoicing --admin-email=admin@exemple.fr
 ----
+
+Dossier d'un foyer : `--kind=household --modules=accounting` (ADR-011 A3).
 
 Elle rend compte dans la langue par défaut du dossier, pluriels compris
 (`core.provision.modules`, `count:`). Avec `--admin-email`, elle affiche le

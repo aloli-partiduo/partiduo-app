@@ -66,7 +66,13 @@ module Partiduo
         auth_methods : Array(String),
         auth_minimum_level : Int32,
         session_duration_minutes : Int32,
-        updated_at : Time? do
+        updated_at : Time?,
+        kind : String = InitialData::COMPANY do
+        # Dossier d'un foyer (ADR-011) ?
+        def household? : Bool
+          kind == InitialData::HOUSEHOLD
+        end
+
         # Clé i18n du régime fiscal (`core.settings.tax_regimes.fr`).
         def tax_regime_key : String
           "core.settings.tax_regimes.#{tax_regime}"
@@ -111,18 +117,21 @@ module Partiduo
             session_duration_minutes: (settings.session_duration_minutes ||
                                        Partiduo::Core::SettingsRules::DEFAULT_SESSION_MINUTES).to_i32,
             updated_at: settings.updated_at,
+            kind: settings.kind.presence || InitialData::COMPANY,
           )
         end
       end
 
       # Création d'une instance : configuration société, modules et extensions
       # à activer (déjà actifs dans `PARTIDUO_MODULES`, que pose
-      # `bin/partiduo-provision`), adresse de l'administrateur à inviter.
+      # `bin/partiduo-provision`), adresse de l'administrateur à inviter,
+      # type de dossier (`InitialData.kinds`, ADR-011 A3).
       record ProvisionInput,
         settings : SettingsInput,
         modules : Array(String) = [] of String,
         extensions : Array(String) = [] of String,
-        admin_email : String? = nil
+        admin_email : String? = nil,
+        kind : String = InitialData::COMPANY
 
       # Résultat du provisionnement : la configuration créée, les pièces
       # actives, les chargeurs de données initiales exécutés et les
@@ -193,13 +202,17 @@ module Partiduo
           values = Partiduo::Core::SettingsRules.normalize(input.settings)
           errors.concat(Partiduo::Core::SettingsRules.validate(values))
           errors.concat(provision_module_errors(input))
+          kind_code = input.kind.strip.downcase
+          errors.concat(provision_kind_errors(kind_code))
           if (email = input.admin_email.try(&.strip)) && !email.empty? &&
              !email.matches?(Partiduo::Core::SettingsRules::EMAIL_FORMAT)
             errors << FieldError.new("admin_email", "core.errors.provision.admin_email.invalid")
           end
           next Result(ProvisionView).failure(errors) unless errors.empty?
 
+          kind = InitialData.kind?(kind_code) || raise ArgumentError.new("type de dossier inconnu : #{kind_code}")
           settings = Partiduo::Core::SettingsRules.assign(Partiduo::Core::Settings.new, values)
+          settings.kind = kind.code
           settings.save!
 
           active = Partiduo::Modules.active_manifests.reject(&.socle?).map(&.code).sort!
@@ -210,12 +223,37 @@ module Partiduo
             locale: values.default_locale,
             admin_email: input.admin_email.try(&.strip.downcase).presence,
             module_codes: active,
+            kind: kind.code,
+            chart: kind.chart,
           )
           loaders = InitialData.run(context)
           Result(ProvisionView).success(
             ProvisionView.new(SettingsView.from(settings), active, loaders, context.invitations)
           )
         end
+      end
+
+      # Type de dossier : déclaré, de pièce active ; modules requis actifs,
+      # modules exclus inactifs (ADR-011 D2).
+      private def self.provision_kind_errors(code : String) : Array(FieldError)
+        kind = InitialData.kind?(code)
+        if kind.nil?
+          return [FieldError.new("kind", "core.errors.provision.kind.unknown",
+            {"kind" => code, "kinds" => InitialData.kinds.map(&.code).join(", ")})]
+        end
+        unless Partiduo::Modules.active?(kind.owner)
+          return [FieldError.new("kind", "core.errors.provision.kind.inactive", {"kind" => code, "code" => kind.owner})]
+        end
+        errors = [] of FieldError
+        kind.required.each do |module_code|
+          next if Partiduo::Modules.active?(module_code)
+          errors << FieldError.new("kind", "core.errors.provision.kind.required", {"kind" => code, "code" => module_code})
+        end
+        kind.excluded.each do |module_code|
+          next unless Partiduo::Modules.active?(module_code)
+          errors << FieldError.new("kind", "core.errors.provision.kind.excluded", {"kind" => code, "code" => module_code})
+        end
+        errors
       end
 
       private def self.provision_module_errors(input : ProvisionInput) : Array(FieldError)

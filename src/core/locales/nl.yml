@@ -180,6 +180,11 @@ nl:
           unknown: "Onbekende uitbreiding: %{code}."
           wrong_kind: "%{code} is geen uitbreiding (gebruik --modules)."
           inactive: "Uitbreiding %{code} is niet actief in de configuratie van de instantie."
+        kind:
+          unknown: "Onbekend type dossier: %{kind} (mogelijke types: %{kinds})."
+          inactive: "Type dossier %{kind} vereist %{code}, dat niet actief is."
+          required: "Een dossier van het type %{kind} vereist de module %{code}."
+          excluded: "De module %{code} is niet toegestaan in een dossier van het type %{kind}."
       fiscal_year:
         year:
           out_of_range: "Het boekjaar moet tussen %{min} en %{max} liggen."
@@ -242,6 +247,7 @@ nl:
     provision:
       done: "Dossier „%{name}” aangemaakt: %{domain}."
       regime: "Fiscaal stelsel: %{regime}."
+      kind: "Type dossier: %{kind}."
       modules:
         one: "%{count} module geactiveerd: %{codes}."
         other: "%{count} modules geactiveerd: %{codes}."

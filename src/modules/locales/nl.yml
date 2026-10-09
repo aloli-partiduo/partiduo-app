@@ -8,3 +8,4 @@ nl:
         missing_dependency: "%{module} vereist %{dependency}, dat niet actief is."
         required_by: "%{dependent} vereist %{module}: deactiveer eerst %{dependent}."
         incompatible: "%{module} is niet compatibel met deze instantie: %{detail}"
+        incompatible_with: "%{module} kan niet samen met %{other} actief zijn, dat in dit dossier actief is: deactiveer eerst %{other}."

@@ -8,3 +8,4 @@ fr:
         missing_dependency: "%{module} requiert %{dependency}, qui n'est pas actif."
         required_by: "%{dependent} requiert %{module} : désactivez d'abord %{dependent}."
         incompatible: "%{module} est incompatible avec cette instance : %{detail}"
+        incompatible_with: "%{module} est incompatible avec %{other}, actif dans ce dossier : désactivez d'abord %{other}."

@@ -1,0 +1,81 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Plan comptable réduit d'un dossier foyer (ADR-011 A3, D3), régime « be » :
+# trésorerie, placements, biens, dettes et catégories de recettes et de
+# dépenses (classes 6 et 7). Les libellés sont des clés i18n
+# (`accounting.initial_data.household.accounts.<clé>`), traduits dans la
+# langue du dossier au chargement. Colonnes : numéro, clé du libellé, parent
+# (null = racine), type, utilisation directe. Parents avant enfants.
+translated: true
+accounts:
+  - ["1", "equity_and_debts", null, liability, false]
+  - ["10", "opening_net_worth", "1", liability, true]
+  - ["17", "loans", "1", liability, false]
+  - ["173", "mortgage_loans", "17", liability, true]
+  - ["174", "other_debts", "17", liability, true]
+  - ["2", "property", null, asset, false]
+  - ["22", "real_estate", "2", asset, false]
+  - ["221", "main_residence", "22", asset, true]
+  - ["222", "other_real_estate", "22", asset, true]
+  - ["24", "movable_goods", "2", asset, false]
+  - ["241", "vehicles", "24", asset, true]
+  - ["240", "other_goods", "24", asset, true]
+  - ["28", "investments", "2", asset, false]
+  - ["2811", "life_insurance", "28", asset, true]
+  - ["2813", "securities_account", "28", asset, true]
+  - ["2818", "other_investments", "28", asset, true]
+  - ["4", "third_parties", null, context, false]
+  - ["489", "other_receivables_payables", "4", context, true]
+  - ["5", "cash", null, asset, false]
+  - ["55", "banks", "5", asset, false]
+  - ["550", "current_accounts", "55", asset, false]
+  - ["5501", "current_account", "550", asset, true]
+  - ["551", "savings_accounts", "55", asset, false]
+  - ["57", "cash_in_hand", "5", asset, true]
+  - ["58", "internal_transfers", "5", asset, true]
+  - ["6", "expenses", null, expense, false]
+  - ["60", "other_expenses", "6", expense, false]
+  - ["601", "donations", "60", expense, true]
+  - ["602", "home_employment", "60", expense, true]
+  - ["603", "savings", "60", expense, true]
+  - ["604", "bank_fees", "60", expense, true]
+  - ["609", "miscellaneous", "60", expense, true]
+  - ["61", "housing", "6", expense, false]
+  - ["6101", "rent_or_mortgage", "61", expense, true]
+  - ["6102", "housing_charges", "61", expense, true]
+  - ["6103", "energy", "61", expense, true]
+  - ["6104", "water", "61", expense, true]
+  - ["6105", "home_insurance", "61", expense, true]
+  - ["6106", "works", "61", expense, true]
+  - ["62", "food", "6", expense, true]
+  - ["63", "transport", "6", expense, false]
+  - ["6301", "fuel", "63", expense, true]
+  - ["6302", "maintenance", "63", expense, true]
+  - ["6303", "vehicle_insurance", "63", expense, true]
+  - ["6304", "public_transport", "63", expense, true]
+  - ["64", "health", "6", expense, true]
+  - ["65", "children_education", "6", expense, true]
+  - ["66", "leisure_holidays", "6", expense, true]
+  - ["67", "clothing", "6", expense, true]
+  - ["68", "communication", "6", expense, true]
+  - ["69", "taxes", "6", expense, false]
+  - ["6901", "income_tax", "69", expense, true]
+  - ["6902", "property_tax", "69", expense, true]
+  - ["7", "income", null, income, false]
+  - ["70", "revenues", "7", income, false]
+  - ["701", "salaries", "70", income, true]
+  - ["702", "pensions", "70", income, true]
+  - ["703", "rental_income", "70", income, true]
+  - ["704", "financial_income", "70", income, true]
+  - ["705", "allowances", "70", income, true]
+  - ["708", "other_income", "70", income, true]
+default_accounts:
+  bank: "550"
+  cash: "57"
+  internal_transfer: "58"
+  bank_fees: "604"
+card_categories:
+  BANK: {base_account: "550", create_account: true}
+ledgers:
+  - {kind: financial, code: "F01", receipt_prefix: "F-", receipt_padding: 5, bank_account: "5501"}
+  - {kind: misc, code: "O01", receipt_prefix: "O-", receipt_padding: 5, bank_account: null}
+vat_accounts: {}
