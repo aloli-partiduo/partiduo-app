@@ -20,7 +20,7 @@
 #   (consultés le 29/09/2026) ;
 # * cases : codes des zones de l'échange de données (EDI-TDFC), relevés dans
 #   les spécifications des formulaires 2035, 2035A et 2035B de TELEDEC,
-#   millésimes 2025 et 2026 (`partiduo/.teledec-doc/FORMULAIRES-TELEDEC.adoc`),
+#   millésimes 2025 et 2026 (`partiduo-docs/travail/teledec/FORMULAIRES-TELEDEC.adoc`),
 #   identiques pour les revenus 2024 et 2025. Ce sont ces codes que
 #   `partiduo-teledec` transmet (`<case>_<formulaire>`). Là où le formulaire
 #   papier porte une autre lettre, elle est notée en commentaire (« papier ») ;

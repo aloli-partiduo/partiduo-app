@@ -106,8 +106,8 @@ https://www.impots.gouv.fr/sites/default/files/formulaires/2035-sd/2025/2035-sd_
 |Spécifications des formulaires de TELEDEC (partenaire EDI), 2035, 2035A,
 2035B, millésimes 2024 à 2026, feuilles « Template » et « Champs »,
 relevées le 28 septembre 2026 dans
-`partiduo/.teledec-doc/FORMULAIRES-TELEDEC.adoc` et
-`.teledec-doc/formulaires/texte/` (documentation partenaire, non publique)
+`partiduo-docs/travail/teledec/FORMULAIRES-TELEDEC.adoc` et
+`partiduo-docs/travail/teledec/formulaires/texte/` (documentation partenaire, non publique)
 |===
 
 == Micro-entreprise (module micro)
