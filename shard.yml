@@ -1,5 +1,5 @@
 name: partiduo
-version: 0.1.6
+version: 0.1.7
 
 description: |
   Partiduo — comptabilité et facturation en Crystal.
@@ -19,7 +19,7 @@ targets:
 
 dependencies:
   marten:
-    path: ../../marten
+    path: ../../prod-crystal/marten
   marten_auth:
     github: martenframework/marten-auth
     version: ">= 0.2.0"
@@ -27,22 +27,22 @@ dependencies:
     github: will/crystal-pg
   # Shards maison, en path: tant qu'ils ne sont pas publiés (lot P).
   authn:
-    path: ../../authn
+    path: ../../prod-crystal/authn
   password-policy:
-    path: ../../password-policy
+    path: ../../prod-crystal/password-policy
   totp:
-    path: ../../totp
+    path: ../../prod-crystal/totp
   webauthn:
-    path: ../../webauthn
+    path: ../../prod-crystal/webauthn
   jose:
-    path: ../../jose
+    path: ../../prod-crystal/jose
   saml:
-    path: ../../saml
+    path: ../../prod-crystal/saml
   # Lot F : PDF/A-3 Factur-X (ADR-006 D5) et son contrôle.
   pdf-a:
-    path: ../../pdf-a
+    path: ../../prod-crystal/pdf-a
   pdf-validate:
-    path: ../../pdf-validate
+    path: ../../prod-crystal/pdf-validate
 
 development_dependencies:
   ameba:
