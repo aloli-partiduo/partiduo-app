@@ -47,9 +47,8 @@ Chaque application Marten suit le même plan : `app.cr`, `manifest.cr`,
 
 * Crystal 1.19.1 ;
 * PostgreSQL 18, joint *par socket Unix* (`/tmp/.s.PGSQL.5432`) ;
-* les shards maison à côté du groupe : `prod-crystal/marten`, `authn`,
-  `password-policy`, `totp`, `webauthn`, `jose` (dépendances `path:`, voir
-  `shard.override.yml`).
+* les shards maison sont pris sur GitHub ; pour les copies de travail
+  locales, voir <<_développement_local>>.
 
 == Installation
 
@@ -60,8 +59,36 @@ createdb --encoding=UTF8 partiduo_dev
 crystal run manage.cr -- migrate
 ----
 
-`SKIP_MARTEN_CLI_PRECOMPILATION=1` évite que Marten, installé en `path:`,
-compile sa ligne de commande hors du dépôt (voir DECISIONS).
+`SKIP_MARTEN_CLI_PRECOMPILATION=1` évite que Marten compile sa ligne de
+commande à l'installation (voir DECISIONS).
+
+== Développement local
+
+`shard.yml` et `shard.lock` référencent les shards maison sur GitHub
+(`aloli-crystal/*` et `aloli-partiduo/*`), suivis par branche. Le verrou
+versionné ne contient aucune dépendance `path:` : les ports FreeBSD et la CI
+l'exigent.
+
+Pour travailler sur les copies de travail voisines (`../../prod-crystal/<nom>`
+et `../partiduo-<dépôt>`), lancer :
+
+[source,sh]
+----
+scripts/override-local.sh
+----
+
+Le script génère un `shard.override.yml` *local et non versionné* (ignoré par
+git), installe les shards, puis remet `shard.lock` à son état versionné.
+Une copie de travail absente reste prise sur GitHub.
+
+Pour régénérer le verrou versionné, supprimer d'abord l'override local :
+
+[source,sh]
+----
+rm -f shard.override.yml
+SKIP_MARTEN_CLI_PRECOMPILATION=1 shards update
+scripts/override-local.sh   # retour au mode local
+----
 
 == Configuration
 

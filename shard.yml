@@ -1,5 +1,5 @@
 name: partiduo
-version: 0.1.9
+version: 0.1.10
 
 description: |
   Partiduo — comptabilité et facturation en Crystal.
@@ -18,31 +18,45 @@ targets:
     main: manage.cr
 
 dependencies:
+  # Shards maison sur GitHub (aloli-crystal), suivis par branche ; en
+  # développement local, scripts/override-local.sh les remplace par les
+  # copies de travail de prod-crystal.
   marten:
-    path: ../../prod-crystal/marten
+    github: aloli-crystal/marten
+    branch: production
   marten_auth:
-    github: martenframework/marten-auth
-    version: ">= 0.2.0"
+    github: aloli-crystal/marten-auth
+    branch: main
   pg:
     github: will/crystal-pg
-  # Shards maison, en path: tant qu'ils ne sont pas publiés (lot P).
   authn:
-    path: ../../prod-crystal/authn
+    github: aloli-crystal/authn
+    branch: production
+  # password-policy et jose sont aussi requis par authn et webauthn avec une
+  # contrainte de version, que shards ne concilie pas avec une branche : ils
+  # suivent donc les étiquettes publiées, avec la même contrainte.
   password-policy:
-    path: ../../prod-crystal/password-policy
+    github: aloli-crystal/password-policy
+    version: "~> 0.1"
   totp:
-    path: ../../prod-crystal/totp
+    github: aloli-crystal/totp
+    branch: production
   webauthn:
-    path: ../../prod-crystal/webauthn
+    github: aloli-crystal/webauthn
+    branch: production
   jose:
-    path: ../../prod-crystal/jose
+    github: aloli-crystal/jose
+    version: "~> 0.2"
   saml:
-    path: ../../prod-crystal/saml
+    github: aloli-crystal/saml
+    branch: production
   # Lot F : PDF/A-3 Factur-X (ADR-006 D5) et son contrôle.
   pdf-a:
-    path: ../../prod-crystal/pdf-a
+    github: aloli-crystal/pdf-a
+    branch: production
   pdf-validate:
-    path: ../../prod-crystal/pdf-validate
+    github: aloli-crystal/pdf-validate
+    branch: production
 
 development_dependencies:
   ameba:

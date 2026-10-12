@@ -12,3 +12,5 @@
 /deploy/inventory
 /tmp/
 /media/
+# Override local du développement (scripts/override-local.sh), jamais versionné.
+/shard.override.yml
