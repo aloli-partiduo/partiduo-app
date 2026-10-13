@@ -15006,3 +15006,87 @@ sur les tiers et le plan comptable, « Archive des pièces » sur les
 
 Version du contrat : les ajouts de D-OUT-002 à D-OUT-005 sont
 rétrocompatibles ; `API_VERSION` passe de 0.7.0 à 0.8.0.
+
+== Dossiers locaux, sans serveur (13 octobre 2026)
+
+Décision de l'utilisateur : on doit pouvoir créer et tenir un dossier
+(finances d'un foyer, entreprise) sur son poste, par une ligne de commande,
+sans serveur. Choix de l'utilisateur sur la proposition : PostgreSQL du
+poste, macOS et FreeBSD d'abord, connexion conservée, sauvegardes au format
+des serveurs. Étape 1 faite (création, ouverture, fermeture, liste,
+suppression) ; code dans `../partiduo-dist` (0.1.12) : `src/local/`,
+`config/settings/local.cr`, spec `spec/local_spec.cr`, README « Dossiers
+locaux, sans serveur ».
+
+=== D-LOC-001 — Commande `partiduo` dans la distribution
+
+*Choix.* Un programme `partiduo` de `partiduo-dist`, à côté de
+`partiduo-manage` et `partiduo-server`, qu'il pilote : `partiduo dossier
+creer|ouvrir|fermer|liste|supprimer`. Il n'utilise que la bibliothèque
+standard de Crystal (il ne charge pas l'application) : il se construit en
+quelques secondes et n'ajoute rien au serveur. Le provisionnement est celui
+des instances de serveur (`partiduo-manage migrate`, puis `provision`) :
+même dossier, mêmes jeux de données.
+
+*Alternative écartée.* Étendre `partiduo-provision` (script shell) : il
+produit des fichiers de serveur (nginx, rc.d, certificat), sans rapport
+avec un poste.
+
+=== D-LOC-002 — PostgreSQL du poste
+
+*Choix.* La base d'un dossier local est dans le PostgreSQL du poste
+(Postgres.app ou Homebrew sur macOS, `postgresql17-server` sur FreeBSD),
+joint par son socket (`PGHOST`, défaut `/tmp`) et ses outils (PATH, ou
+`PARTIDUO_PG_BIN`). Nom : `partiduo_local_<dossier>`, jamais celui d'une
+instance de serveur (`partiduo_<dossier>`) ni d'une démonstration. Une base
+de même nom déjà présente fait refuser la création ; un échec en cours de
+création retire la base et le répertoire.
+
+*Alternatives écartées.* PostgreSQL embarqué (binaires à fournir avec le
+paquet) et SQLite (code et migrations propres à PostgreSQL), sur choix de
+l'utilisateur.
+
+=== D-LOC-003 — Réglage `local` du serveur
+
+*Choix.* `MARTEN_ENV=local` (`config/settings/local.cr` de la
+distribution) : comme la production (pas de débogage, clé secrète
+obligatoire, gabarits en cache, fichiers statiques collectés et servis),
+sauf écoute sur 127.0.0.1 seulement, HTTP sans cookies `Secure` ni HSTS (il
+n'y a pas de proxy TLS), hôtes admis `localhost` et `*.localhost`. Le
+dossier est servi en `http://<dossier>.partiduo.localhost:<port>/` : les
+navigateurs tiennent `*.localhost` pour un contexte sécurisé, et le cœur
+admet les clés d'accès en HTTP sur `.localhost`. Une requête d'un autre
+hôte est refusée (400), comme en production.
+
+=== D-LOC-004 — Données d'un dossier local
+
+*Choix.* Répertoire de l'utilisateur : `PARTIDUO_HOME`, sinon
+`$XDG_DATA_HOME/partiduo`, sinon `~/.local/share/partiduo` ; un
+répertoire par dossier (0700) : `dossier.env` (réglages du serveur, dont sa
+clé secrète tirée à la création, 0600), `media/` (pièces jointes),
+`serveur.log`, `serveur.pid`. Ports 8400 et suivants, un par dossier,
+gardé dans ses réglages. Le serveur, lancé par `ouvrir`, est détaché du
+terminal (`nohup`) et tourne jusqu'à `fermer`. `supprimer` exige de
+répéter le nom du dossier (`--confirmer`).
+
+=== D-LOC-005 — Connexion conservée
+
+*Choix.* Un dossier local demande la même connexion qu'une instance de
+serveur (mot de passe ou clé d'accès) : un poste partagé ne donne pas accès
+aux comptes, et le dossier se déplace tel quel vers un hébergeur. Le premier
+accès passe par le lien d'invitation affiché à la création, réécrit pour
+l'adresse locale.
+
+*Alternative écartée.* Ouverture directe, déjà connectée, sur choix de
+l'utilisateur.
+
+=== D-LOC-006 — Suite : sauvegardes et distribution
+
+*Choix.* Étape 2 : `partiduo dossier sauvegarder|restaurer`, au format des
+serveurs (D-CHF-013 à D-CHF-025 : age post-quantique, capsule, manifeste
+signé) vers un répertoire (clé USB, NAS) ; sur un poste, l'utilisateur
+tient le rôle de l'exploitant (sa propre clé `age1pq1…`), et une clé de
+signature est tirée pour le poste. Le code du format, aujourd'hui dans
+`partiduo-admin`, passe dans un shard `partiduo-backup` utilisé par les
+deux (dépôt à créer). Étape 3 : formule Homebrew pour macOS, programme
+`partiduo` dans le paquet FreeBSD.
