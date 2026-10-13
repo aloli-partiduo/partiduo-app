@@ -36,6 +36,10 @@ module Partiduo
       field :last_seen_at, :date_time
       field :expires_at, :date_time
       field :revoked_at, :date_time, null: true, blank: true
+      # Dernière authentification forte (A-SEPA-3) : TOTP, passkey ou identité
+      # fédérée, au niveau qu'exige l'utilisateur ; jamais un code de
+      # récupération ni le mot de passe seul.
+      field :strong_auth_at, :date_time, null: true, blank: true
     end
 
     # Défi à usage unique, conservé côté serveur : WebAuthn (enregistrement,

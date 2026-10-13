@@ -63,7 +63,8 @@ vide, `share_capital` `nil` efface le capital. Les champs à valeur par défaut
 (`country_code`, `default_locale`, `domain`, `auth_methods`,
 `auth_minimum_level`, `session_duration_minutes`) gardent, s'ils valent `nil`,
 la valeur enregistrée — ou prennent le défaut à la création. Les champs
-ajoutés au contrat après sa première version (`creditor_identifier`…)
+ajoutés au contrat après sa première version (`creditor_identifier`,
+`approval_mode`, `approval_reauth_minutes`)
 gardent aussi, s'ils valent `nil`, la valeur enregistrée : une saisie
 construite avant leur ajout ne les efface pas ; `""` les efface. Pour modifier un
 seul champ : `Api::Core.settings(actor).to_input.copy_with(city: "Namur")`.
@@ -96,7 +97,15 @@ contrôlée, SIREN cohérent ; BE : modulo 97
 A-SEPA-2) : forme compacte (pays, clé, code d'activité, identifiant
 national ; 35 caractères au plus), clé modulo 97 contrôlée (EPC262) ;
 facultatif. Lu par les prélèvements SEPA et les mentions des factures.
+|`approval_mode` (0.17.0) |— |`single` (défaut) ou `dual` : validation des
+opérations sensibles à une ou deux personnes (A-SEPA-3,
+`doc/api/approvals.adoc`) ; `SettingsView#dual_approval?`
+|`approval_reauth_minutes` (0.17.0) |— |1 à 60 (5 par défaut) : délai de
+l'authentification forte exigée pour approuver
 |===
+
+Un changement de `approval_mode` ou `approval_reauth_minutes` est inscrit
+à la piste d'audit des approbations (`policy.changed`).
 
 Erreurs : `core.errors.settings.<champ>.<code>` (`blank`, `too_long`,
 `invalid`, `regime_mismatch`, `country_mismatch`, `siren_mismatch`,

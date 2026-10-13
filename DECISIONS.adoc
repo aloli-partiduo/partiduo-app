@@ -15680,3 +15680,89 @@ validation suffit à la promesse « rien ne part d'une opération annulée ».
 *Choix.* D-AMD-025 : `API_VERSION` 0.16.0. Documentation :
 `doc/api/mail.adoc` (nouveau, cité par le README avec
 `accounting-fec-reader.adoc`). Specs : `spec/core/mail_spec.cr`.
+
+=== D-AMD-027 — Heure de la dernière authentification forte dans `Actor` (A-SEPA-3)
+
+*Choix.* Colonne `strong_auth_at` de la session (migration auth 0004) et
+champ `Actor#strong_auth_at` (dernier champ, `nil` par défaut ;
+`Actor.user(…, strong_auth_at:)`), repris par `SessionView`. Une
+authentification est *forte* (`Sessions.strong?`) si le facteur présenté
+est au moins du niveau 2 et au niveau qu'exige l'utilisateur : TOTP,
+passkey, identité fédérée qui exige le MFA ; jamais un code de
+récupération (secours, comme D-VAL2-004) ni le mot de passe seul. Elle est
+notée à l'ouverture de la session et à chaque élévation réussie
+(`elevate_with_totp`, `elevate_with_passkey`), *même si la session est déjà
+à ce niveau* : c'est la ré-authentification ; inscrite au journal d'audit
+(`auth.reauth`). `Actor#strong_auth_within?(window)` dit si elle est
+récente ; jamais vrai pour l'acteur système, ni pour une heure dans
+l'avenir (au-delà d'une minute de dérive).
+
+*Pourquoi pas de nouvelle commande de ré-authentification.* Les deux
+élévations existantes font exactement ce geste (TOTP avec la limitation
+des tentatives de la connexion, passkey de l'utilisateur) ; l'interface
+les a déjà, avec un retour (`next`). Les sessions ouvertes avant la
+migration n'ont pas d'heure : elles se ré-authentifient pour approuver.
+
+=== D-AMD-028 — Approbation des opérations sensibles, service commun (A-SEPA-3)
+
+*Choix.* Réglage du dossier `approval_mode` (`single`, défaut ; `dual`) et
+`approval_reauth_minutes` (1 à 60, 5 par défaut, comme `REAUTH_WINDOW` de
+l'administration), colonnes de `core_settings` (migration core 0007),
+champs de `SettingsInput` (`nil` garde) et `SettingsView`. Service
+`Partiduo::Api::Approvals` : `submit` (l'extension), `approve`, `reject`,
+`cancel`, `consume` (l'extension, une fois), lectures (`pending`,
+`decision`, `events`, `log`), gestionnaire d'exécution
+(`register_handler`). Les règles reprennent celles de la validation à deux
+du parc :
+
+* mode lu à la décision (D-VAL2-006) ;
+* repli à une personne (D-VAL2-004) : en mode `single`, celle qui a soumis
+  approuve, mais après une authentification forte récente ; en mode
+  `dual`, une autre personne, *aussi* après une authentification forte
+  récente — approuver un paiement est toujours un geste confirmé ;
+* décision atomique, opération jamais rejouée (D-AFN-010) : mises à jour
+  conditionnelles sur l'état ; `consume` lie l'exécution à l'objet et à
+  l'empreinte approuvés — un lot modifié après l'approbation n'est pas
+  exécuté (`digest_mismatch`), une approbation ne sert pas deux fois ni
+  pour un autre objet ;
+* piste d'audit en ajout seul (`core_approval_event`), refus compris.
+
+*Ce qui ne vient pas du parc.* « Deux personnes habilitées au moins » et
+la désactivation d'office (D-VAL2-003) : les personnes habilitées
+dépendent ici de la permission de chaque extension, que le réglage du
+dossier ne connaît pas ; en mode `dual` sans seconde personne habilitée,
+la demande attend (l'écran le dit). La confirmation explicite (case
+cochée, nom retapé) reste à l'extension, qui sait ce qu'elle fait
+approuver.
+
+*Sens des dépendances.* Le service est au socle et ne lit que
+`Actor#strong_auth_at` : il ne cite pas l'authentification. Les extensions
+le citent ; le cœur n'en cite aucune. Aucun événement n'est ajouté à la
+liste fermée : le gestionnaire est une accroche déclarée, comme les
+chargeurs de données initiales.
+
+*Alternatives écartées.* Garder le réglage dans chaque extension
+(contournement de `partiduo-sepa`, D-SEPA-005) : une règle par extension,
+sans ré-authentification ni piste commune. Un réglage par nature
+d'opération : la question est celle de l'équipe du dossier (D-VAL2-001).
+
+=== D-AMD-029 — Specs d'attaque, interface et version du contrat 0.17.0
+
+*Specs* (`spec/core/approvals_spec.cr`) : même personne en validation à
+deux (contrat, puis SQL direct refusé par la base), mode changé entre
+soumission et décision, authentification absente, trop ancienne ou datée
+dans l'avenir, délai réglé, approbation rejouée, rejet ou retrait après
+décision, exécution avant approbation, pour un autre objet, pour un autre
+contenu, deux fois, consommation forcée en SQL refusée, acteur sans
+permission, système, anonyme, gestionnaire qui échoue (la demande reste en
+attente), authentification forte notée par TOTP et non par code de
+récupération ni par mot de passe, renouvelée par l'élévation.
+
+*Interface.* `partiduo-ui-bulma` porte l'écran « Approbations » (liste,
+détail, piste, approuver, rejeter, retirer) et la ré-authentification
+avant d'approuver (TOTP ou passkey, retour à la demande) : décisions de
+l'interface plus bas (D-AMD-031).
+
+*Version.* D-AMD-027 et D-AMD-028 : `API_VERSION` 0.17.0. Documentation :
+`doc/api/approvals.adoc` (nouveau), `doc/api/auth.adoc`,
+`doc/api/core-settings.adoc`.

@@ -419,12 +419,20 @@ module Partiduo
         ))
       end
 
+      # Élève la session au niveau du facteur présenté ; un facteur fort au
+      # niveau qu'exige l'utilisateur renouvelle aussi son heure
+      # d'authentification forte (A-SEPA-3), même si la session était déjà
+      # à ce niveau : c'est la ré-authentification d'une approbation.
       private def self.raise_level(session : Partiduo::Auth::Session, level : Int32, method : String) : Nil
         user = session.user!
         if level > (session.level || 0).to_i32
           session.level = level
           session.method = method
           session.save!
+        end
+        if Partiduo::Auth::Sessions.strong?(user, level, method)
+          Partiduo::Auth::Sessions.mark_strong(session)
+          Partiduo::Auth::Audit.record("auth.reauth", "SUCCESS", user: user, detail: method)
         end
         Partiduo::Auth::Audit.record("session.elevate", "SUCCESS", user: user, detail: "#{method}, niveau #{session.level}")
       end
@@ -479,6 +487,7 @@ module Partiduo
           elevation_required: level < required,
           suggest_passkey: level < Partiduo::Auth::Levels::PASSKEY && Partiduo::Auth::Levels.suggest_passkey?(user, policy),
           expires_at: session.expires_at!,
+          strong_auth_at: session.strong_auth_at,
         )
       end
 

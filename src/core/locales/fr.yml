@@ -59,6 +59,8 @@ fr:
         auth_minimum_level: "Niveau d'authentification minimum"
         session_duration_minutes: "Durée de session (minutes)"
         creditor_identifier: "Identifiant créancier SEPA (ICS)"
+        approval_mode: "Validation des opérations sensibles"
+        approval_reauth_minutes: "Délai de l'authentification forte pour approuver (minutes)"
       tax_regimes:
         fr: "France"
         be: "Belgique"
@@ -77,6 +79,9 @@ fr:
       session_duration:
         one: "%{count} minute"
         other: "%{count} minutes"
+      approval_modes:
+        single: "Une personne (celle qui soumet peut approuver, après une authentification forte)"
+        dual: "Deux personnes (une autre personne approuve)"
     currencies:
       eur: "Euro"
     exports:
@@ -171,6 +176,10 @@ fr:
           out_of_range: "La durée de session doit être comprise entre %{min} et %{max} minutes."
         creditor_identifier:
           invalid: "L'identifiant créancier SEPA « %{value} » n'est pas valide (pays, clé, code d'activité, identifiant national)."
+        approval_mode:
+          invalid: "Mode de validation inconnu : %{value} (une ou deux personnes)."
+        approval_reauth_minutes:
+          out_of_range: "Le délai de l'authentification forte doit être compris entre %{min} et %{max} minutes."
       mail:
         to:
           blank: "Indiquez au moins un destinataire."
@@ -186,6 +195,26 @@ fr:
           filename: "Une pièce jointe n'a pas de nom."
         no_sender: "Aucune adresse d'expédition : renseignez l'adresse électronique de la société."
         not_configured: "L'envoi de courriels n'est pas configuré sur cette instance."
+      approval:
+        person_required: "Une approbation est le geste d'une personne connectée."
+        not_pending: "Cette demande n'est plus en attente : elle a déjà été décidée."
+        same_person: "Validation à deux personnes : une autre personne que celle qui a soumis la demande doit l'approuver."
+        reauthentication_required: "Confirmez votre identité (application d'authentification ou passkey) : approuver exige une authentification forte de moins de %{minutes} minutes."
+        forbidden: "Vous n'avez pas le droit de décider de cette demande."
+        pending_exists: "Une demande attend déjà d'être approuvée pour cet objet."
+        not_approved: "Cette opération n'a pas été approuvée."
+        already_consumed: "Cette approbation a déjà servi."
+        subject_mismatch: "Cette approbation porte sur un autre objet."
+        digest_mismatch: "Le contenu a changé depuis la demande : soumettez-le de nouveau."
+        kind:
+          invalid: "Nature de demande non valide : %{value}."
+        subject:
+          blank: "Indiquez l'objet de la demande."
+          too_long: "L'objet de la demande compte au plus %{max} caractères."
+        summary:
+          blank: "Indiquez le résumé de la demande."
+        digest:
+          blank: "L'empreinte du contenu soumis manque ou est trop longue."
       provision:
         already_provisioned: "Ce dossier est déjà créé."
         admin_email:
@@ -304,6 +333,20 @@ fr:
         unknown: "Aucun compte pour %{email} : la plateforme ne crée pas d'administrateur ; seul un administrateur existant reçoit une nouvelle invitation."
         host_unknown: "Hôte de l'instance inconnu (société sans domaine, ni PARTIDUO_HOST ni MARTEN_ALLOWED_HOSTS) : lien d'invitation impossible."
         internal: "Erreur interne : %{detail}"
+    approvals:
+      statuses:
+        pending: "En attente"
+        approved: "Approuvée"
+        rejected: "Rejetée"
+        cancelled: "Retirée"
+      actions:
+        submitted: "Soumise"
+        approved: "Approuvée"
+        rejected: "Rejetée"
+        cancelled: "Retirée"
+        consumed: "Exécutée"
+        refused: "Tentative refusée"
+        policy_changed: "Règle modifiée"
   partiduo:
     api:
       errors:

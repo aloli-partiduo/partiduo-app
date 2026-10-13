@@ -14,6 +14,9 @@ module Partiduo
       AUTH_LEVELS = Partiduo::Core::SettingsRules::AUTH_LEVELS
       # Durée de session admise, en minutes.
       SESSION_MINUTES = Partiduo::Core::SettingsRules::SESSION_MINUTES
+      # Approbations (A-SEPA-3) : modes et délai de l'authentification forte.
+      APPROVAL_MODES          = Partiduo::Core::SettingsRules::APPROVAL_MODES
+      APPROVAL_REAUTH_MINUTES = Partiduo::Core::SettingsRules::APPROVAL_REAUTH_MINUTES
 
       # Saisie de la configuration société.
       #
@@ -25,7 +28,9 @@ module Partiduo
       # création. `tax_regime` est obligatoire à la création et ne change plus
       # ensuite. `creditor_identifier` (ICS, A-SEPA-2) : `nil` garde la valeur
       # enregistrée (une saisie antérieure au champ ne l'efface pas) ; `""`
-      # l'efface.
+      # l'efface. `approval_mode` (`single`, `dual`) et
+      # `approval_reauth_minutes` (1 à 60), A-SEPA-3 : `nil` garde la valeur
+      # enregistrée.
       record SettingsInput,
         company_name : String? = nil,
         legal_form : String? = nil,
@@ -46,7 +51,9 @@ module Partiduo
         auth_methods : Array(String)? = nil,
         auth_minimum_level : Int32? = nil,
         session_duration_minutes : Int32? = nil,
-        creditor_identifier : String? = nil
+        creditor_identifier : String? = nil,
+        approval_mode : String? = nil,
+        approval_reauth_minutes : Int32? = nil
 
       # Configuration société, vue de l'interface et des extensions.
       record SettingsView,
@@ -71,7 +78,14 @@ module Partiduo
         session_duration_minutes : Int32,
         updated_at : Time?,
         kind : String = InitialData::COMPANY,
-        creditor_identifier : String = "" do
+        creditor_identifier : String = "",
+        approval_mode : String = Partiduo::Core::SettingsRules::DEFAULT_APPROVAL_MODE,
+        approval_reauth_minutes : Int32 = Partiduo::Core::SettingsRules::DEFAULT_APPROVAL_REAUTH_MINUTES do
+        # Validation à deux personnes des opérations sensibles (A-SEPA-3) ?
+        def dual_approval? : Bool
+          approval_mode == "dual"
+        end
+
         # Dossier d'un foyer (ADR-011) ?
         def household? : Bool
           kind == InitialData::HOUSEHOLD
@@ -95,7 +109,8 @@ module Partiduo
             tax_regime: tax_regime, default_locale: default_locale, domain: domain,
             auth_methods: auth_methods, auth_minimum_level: auth_minimum_level,
             session_duration_minutes: session_duration_minutes,
-            creditor_identifier: creditor_identifier,
+            creditor_identifier: creditor_identifier, approval_mode: approval_mode,
+            approval_reauth_minutes: approval_reauth_minutes,
           )
         end
 
@@ -124,6 +139,9 @@ module Partiduo
             updated_at: settings.updated_at,
             kind: settings.kind.presence || InitialData::COMPANY,
             creditor_identifier: settings.creditor_identifier.to_s,
+            approval_mode: settings.approval_mode.presence || Partiduo::Core::SettingsRules::DEFAULT_APPROVAL_MODE,
+            approval_reauth_minutes: (settings.approval_reauth_minutes ||
+                                      Partiduo::Core::SettingsRules::DEFAULT_APPROVAL_REAUTH_MINUTES).to_i32,
           )
         end
       end
@@ -182,7 +200,14 @@ module Partiduo
           values = Partiduo::Core::SettingsRules.normalize(input, current)
           errors = Partiduo::Core::SettingsRules.validate(values, current)
           if errors.empty?
+            before = {current.approval_mode.to_s, current.approval_reauth_minutes.try(&.to_i32)}
             Partiduo::Core::SettingsRules.assign(current, values).save!
+            after = {values.approval_mode, values.approval_reauth_minutes}
+            # Piste d'audit des approbations (A-SEPA-3) : qui a changé la règle.
+            if before != after
+              Partiduo::Core::ApprovalLog.record(nil, "policy.changed", actor.user_id,
+                "#{before[0]}/#{before[1]} → #{after[0]}/#{after[1]}")
+            end
             Result(SettingsView).success(SettingsView.from(current))
           else
             Result(SettingsView).failure(errors)

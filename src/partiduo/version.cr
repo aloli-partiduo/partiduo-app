@@ -33,8 +33,11 @@ module Partiduo
   # extrait financier ventilé, `read_fec`, D-AMD-017 à D-AMD-021 ; 0.15.0 :
   # prévision tenue par une extension, immobilisations de la 2035 fournies
   # par une extension, D-AMD-022 à D-AMD-024 ; 0.16.0 : envoi de courriels
-  # par une extension, `Partiduo::Api::Mail`, D-AMD-025 et D-AMD-026).
-  API_VERSION = "0.16.0"
+  # par une extension, `Partiduo::Api::Mail`, D-AMD-025 et D-AMD-026 ;
+  # 0.17.0 : approbation des opérations sensibles, `Partiduo::Api::Approvals`,
+  # `Actor#strong_auth_at`, réglage `approval_mode` du dossier, D-AMD-027 à
+  # D-AMD-029).
+  API_VERSION = "0.17.0"
 end
 
 module Partiduo

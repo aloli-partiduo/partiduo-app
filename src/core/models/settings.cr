@@ -49,6 +49,12 @@ module Partiduo
       field :auth_minimum_level, :int
       field :session_duration_minutes, :int
 
+      # Approbations (A-SEPA-3) : `single` (une personne) ou `dual` (deux
+      # personnes : celle qui soumet n'approuve pas) ; délai, en minutes,
+      # de l'authentification forte exigée pour approuver.
+      field :approval_mode, :string, max_size: 8, default: "single"
+      field :approval_reauth_minutes, :int, default: 5
+
       field :created_at, :date_time, auto_now_add: true
       field :updated_at, :date_time, auto_now: true
 

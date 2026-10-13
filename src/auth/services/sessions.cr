@@ -22,6 +22,7 @@ module Partiduo
           user_agent: user_agent[0, 255],
           last_seen_at: now,
           expires_at: now + Policy.current.session_minutes.minutes,
+          strong_auth_at: strong?(user, level, method) ? now : nil,
         )
         user.last_login_at = now
         user.save!
@@ -42,6 +43,21 @@ module Partiduo
           session.save!
         end
         session
+      end
+
+      # Authentification forte (A-SEPA-3) : un facteur au moins du niveau 2
+      # (TOTP, passkey, identité fédérée qui exige le MFA), au niveau
+      # qu'exige l'utilisateur ; un code de récupération n'en est pas une
+      # (usage de secours, D-VAL2-004).
+      def self.strong?(user : User, level : Int32, method : String) : Bool
+        method != "recovery_code" && level >= Levels::TWO_FACTOR && level >= Levels.required(user)
+      end
+
+      # Note une authentification forte sur la session (élévation ou
+      # ré-authentification).
+      def self.mark_strong(session : Session, now : Time = Time.utc) : Nil
+        session.strong_auth_at = now
+        session.save!
       end
 
       def self.revoke(session : Session, now : Time = Time.utc) : Nil
@@ -68,7 +84,7 @@ module Partiduo
         elevated = level > Levels::ENROLLMENT && level >= Levels.required(user)
         permissions = elevated ? Permissions.of_user(user) : Set(String).new
         Partiduo::Api::Actor.user(user.pk!.as(Int64), permissions, level, elevated: elevated,
-          session_id: session.pk.try(&.as(Int64)))
+          session_id: session.pk.try(&.as(Int64)), strong_auth_at: session.strong_auth_at)
       end
     end
   end

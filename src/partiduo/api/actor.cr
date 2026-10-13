@@ -21,8 +21,15 @@ module Partiduo
     #
     # `session_id` : session d'où vient l'acteur (conservée quand un
     # changement de sécurité coupe les autres sessions).
+    #
+    # `strong_auth_at` (A-SEPA-3) : heure de la dernière authentification
+    # forte de la session (TOTP, passkey, identité fédérée, au niveau
+    # qu'exige l'utilisateur ; ni code de récupération, ni mot de passe
+    # seul) ; `nil` s'il n'y en a pas eu. Une opération sensible exige
+    # qu'elle soit récente (`strong_auth_within?`) : c'est la règle des
+    # approbations (`Partiduo::Api::Approvals`).
     record Actor, user_id : Int64?, permissions : Set(String), system : Bool = false, level : Int32 = 0,
-      elevated : Bool = true, session_id : Int64? = nil do
+      elevated : Bool = true, session_id : Int64? = nil, strong_auth_at : Time? = nil do
       # Acteur technique : toutes les permissions. Réservé aux outils en ligne
       # de commande et aux abonnés d'événements, jamais à une requête HTTP.
       def self.system : Actor
@@ -35,8 +42,8 @@ module Partiduo
       end
 
       def self.user(user_id : Int64, permissions : Enumerable(String), level : Int32 = 0,
-                    elevated : Bool = true, session_id : Int64? = nil) : Actor
-        new(user_id, permissions.to_set, false, level, elevated, session_id)
+                    elevated : Bool = true, session_id : Int64? = nil, strong_auth_at : Time? = nil) : Actor
+        new(user_id, permissions.to_set, false, level, elevated, session_id, strong_auth_at)
       end
 
       def authenticated? : Bool
@@ -45,6 +52,15 @@ module Partiduo
 
       def can?(permission : String) : Bool
         system || (authenticated? && permissions.includes?(permission))
+      end
+
+      # L'acteur, une personne, s'est-il authentifié fortement depuis moins
+      # de `window` (à `now`) ? Jamais vrai pour l'acteur système : une
+      # approbation est le geste d'une personne.
+      def strong_auth_within?(window : Time::Span, now : Time = Time.utc) : Bool
+        return false if system || user_id.nil?
+        at = strong_auth_at || return false
+        at <= now + 1.minute && now - at <= window
       end
     end
   end

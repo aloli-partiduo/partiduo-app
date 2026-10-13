@@ -1,0 +1,153 @@
+= Socle : approbation des opérations sensibles
+:toc: left
+:toc-title: Table des matières
+:toclevels: 2
+:icons: font
+:source-language: crystal
+
+Règle commune aux extensions pour faire approuver une opération sensible
+(lot de virements, suppression définitive…) : validation à une ou deux
+personnes réglée par le dossier, authentification forte récente, une
+décision et une exécution par demande, piste d'audit (A-SEPA-3, contrat
+0.17.0). Modèle : la validation à deux de l'administration du parc
+(DECISIONS D-VAL2-001 à D-VAL2-006). Contrat `Partiduo::Api::Approvals`
+(`src/core/api/approvals.cr`) ; écran commun dans `partiduo-ui-bulma`
+(« Approbations »).
+
+== Règle du dossier
+
+[cols="1,3",options="header"]
+|===
+|Réglage |Effet
+
+|`approval_mode` = `single` (défaut)
+|Une personne : celle qui a soumis peut approuver elle-même, après une
+authentification forte récente (protection de repli, D-VAL2-004) ; une
+autre personne habilitée le peut aussi.
+
+|`approval_mode` = `dual`
+|Deux personnes : celle qui a soumis ne peut pas approuver
+(`same_person`) ; la base le refuse aussi (`core_approval_dual_check`).
+
+|`approval_reauth_minutes` (1 à 60, 5 par défaut)
+|Délai de l'authentification forte exigée pour approuver, dans les deux
+modes.
+|===
+
+Le mode est lu *à la décision*, non figé à la soumission (D-VAL2-006) :
+passer à deux personnes empêche aussitôt la personne qui a soumis une
+demande en attente de l'approuver ; revenir à une personne le lui permet.
+Réglage : `Api::Core.update_settings` (`core.settings.manage`), tracé
+(`policy.changed`).
+
+*Authentification forte* : `Actor#strong_auth_at` (`doc/api/auth.adoc`) —
+TOTP, passkey ou identité fédérée au niveau exigé de l'utilisateur ; ni
+code de récupération, ni mot de passe seul. L'écran la redemande par
+`elevate_with_totp` ou `elevate_with_passkey`.
+
+== Cycle d'une demande
+
+. L'extension *soumet* (`submit`) : pièce, nature, objet (`batch:42`),
+  résumé, empreinte du contenu soumis, permission qui décide, montant,
+  devise, détails affichés. Une seule demande en attente par objet.
+. Une personne qui a la permission *approuve* (`approve`) ou *rejette*
+  (`reject`) ; celle qui a soumis peut *retirer* (`cancel`), comme
+  l'extension (acteur système) si l'objet change.
+. L'extension *exécute* ce qui a été approuvé et *consomme* l'approbation
+  (`consume`) : une fois, pour cet objet et cette empreinte. Elle peut
+  déclarer un gestionnaire (`register_handler`), appelé dans la
+  transaction de l'approbation : son échec annule l'approbation.
+
+[source]
+----
+alias Approvals = Partiduo::Api::Approvals
+
+request = Approvals.submit(actor, Approvals::SubmitInput.new(
+  module_code: "SEPA", kind: "batch", subject: "batch:#{id}", summary: "Virements du 15 octobre",
+  digest: sha256_du_lot, permission: "sepa.batch.approve",
+  amount: total, currency_code: "EUR", details: {"sepa.fields.count" => "12"})).value!
+
+Approvals.register_handler("SEPA", "batch") do |actor, approval|
+  # produire le fichier, puis :
+  consumed = Approvals.consume(actor, approval.id,
+    Approvals::ConsumeInput.new("SEPA", "batch", approval.subject, sha256_du_lot))
+  consumed.failure? ? Partiduo::Api::Result(Nil).failure(consumed.errors) : Partiduo::Api::Result(Nil).success(nil)
+end
+----
+
+== Contrat
+
+[cols="2,1,3",options="header"]
+|===
+|Appel |Droit |Rôle
+
+|`policy(actor) : PolicyView`
+|authentifié
+|`mode`, `reauth_minutes`, `dual?`.
+
+|`submit(actor, SubmitInput) : Result(ApprovalView)`
+|authentifié (une personne) ; pièce active
+|Demande en attente ; permission non déclarée : `ArgumentError`.
+
+|`approve(actor, id, comment = "") : Result(ApprovalView)`
+|permission de la demande
+|Une personne, demande en attente, autre personne en mode `dual`,
+authentification forte récente ; gestionnaire exécuté.
+
+|`check_approve(actor, id) : Result(Nil)`, `decision(actor, id) : DecisionView`
+|permission / visibilité
+|Mêmes contrôles sans décider ; `DecisionView` : `can_approve`,
+`can_reject`, `can_cancel`, `reason`, `reauthentication_required`,
+`reauth_minutes`.
+
+|`reject(actor, id, comment = "")`
+|permission de la demande
+|Pas d'authentification forte : rejeter n'exécute rien.
+
+|`cancel(actor, id, comment = "")`
+|celle qui a soumis, ou l'acteur système
+|Retire une demande en attente.
+
+|`consume(actor, id, ConsumeInput) : Result(ApprovalView)`
+|authentifié ; pièce active
+|Exécution unique de l'approbation, pour l'objet et l'empreinte approuvés.
+
+|`approval(actor, id)`, `events(actor, id)`
+|qui a soumis, décidé, ou peut décider
+|La demande ; sa piste d'audit. `NotFound` sinon.
+
+|`pending(actor, module_code = nil)`, `pending_count(actor)`, `latest(actor, module_code, kind, subject)`
+|authentifié
+|Demandes en attente que l'acteur peut décider ou qu'il a soumises ;
+nombre de celles qu'il peut approuver (compteur, « À traiter ») ; dernière
+demande d'un objet.
+
+|`log(actor, limit, offset)`
+|`core.settings.manage`
+|Piste d'audit du dossier.
+|===
+
+Refus (`core.errors.approval.*`, champ `base` sauf mention) :
+`person_required`, `not_pending` (déjà décidée : rejeu), `same_person`,
+`reauthentication_required` (`%{minutes}`), `forbidden` (écran),
+`pending_exists` (champ `subject`), `kind.invalid`, `subject.blank`,
+`subject.too_long`, `summary.blank`, `digest.blank`, `not_approved`,
+`already_consumed`, `subject_mismatch`, `digest_mismatch`. Sans la
+permission : `Forbidden` ; pièce inactive : `ModuleDisabled`.
+
+== Garanties
+
+* Décision atomique : approuver, rejeter, retirer, consommer sont des mises
+  à jour conditionnelles sur l'état (`WHERE status = 'pending'`,
+  `consumed_at IS NULL`) ; deux décisions concurrentes, une seule passe.
+* Base : état et mode contrôlés ; pas d'approbation à deux par la même
+  personne ; pas de consommation sans approbation ; une seule demande en
+  attente par objet (index unique partiel).
+* Piste d'audit `core_approval_event` en ajout seul (déclencheur) :
+  `submitted`, `approved`, `rejected`, `cancelled`, `consumed`, `refused`
+  (avec la clé du refus : même personne, authentification trop ancienne,
+  rejeu…), `policy.changed`. Un refus est inscrit hors de la transaction
+  de la commande refusée.
+* Tables : `core_approval`, `core_approval_event`, colonnes
+  `approval_mode` et `approval_reauth_minutes` de `core_settings`
+  (migration core 0007).

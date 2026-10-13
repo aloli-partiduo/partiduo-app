@@ -59,6 +59,8 @@ nl:
         auth_minimum_level: "Minimaal authenticatieniveau"
         session_duration_minutes: "Sessieduur (minuten)"
         creditor_identifier: "SEPA-incassant-ID"
+        approval_mode: "Goedkeuring van gevoelige bewerkingen"
+        approval_reauth_minutes: "Termijn van de sterke authenticatie om goed te keuren (minuten)"
       tax_regimes:
         fr: "Frankrijk"
         be: "België"
@@ -77,6 +79,9 @@ nl:
       session_duration:
         one: "%{count} minuut"
         other: "%{count} minuten"
+      approval_modes:
+        single: "Eén persoon (wie indient mag goedkeuren, na sterke authenticatie)"
+        dual: "Twee personen (iemand anders keurt goed)"
     currencies:
       eur: "Euro"
     exports:
@@ -171,6 +176,10 @@ nl:
           out_of_range: "De sessieduur moet tussen %{min} en %{max} minuten liggen."
         creditor_identifier:
           invalid: "Het SEPA-incassant-ID „%{value}” is ongeldig (land, controlegetal, activiteitscode, nationale identificatie)."
+        approval_mode:
+          invalid: "Onbekende goedkeuringswijze: %{value} (één of twee personen)."
+        approval_reauth_minutes:
+          out_of_range: "De termijn van de sterke authenticatie moet tussen %{min} en %{max} minuten liggen."
       mail:
         to:
           blank: "Geef minstens één geadresseerde op."
@@ -186,6 +195,26 @@ nl:
           filename: "Een bijlage heeft geen naam."
         no_sender: "Geen afzenderadres: vul het e-mailadres van de onderneming in."
         not_configured: "Het verzenden van e-mail is niet ingesteld op deze instantie."
+      approval:
+        person_required: "Een goedkeuring is de handeling van een aangemelde persoon."
+        not_pending: "Dit verzoek is niet meer in behandeling: er is al over beslist."
+        same_person: "Goedkeuring door twee personen: iemand anders dan wie het verzoek indiende moet het goedkeuren."
+        reauthentication_required: "Bevestig uw identiteit (authenticatie-app of passkey): goedkeuren vereist een sterke authenticatie van minder dan %{minutes} minuten geleden."
+        forbidden: "U mag niet over dit verzoek beslissen."
+        pending_exists: "Er wacht al een verzoek op goedkeuring voor dit onderwerp."
+        not_approved: "Deze bewerking is niet goedgekeurd."
+        already_consumed: "Deze goedkeuring is al gebruikt."
+        subject_mismatch: "Deze goedkeuring betreft een ander onderwerp."
+        digest_mismatch: "De inhoud is gewijzigd sinds het verzoek: dien het opnieuw in."
+        kind:
+          invalid: "Ongeldige soort verzoek: %{value}."
+        subject:
+          blank: "Geef het onderwerp van het verzoek op."
+          too_long: "Het onderwerp van het verzoek telt hoogstens %{max} tekens."
+        summary:
+          blank: "Geef de samenvatting van het verzoek op."
+        digest:
+          blank: "De vingerafdruk van de ingediende inhoud ontbreekt of is te lang."
       provision:
         already_provisioned: "Dit dossier bestaat al."
         admin_email:
@@ -304,6 +333,20 @@ nl:
         unknown: "Geen account voor %{email}: het platform maakt geen beheerders aan; alleen een bestaande beheerder krijgt een nieuwe uitnodiging."
         host_unknown: "Host van de instantie onbekend (onderneming zonder domein, geen PARTIDUO_HOST of MARTEN_ALLOWED_HOSTS): geen uitnodigingslink mogelijk."
         internal: "Interne fout: %{detail}"
+    approvals:
+      statuses:
+        pending: "In behandeling"
+        approved: "Goedgekeurd"
+        rejected: "Afgewezen"
+        cancelled: "Ingetrokken"
+      actions:
+        submitted: "Ingediend"
+        approved: "Goedgekeurd"
+        rejected: "Afgewezen"
+        cancelled: "Ingetrokken"
+        consumed: "Uitgevoerd"
+        refused: "Geweigerde poging"
+        policy_changed: "Regel gewijzigd"
   partiduo:
     api:
       errors:

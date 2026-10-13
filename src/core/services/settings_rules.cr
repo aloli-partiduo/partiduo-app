@@ -26,6 +26,12 @@ module Partiduo
       DEFAULT_AUTH_LEVEL      = 1
       DEFAULT_LOCALE          = "fr"
 
+      # Approbations (A-SEPA-3) : modes et délai de l'authentification forte.
+      APPROVAL_MODES                  = %w[single dual]
+      DEFAULT_APPROVAL_MODE           = "single"
+      APPROVAL_REAUTH_MINUTES         = 1..60
+      DEFAULT_APPROVAL_REAUTH_MINUTES = 5
+
       # Pays admis par régime fiscal. Monaco relève de la TVA française.
       REGIME_COUNTRIES = {"fr" => %w[FR MC], "be" => %w[BE]}
 
@@ -72,7 +78,9 @@ module Partiduo
         auth_methods : Array(String),
         auth_minimum_level : Int32,
         session_duration_minutes : Int32,
-        creditor_identifier : String = ""
+        creditor_identifier : String = "",
+        approval_mode : String = DEFAULT_APPROVAL_MODE,
+        approval_reauth_minutes : Int32 = DEFAULT_APPROVAL_REAUTH_MINUTES
 
       # Normalise la saisie. Un champ texte `nil` vaut chaîne vide ; un champ
       # qui a une valeur par défaut (pays, langue, politique d'authentification)
@@ -105,6 +113,9 @@ module Partiduo
             DEFAULT_SESSION_MINUTES),
           creditor_identifier: input.creditor_identifier.try { |value| Identifiers.compact(value) } ||
                                current.try(&.creditor_identifier) || "",
+          approval_mode: approval_mode(input, current),
+          approval_reauth_minutes: integer(input.approval_reauth_minutes, current.try(&.approval_reauth_minutes),
+            DEFAULT_APPROVAL_REAUTH_MINUTES),
         )
       end
 
@@ -139,6 +150,7 @@ module Partiduo
         unless values.creditor_identifier.empty? || Identifiers.valid_creditor_identifier?(values.creditor_identifier)
           errors << error("creditor_identifier", "invalid", {"value" => values.creditor_identifier})
         end
+        validate_approvals(values, errors)
         errors
       end
 
@@ -164,6 +176,8 @@ module Partiduo
         settings.auth_minimum_level = values.auth_minimum_level
         settings.session_duration_minutes = values.session_duration_minutes
         settings.creditor_identifier = values.creditor_identifier
+        settings.approval_mode = values.approval_mode
+        settings.approval_reauth_minutes = values.approval_reauth_minutes
         settings
       end
 
@@ -277,6 +291,21 @@ module Partiduo
         unless SESSION_MINUTES.includes?(values.session_duration_minutes)
           errors << error("session_duration_minutes", "out_of_range",
             {"min" => SESSION_MINUTES.begin.to_s, "max" => SESSION_MINUTES.end.to_s})
+        end
+      end
+
+      # Mode d'approbation saisi, sinon enregistré, sinon `single`.
+      private def self.approval_mode(input : Partiduo::Api::Core::SettingsInput, current : Settings?) : String
+        input.approval_mode.try(&.strip.downcase) || current.try(&.approval_mode).presence || DEFAULT_APPROVAL_MODE
+      end
+
+      private def self.validate_approvals(values : Values, errors) : Nil
+        unless APPROVAL_MODES.includes?(values.approval_mode)
+          errors << error("approval_mode", "invalid", {"value" => values.approval_mode})
+        end
+        unless APPROVAL_REAUTH_MINUTES.includes?(values.approval_reauth_minutes)
+          errors << error("approval_reauth_minutes", "out_of_range",
+            {"min" => APPROVAL_REAUTH_MINUTES.begin.to_s, "max" => APPROVAL_REAUTH_MINUTES.end.to_s})
         end
       end
 

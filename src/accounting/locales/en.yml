@@ -732,7 +732,7 @@ en:
         empty_file: "The file is empty."
         separator: "Unknown separator: tab, vertical bar or semicolon."
         separator_strict: "Unknown separator: tab or vertical bar (article A47 A-1)."
-        missing_column: "Field %{column} missing from the header."
+        missing_column: "Field %{column} absent from the header."
         field_count: "%{count} fields instead of %{expected} (separator inside a label?)."
         unbalanced: "Entry %{entry} is unbalanced: debit %{debit}, credit %{credit}."
         no_entry: "The file contains no entry."

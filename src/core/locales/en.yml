@@ -59,6 +59,8 @@ en:
         auth_minimum_level: "Minimum authentication level"
         session_duration_minutes: "Session duration (minutes)"
         creditor_identifier: "SEPA creditor identifier"
+        approval_mode: "Approval of sensitive operations"
+        approval_reauth_minutes: "Strong authentication delay to approve (minutes)"
       tax_regimes:
         fr: "France"
         be: "Belgium"
@@ -77,6 +79,9 @@ en:
       session_duration:
         one: "%{count} minute"
         other: "%{count} minutes"
+      approval_modes:
+        single: "One person (the submitter may approve, after strong authentication)"
+        dual: "Two people (someone else approves)"
     currencies:
       eur: "Euro"
     exports:
@@ -171,6 +176,10 @@ en:
           out_of_range: "The session duration must be between %{min} and %{max} minutes."
         creditor_identifier:
           invalid: "The SEPA creditor identifier “%{value}” is not valid (country, check digits, business code, national identifier)."
+        approval_mode:
+          invalid: "Unknown approval mode: %{value} (one or two people)."
+        approval_reauth_minutes:
+          out_of_range: "The strong authentication delay must be between %{min} and %{max} minutes."
       mail:
         to:
           blank: "Give at least one recipient."
@@ -186,6 +195,26 @@ en:
           filename: "An attachment has no name."
         no_sender: "No sender address: fill in the company's email address."
         not_configured: "Sending email is not configured on this instance."
+      approval:
+        person_required: "An approval is the act of a signed-in person."
+        not_pending: "This request is no longer pending: it has already been decided."
+        same_person: "Two-person approval: someone other than the person who submitted the request must approve it."
+        reauthentication_required: "Confirm your identity (authenticator app or passkey): approving requires strong authentication within the last %{minutes} minutes."
+        forbidden: "You are not allowed to decide on this request."
+        pending_exists: "A request is already waiting for approval for this item."
+        not_approved: "This operation has not been approved."
+        already_consumed: "This approval has already been used."
+        subject_mismatch: "This approval is for another item."
+        digest_mismatch: "The content has changed since the request: submit it again."
+        kind:
+          invalid: "Invalid request kind: %{value}."
+        subject:
+          blank: "Give the item of the request."
+          too_long: "The item of the request has at most %{max} characters."
+        summary:
+          blank: "Give the summary of the request."
+        digest:
+          blank: "The fingerprint of the submitted content is absent or too long."
       provision:
         already_provisioned: "This company file already exists."
         admin_email:
@@ -304,6 +333,20 @@ en:
         unknown: "No account for %{email}: the platform does not create administrators; only an existing administrator receives a new invitation."
         host_unknown: "Unknown instance host (company without a domain, no PARTIDUO_HOST nor MARTEN_ALLOWED_HOSTS): cannot build the invitation link."
         internal: "Internal error: %{detail}"
+    approvals:
+      statuses:
+        pending: "Pending"
+        approved: "Approved"
+        rejected: "Rejected"
+        cancelled: "Withdrawn"
+      actions:
+        submitted: "Submitted"
+        approved: "Approved"
+        rejected: "Rejected"
+        cancelled: "Withdrawn"
+        consumed: "Executed"
+        refused: "Refused attempt"
+        policy_changed: "Rule changed"
   partiduo:
     api:
       errors:

@@ -167,6 +167,7 @@ Référence par domaine (AsciiDoc) :
 * link:doc/api/accounting-reference.adoc[]
 * link:doc/api/accounting-reports.adoc[]
 * link:doc/api/analytic.adoc[]
+* link:doc/api/approvals.adoc[] (approbation des opérations sensibles, A-SEPA-3)
 * link:doc/api/auth.adoc[]
 * link:doc/api/core-settings.adoc[]
 * link:doc/api/followup.adoc[]

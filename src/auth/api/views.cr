@@ -70,7 +70,8 @@ module Partiduo
         required_level : Int32,
         elevation_required : Bool,
         suggest_passkey : Bool,
-        expires_at : Time
+        expires_at : Time,
+        strong_auth_at : Time? = nil
 
       record PasskeyView,
         id : Int64,

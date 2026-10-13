@@ -140,6 +140,23 @@ Partiduo::Api::Auth.elevate_with_totp(anonymous, cookie, code)
 
 Les octets passent en base64url, tels que les renvoie le navigateur.
 
+=== Authentification forte récente (0.17.0, A-SEPA-3)
+
+`Actor#strong_auth_at` (et `SessionView#strong_auth_at`) : heure de la
+dernière *authentification forte* de la session — connexion ou élévation
+par TOTP, par passkey ou par une identité fédérée qui exige le MFA, au
+niveau qu'exige l'utilisateur (`auth_session.strong_auth_at`, migration
+auth 0004). Un code de récupération ou le mot de passe seul n'en sont pas
+une. `Actor#strong_auth_within?(window)` : l'acteur, une personne, s'est
+authentifié fortement depuis moins de `window` ; jamais vrai pour l'acteur
+système.
+
+*Ré-authentification.* `elevate_with_totp` et `elevate_with_passkey`
+renouvellent cette heure, même si la session est déjà au niveau du
+facteur : c'est le geste que demande une approbation
+(`doc/api/approvals.adoc`). Chaque renouvellement est inscrit au journal
+d'audit (`auth.reauth`).
+
 === TOTP
 
 [source]
