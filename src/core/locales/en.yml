@@ -171,6 +171,21 @@ en:
           out_of_range: "The session duration must be between %{min} and %{max} minutes."
         creditor_identifier:
           invalid: "The SEPA creditor identifier “%{value}” is not valid (country, check digits, business code, national identifier)."
+      mail:
+        to:
+          blank: "Give at least one recipient."
+          invalid: "Invalid email address: %{address}."
+          too_many: "A message has at most %{max} recipients."
+        subject:
+          blank: "Give the subject of the message."
+          too_long: "The subject has at most %{max} characters."
+        body:
+          too_long: "The message has at most %{max} characters."
+        attachments:
+          too_large: "The attachments of a message do not exceed %{max} MB in all."
+          filename: "An attachment has no name."
+        no_sender: "No sender address: fill in the company's email address."
+        not_configured: "Sending email is not configured on this instance."
       provision:
         already_provisioned: "This company file already exists."
         admin_email:

@@ -15635,3 +15635,48 @@ lit les données de l'extension, pas celles de l'utilisateur.
 `doc/api/accounting-forecasts.adoc`, `doc/api/liberal.adoc`. Specs :
 `spec/accounting/forecast_owner_spec.cr`, `spec/liberal/asset_source_spec.cr`
 (`PARTIDUO_MODULES=liberal`).
+
+=== D-AMD-025 — Envoi de courriels par une extension (A-REP-2)
+
+*Constat.* Deux envois existaient : les courriels à lien des comptes
+(invitation, remise à zéro, déblocage), rédigés et envoyés par
+l'interface avec `Marten::Email`, et les documents et relances de la
+Facturation, par un transport à elle (`Partiduo::Invoicing::Mail` :
+SMTP minimal réglé par `PARTIDUO_SMTP_URL`, transport en mémoire pour les
+specs, journal sur le document). Une extension ne pouvait se servir
+d'aucun des deux : le premier est de l'interface, le second d'un module.
+
+*Choix.* Ne rien refaire : le transport de la Facturation (message MIME,
+transports SMTP, mémoire, désactivé) *rejoint le socle*
+(`Partiduo::Core::Mail`), tel quel, avec un en-tête `Reply-To` en plus ;
+la Facturation le reprend par des alias, ses noms et ses specs ne
+changent pas, et le dossier n'a plus qu'un transport. Le contrat
+`Partiduo::Api::Mail.deliver(actor, MessageInput, module_code)` y ajoute
+ce que la proposition demandait : expéditeur imposé (adresse de
+l'instance `PARTIDUO_MAIL_FROM`, sinon celle de la société ; nom de la
+société ; réponses à la société), envoi après la validation
+(`Events.after_commit`), journal `core_mail_message` (migration core
+0006). Hors transaction, l'appel rend le message déjà envoyé.
+
+*Droits.* Utilisateur authentifié au niveau exigé et pièce appelante
+active ; c'est l'extension qui décide qui peut envoyer (son propre droit,
+vérifié avant l'appel), comme pour ses autres commandes. Les pièces du
+socle jointes exigent `core.attachment.read`. Le journal se lit par son
+auteur ou par qui gère le dossier.
+
+*Specs.* En `MARTEN_ENV=test`, le transport par défaut n'est jamais SMTP,
+même si `PARTIDUO_SMTP_URL` traîne dans l'environnement : rien ne sort ;
+les specs capturent les messages (`MemoryTransport`) et simulent un refus
+(`failure`).
+
+*Alternatives écartées.* `Marten::Email` pour les extensions : son
+transport se règle par l'application Marten de la distribution, pas par
+l'instance, et il n'a pas de journal. Une file d'envoi en base relevée
+par une tâche : aucun exécutant de tâches dans l'instance ; l'envoi à la
+validation suffit à la promesse « rien ne part d'une opération annulée ».
+
+=== D-AMD-026 — Version du contrat 0.16.0
+
+*Choix.* D-AMD-025 : `API_VERSION` 0.16.0. Documentation :
+`doc/api/mail.adoc` (nouveau, cité par le README avec
+`accounting-fec-reader.adoc`). Specs : `spec/core/mail_spec.cr`.

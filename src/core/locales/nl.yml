@@ -171,6 +171,21 @@ nl:
           out_of_range: "De sessieduur moet tussen %{min} en %{max} minuten liggen."
         creditor_identifier:
           invalid: "Het SEPA-incassant-ID „%{value}” is ongeldig (land, controlegetal, activiteitscode, nationale identificatie)."
+      mail:
+        to:
+          blank: "Geef minstens één geadresseerde op."
+          invalid: "Ongeldig e-mailadres: %{address}."
+          too_many: "Een bericht telt hoogstens %{max} geadresseerden."
+        subject:
+          blank: "Geef het onderwerp van het bericht op."
+          too_long: "Het onderwerp telt hoogstens %{max} tekens."
+        body:
+          too_long: "Het bericht telt hoogstens %{max} tekens."
+        attachments:
+          too_large: "De bijlagen van een bericht zijn samen niet groter dan %{max} MB."
+          filename: "Een bijlage heeft geen naam."
+        no_sender: "Geen afzenderadres: vul het e-mailadres van de onderneming in."
+        not_configured: "Het verzenden van e-mail is niet ingesteld op deze instantie."
       provision:
         already_provisioned: "Dit dossier bestaat al."
         admin_email:

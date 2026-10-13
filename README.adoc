@@ -161,6 +161,7 @@ Référence par domaine (AsciiDoc) :
 
 * link:doc/api/accounting-closing.adoc[]
 * link:doc/api/accounting-entries.adoc[]
+* link:doc/api/accounting-fec-reader.adoc[] (lecture d'un FEC, A-IMP-4)
 * link:doc/api/accounting-forecasts.adoc[]
 * link:doc/api/accounting-reconciliation.adoc[]
 * link:doc/api/accounting-reference.adoc[]
@@ -171,6 +172,7 @@ Référence par domaine (AsciiDoc) :
 * link:doc/api/followup.adoc[]
 * link:doc/api/invoicing.adoc[]
 * link:doc/api/liberal.adoc[]
+* link:doc/api/mail.adoc[] (envoi de courriels par une extension, A-REP-2)
 * link:doc/api/micro.adoc[]
 * link:doc/api/modules.adoc[]
 * link:doc/api/outils.adoc[] (imports CSV de fiches et du plan comptable, archive des pièces)

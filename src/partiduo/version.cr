@@ -32,8 +32,9 @@ module Partiduo
   # saisie et reprise, TVA d'une ligne saisie, référence de l'émetteur,
   # extrait financier ventilé, `read_fec`, D-AMD-017 à D-AMD-021 ; 0.15.0 :
   # prévision tenue par une extension, immobilisations de la 2035 fournies
-  # par une extension, D-AMD-022 à D-AMD-024).
-  API_VERSION = "0.15.0"
+  # par une extension, D-AMD-022 à D-AMD-024 ; 0.16.0 : envoi de courriels
+  # par une extension, `Partiduo::Api::Mail`, D-AMD-025 et D-AMD-026).
+  API_VERSION = "0.16.0"
 end
 
 module Partiduo
