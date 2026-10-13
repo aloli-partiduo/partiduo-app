@@ -76,3 +76,18 @@ module Partiduo
     end
   end
 end
+
+module Partiduo
+  module Cards
+    # Pièce jointe du socle rattachée à une fiche (A-FRM-2) : justificatif
+    # reçu, pièce d'identité d'un fournisseur, contrat d'un client.
+    class CardAttachment < Marten::Model
+      field :id, :big_int, primary_key: true, auto: true
+      field :card, :many_to_one, to: Partiduo::Cards::Card, related: :card_attachments
+      # Pièce du socle (`core_attachment`) ; clé étrangère posée par la migration.
+      field :attachment_id, :big_int
+      field :attached_by_id, :big_int, null: true, blank: true
+      field :created_at, :date_time, auto_now_add: true
+    end
+  end
+end

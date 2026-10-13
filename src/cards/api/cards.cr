@@ -106,7 +106,9 @@ module Partiduo
       # Critères de recherche (`Fiche::build_sql`, `count_by_modele`).
       # `search` : nom, quick code, numéro de TVA, SIREN, SIRET, description ;
       # `extra` : valeurs d'attributs propres exigées (recherche par
-      # inclusion, servie par l'index GIN).
+      # inclusion, servie par l'index GIN) ; `iban` (A-BKI-2) : IBAN exact,
+      # espaces, points et tirets ignorés, casse indifférente (un IBAN mal
+      # formé ne trouve rien).
       record CardQuery,
         category_id : Int64? = nil,
         kind : String? = nil,
@@ -114,7 +116,8 @@ module Partiduo
         enabled : Bool? = true,
         extra : Hash(String, JSON::Any)? = nil,
         limit : Int32 = 100,
-        offset : Int32 = 0
+        offset : Int32 = 0,
+        iban : String? = nil
 
       # --- Vues ------------------------------------------------------------------
 
@@ -202,7 +205,8 @@ module Partiduo
         supplier_nature : String = "",
         last_name : String = "",
         first_names : String = "",
-        birth_date : Time? = nil do
+        birth_date : Time? = nil,
+        attachments : Array(Partiduo::Api::Core::AttachmentView) = [] of Partiduo::Api::Core::AttachmentView do
         def item? : Bool
           kind == "item"
         end
@@ -373,7 +377,7 @@ module Partiduo
         limit = query.limit.clamp(1, 1000)
         offset = query.offset.clamp(0, nil)
         records = card_query(query).order(:name, :id)[offset...(offset + limit)].to_a
-        card_views(records)
+        card_views(records, attachments_for(actor))
       end
 
       # Identifiants de toutes les fiches qui répondent aux critères, sans
@@ -390,7 +394,7 @@ module Partiduo
 
       def self.card(actor : Actor, id : Int64) : CardView
         Guard.authorize!(actor, "cards.card.read", module_code: "CARDS")
-        card_views([find_card(id)]).first
+        card_views([find_card(id)], attachments_for(actor)).first
       end
 
       # Fiche par quick code (`Fiche::get_by_qcode`), casse et accents
@@ -399,7 +403,7 @@ module Partiduo
         Guard.authorize!(actor, "cards.card.read", module_code: "CARDS")
         formatted = Partiduo::Cards::QuickCode.format(code)
         return if formatted.empty?
-        Partiduo::Cards::Card.filter(code: formatted).first.try { |card| card_views([card]).first }
+        Partiduo::Cards::Card.filter(code: formatted).first.try { |card| card_views([card], attachments_for(actor)).first }
       end
 
       # Nature proposée pour un client d'après son SIREN et son numéro de TVA
@@ -514,7 +518,72 @@ module Partiduo
         end
       end
 
+      # --- Pièces jointes d'une fiche (A-FRM-2) ----------------------------------
+
+      # Rattache une pièce jointe du socle à une fiche (pièce reçue par un
+      # formulaire, contrat, justificatif d'identité). Une pièce déjà
+      # rattachée l'est une fois ; la pièce ne peut plus être supprimée tant
+      # qu'une fiche la cite. Droits : `cards.card.write` et
+      # `core.attachment.read` (on ne rattache que ce qu'on peut lire).
+      # `NotFound` si la fiche ou la pièce n'existe pas.
+      def self.attach(actor : Actor, card_id : Int64, attachment_id : Int64) : Result(Partiduo::Api::Core::AttachmentView)
+        Guard.authorize!(actor, "cards.card.write", module_code: "CARDS")
+        raise Forbidden.new("core.attachment.read") unless actor.can?("core.attachment.read")
+        Transaction.run do
+          card = Partiduo::Cards::Card.all.lock.filter(id: card_id).first || raise NotFound.new("card", card_id)
+          attachment = Partiduo::Api::Core.attachment(actor, attachment_id)
+          unless Partiduo::Cards::CardAttachment.filter(card_id: card.id, attachment_id: attachment_id).exists?
+            Partiduo::Cards::CardAttachment.create!(card: card, attachment_id: attachment_id, attached_by_id: actor.user_id)
+          end
+          Result(Partiduo::Api::Core::AttachmentView).success(attachment)
+        end
+      end
+
+      # Retire le lien entre une fiche et une pièce ; la pièce reste au socle
+      # (`Core.delete_attachment` la supprime si plus rien ne la cite). Sans
+      # effet si la pièce n'était pas rattachée.
+      def self.detach(actor : Actor, card_id : Int64, attachment_id : Int64) : Result(Nil)
+        Guard.authorize!(actor, "cards.card.write", module_code: "CARDS")
+        Transaction.run do
+          card = Partiduo::Cards::Card.all.lock.filter(id: card_id).first || raise NotFound.new("card", card_id)
+          Partiduo::Cards::CardAttachment.filter(card_id: card.id, attachment_id: attachment_id).delete
+          Result(Nil).success(nil)
+        end
+      end
+
+      # Pièces jointes d'une fiche, dans l'ordre de leur rattachement. Droits :
+      # `cards.card.read` et `core.attachment.read`.
+      def self.card_attachments(actor : Actor, card_id : Int64) : Array(Partiduo::Api::Core::AttachmentView)
+        Guard.authorize!(actor, "cards.card.read", module_code: "CARDS")
+        raise Forbidden.new("core.attachment.read") unless actor.can?("core.attachment.read")
+        card = find_card(card_id)
+        attachment_views([card.id!.to_i64])[card.id!.to_i64]? || [] of Partiduo::Api::Core::AttachmentView
+      end
+
       # --- Interne ---------------------------------------------------------------
+
+      # La vue d'une fiche cite ses pièces jointes si l'acteur peut les lire.
+      private def self.attachments_for(actor : Actor) : Bool
+        actor.can?("core.attachment.read")
+      end
+
+      # Pièces jointes de fiches, par fiche, en deux requêtes.
+      private def self.attachment_views(card_ids : Array(Int64)) : Hash(Int64, Array(Partiduo::Api::Core::AttachmentView))
+        result = {} of Int64 => Array(Partiduo::Api::Core::AttachmentView)
+        return result if card_ids.empty?
+        links = Partiduo::Cards::CardAttachment.filter(card_id__in: card_ids).order(:created_at, :id).to_a
+        return result if links.empty?
+        attachments = Partiduo::Core::Attachment.filter(id__in: links.map(&.attachment_id!.to_i64).uniq!).to_a
+          .to_h { |attachment| {attachment.id!.to_i64, attachment} }
+        links.each do |link|
+          attachment = attachments[link.attachment_id!.to_i64]? || next
+          (result[link.card_id!.as(Int).to_i64] ||= [] of Partiduo::Api::Core::AttachmentView) << Partiduo::Api::Core::AttachmentView.new(
+            id: attachment.id!.to_i64, filename: attachment.filename!, content_type: attachment.content_type!,
+            byte_size: attachment.byte_size!.to_i64, sha256: attachment.sha256!,
+            uploaded_by_id: attachment.uploaded_by_id.try(&.to_i64), created_at: attachment.created_at!)
+        end
+        result
+      end
 
       # Publie `card.saved` ; `account` (création seulement) : compte demandé,
       # clé facultative `account` de la charge utile.
@@ -522,7 +591,7 @@ module Partiduo
         payload = {"card_id" => card.id!.to_i64.to_s}
         payload["account"] = account if account
         Partiduo::Events.publish("card.saved", payload, actor_user_id: actor.user_id)
-        Result(CardView).success(card_views([card]).first)
+        Result(CardView).success(card_views([card], attachments_for(actor)).first)
       end
 
       # Sérialise l'attribution des quick codes (la contrainte d'unicité reste
@@ -535,6 +604,7 @@ module Partiduo
 
       private def self.card_delete_statements(id : Int64) : Array({String, Array(::DB::Any)})
         [
+          {"DELETE FROM cards_card_attachment WHERE card_id = $1", [id] of ::DB::Any},
           {"DELETE FROM cards_address WHERE card_id = $1", [id] of ::DB::Any},
           {"DELETE FROM cards_card WHERE id = $1", [id] of ::DB::Any},
         ]
@@ -568,6 +638,11 @@ module Partiduo
         if (extra = query.extra) && !extra.empty?
           records = records.filter("extra @> ?::jsonb", extra.to_json)
         end
+        if iban = query.iban
+          # Un IBAN vide ne cite aucune fiche (« - » n'est jamais enregistré :
+          # les IBAN sont gardés sous leur forme compacte).
+          records = records.filter(iban: Partiduo::Core::Identifiers.compact(iban).presence || "-")
+        end
         records
       end
 
@@ -592,9 +667,10 @@ module Partiduo
 
       # Vues d'un lot de fiches : catégories, adresses et taux lus en trois
       # requêtes.
-      private def self.card_views(cards : Array(Partiduo::Cards::Card)) : Array(CardView)
+      private def self.card_views(cards : Array(Partiduo::Cards::Card), with_attachments : Bool = false) : Array(CardView)
         return [] of CardView if cards.empty?
         ids = cards.map(&.id!.to_i64)
+        attachments = with_attachments ? attachment_views(ids) : {} of Int64 => Array(Partiduo::Api::Core::AttachmentView)
         categories = Partiduo::Cards::Category.filter(id__in: cards.map(&.category_id!.as(Int).to_i64).uniq!).to_a.to_h { |category| {category.id!.to_i64, category} }
         addresses = Partiduo::Cards::Address.filter(card_id__in: ids).order(:position, :id).to_a.group_by(&.card_id!.as(Int).to_i64)
         rate_ids = cards.compact_map(&.vat_rate_id.try(&.as(Int).to_i64)).uniq!
@@ -638,6 +714,7 @@ module Partiduo
             last_name: card.last_name.to_s,
             first_names: card.first_names.to_s,
             birth_date: card.birth_date,
+            attachments: attachments[card.id!.to_i64]? || [] of Partiduo::Api::Core::AttachmentView,
           )
         end
       end

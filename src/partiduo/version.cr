@@ -24,8 +24,10 @@ module Partiduo
   # `ForecastReportItemView`, `forecast_nature`, D-FOY-006 ; 0.11.0 :
   # amendements du socle du 13 octobre 2026, relevés OFX et QIF,
   # `check_attachment`, ICS de la société, saut de page et niveaux de titre
-  # du PDF neutre, `incompatible_with_kind`, D-AMD-001 à D-AMD-006).
-  API_VERSION = "0.11.0"
+  # du PDF neutre, `incompatible_with_kind`, D-AMD-001 à D-AMD-006 ;
+  # 0.12.0 : fiches, critère `iban` de `CardQuery`, pièces jointes d'une
+  # fiche, D-AMD-007 à D-AMD-009).
+  API_VERSION = "0.12.0"
 end
 
 module Partiduo

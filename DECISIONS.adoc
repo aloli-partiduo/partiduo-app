@@ -15366,3 +15366,36 @@ démarrer, avec un message qui le nomme.
 (pièces jointes), `doc/api/core-settings.adoc` (ICS, PDF neutre),
 `doc/api/modules.adoc` (`incompatible_with_kind`). Specs :
 `spec/core/amendments_socle_spec.cr`, `spec/modules/excluded_kind_spec.cr`.
+
+=== D-AMD-007 — Recherche d'une fiche par IBAN (A-BKI-2)
+
+*Choix.* Critère `iban` de `CardQuery` (dernier champ, `nil` par défaut) :
+égalité sur la forme compacte (`Identifiers.compact` : espaces, points et
+tirets retirés, majuscules), qui est celle que l'enregistrement garde.
+Index partiel `cards_card_iban_idx` sur les IBAN renseignés (migration
+cards 0006). Un IBAN vide ne trouve rien, au lieu de tout trouver. Les
+autres critères se combinent (nature, catégorie, fiches désactivées).
+
+*Alternative écartée.* L'ajouter à `search` : une recherche « contient »
+sur un IBAN confondrait deux comptes d'une même banque ; l'extension veut
+la fiche d'un IBAN, pas une liste.
+
+=== D-AMD-008 — Pièces jointes d'une fiche (A-FRM-2)
+
+*Choix.* Table `cards_card_attachment` (fiche, pièce du socle, auteur,
+date ; unique par couple), commandes `Cards.attach` et `Cards.detach`,
+requête `Cards.card_attachments`, champ `CardView#attachments` (dernier
+champ, liste vide par défaut). Droits : écrire une fiche, et lire les
+pièces pour les rattacher ou les lister — on ne rattache pas une pièce
+qu'on ne pourrait pas ouvrir. La vue d'une fiche ne cite ses pièces qu'à
+un acteur qui peut les lire : le nom d'un fichier peut être confidentiel.
+La clé étrangère sans cascade protège la pièce citée
+(`core.errors.attachment.in_use`) ; supprimer la fiche retire ses liens,
+pas les pièces. Aucun événement : rattacher une pièce ne change rien à la
+comptabilité de la fiche (`card.saved` n'est pas publié).
+
+=== D-AMD-009 — Version du contrat 0.12.0
+
+*Choix.* D-AMD-007 et D-AMD-008 : `API_VERSION` 0.12.0. Documentation :
+`doc/api/socle-referentiel.adoc` (fiches). Specs :
+`spec/cards/amendments_cards_spec.cr`.

@@ -78,7 +78,9 @@ retiré est effacé des fiches.
 |`cards.card.read`
 |Recherche : `search` (nom, quick code, TVA, SIREN, SIRET, description),
 `category_id`, `kind`, `enabled` (`true` par défaut, `nil` = toutes),
-`extra` (inclusion jsonb, servie par l'index GIN), `limit`, `offset`.
+`extra` (inclusion jsonb, servie par l'index GIN), `limit`, `offset` ;
+`iban` (0.12.0, A-BKI-2) : IBAN exact, espaces, points, tirets et casse
+ignorés, servi par un index partiel ; vide ou inconnu, il ne trouve rien.
 
 |`card(actor, id)`, `card_by_code(actor, code)`
 |`cards.card.read`
@@ -108,7 +110,28 @@ cite (attribut `card`) ou si une ligne d'un module la référence.
 |`format_code(code) : String`
 |—
 |Format d'un quick code (`comptaproc.format_quickcode`).
+
+|`attach(actor, card_id, attachment_id) : Result(Core::AttachmentView)` (0.12.0)
+|`cards.card.write` et `core.attachment.read`
+|Rattache une pièce jointe du socle à la fiche (A-FRM-2), une fois au plus
+(sans effet la deuxième fois). La pièce citée ne peut plus être supprimée
+(`core.errors.attachment.in_use`). `NotFound` si la fiche ou la pièce
+n'existe pas.
+
+|`detach(actor, card_id, attachment_id) : Result(Nil)` (0.12.0)
+|`cards.card.write`
+|Retire le lien ; la pièce reste au socle. Sans effet si elle n'était pas
+rattachée.
+
+|`card_attachments(actor, card_id) : Array(Core::AttachmentView)` (0.12.0)
+|`cards.card.read` et `core.attachment.read`
+|Pièces de la fiche, dans l'ordre de leur rattachement. `CardView#attachments`
+les porte aussi, pour un acteur qui peut lire les pièces (vide sinon).
 |===
+
+Supprimer une fiche retire ses liens vers des pièces ; les pièces restent,
+libres d'être supprimées. Table `cards_card_attachment` (migration
+cards 0006), unique par fiche et pièce.
 
 `CardInput` décrit la fiche entière, sauf `code` : `nil` ou vide *génère* le
 quick code à la création (six premiers caractères du nom formaté, ou `CRD`,
