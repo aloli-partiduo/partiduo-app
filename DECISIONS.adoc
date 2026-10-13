@@ -13812,6 +13812,54 @@ l'ancien home restant à nettoyer à la main.
 dans `CERT_HOME`) et de `su`, refus sans règle sudo. Ni acme.sh sous `acme` ni
 Let's Encrypt n'ont encore tourné sur un serveur FreeBSD.
 
+=== D-PKG-010 — Mandataire de la page publique des formulaires, purge quotidienne (13 octobre 2026)
+
+*Contexte.* partiduo-form expose `/f/<jeton>` sans connexion ; le jeton
+est un secret (D-FRM-016). Son amendement A-FRM-4, adopté, renvoie au
+déploiement ce que l'instance ne peut pas faire seule : le journal d'accès
+de nginx enregistre l'adresse demandée, donc le jeton ; l'adresse du client
+vient de `X-Real-IP`, falsifiable si le mandataire ne l'écrase pas ; la
+limitation de débit de l'instance est propre à chaque processus. Les
+réponses arrivées à échéance de conservation sont effacées par
+`manage form_purge`, à planifier chaque jour (D-FRM-011).
+
+*Choix.* Dans `deploy/templates/nginx-vhost.conf.tmpl` :
+
+* `location ^~ /f/` avec son propre format de journal
+  (`partiduo_<dossier>_form`) : chemin remplacé par `/f/<jeton>`, ni
+  référent (un envoi depuis la page porte le jeton dans `Referer`) ni
+  chaîne de requête ; journal d'erreurs réduit au critique pour ce lieu,
+  car un refus de débit ou une erreur du serveur y écrirait la ligne de
+  requête ;
+* `limit_req` sur ce lieu : 30 requêtes par minute et par adresse, 20
+  d'avance, refus en 429, zone `partiduo_<dossier>_form` commune à tous les
+  processus de l'instance. `log_format` et `limit_req_zone` sont déclarés
+  en tête du fichier, inclus dans le bloc `http` de `nginx.conf` ; leurs
+  noms portent le dossier, unique sur le serveur ;
+* `X-Real-IP` *et* `X-Forwarded-For` écrasés par `$remote_addr` (plus de
+  `$proxy_add_x_forwarded_for`, qui complétait la valeur reçue) ;
+* en HTTP, `/f/` redirigé vers HTTPS sans journal ;
+* HSTS vérifié : posé au niveau du serveur
+  (`max-age=63072000; includeSubDomains`, `always`) et hérité par `/f/`, qui
+  ne pose aucun `add_header` (il annulerait l'héritage).
+
+Dans `deploy/templates/partiduo-instance.cron.tmpl` : `form_purge` chaque
+jour à 4 h, à la même minute que `invoicing_month_end` (3 h). Extension
+inactive : la commande ne fait rien (code 0), la ligne vaut pour toutes les
+instances. Les enveloppes de `partiduo-admin` rendent le même gabarit :
+rien à changer de leur côté.
+
+*Limite.* Une erreur du serveur sur `/f/` n'est plus dans le journal
+d'erreurs de nginx ; celui de l'instance (`/var/log/partiduo/<dossier>.log`,
+jeton masqué, D-FRM-015) reste la source. Le vhost d'une instance déjà
+installée n'est pas réécrit : rejouer `INSTALL.txt` (ou `install` de
+l'enveloppe) le repose.
+
+*Vérification.* `spec/deploy/scripts_spec.cr` (sans base) : format de
+journal, zone, lieu `/f/`, en-têtes écrasés, HSTS, ligne `form_purge`.
+`nginx -t` n'a pas pu tourner sur le poste (bac à sable) : à faire au
+premier déploiement.
+
 == TELEDEC : réponses du 1er octobre 2026 (T9:teledec)
 
 Réponses de TELEDEC au courriel du 30 septembre 2026

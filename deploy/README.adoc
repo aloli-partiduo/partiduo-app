@@ -56,11 +56,13 @@ le certificat de l'instance.
 
 |`templates/nginx-vhost.conf.tmpl`
 |Vhost nginx : défis ACME et redirection HTTPS, certificat Let's Encrypt
-*propre à l'instance*, mandataire vers le port local de l'instance.
+*propre à l'instance*, mandataire vers le port local de l'instance ; page
+publique des formulaires (`/f/<jeton>`) sans jeton dans les journaux et à
+débit limité, adresse du client écrasée (D-PKG-010).
 
 |`templates/partiduo-instance.cron.tmpl`
-|Tâches quotidiennes de l'instance (fin de mois de la Facturation), pour
-`cron(8)`.
+|Tâches quotidiennes de l'instance (fin de mois de la Facturation, purge
+des réponses aux formulaires publics), pour `cron(8)`.
 
 |`bin/partiduo-fleet`
 |Exploitation du parc : provisionnement, état, sauvegardes, retrait.
