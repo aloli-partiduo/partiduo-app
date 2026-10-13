@@ -21,8 +21,11 @@ module Partiduo
   # `Transaction.dry_run`, D-OUT-002 à D-OUT-005 ; 0.9.0 : fuseau du
   # dossier, `Core.time_zone` ; 0.10.0 : nature des postes de prévision,
   # `nature` de `ForecastItemInput`, `ForecastItemView` et
-  # `ForecastReportItemView`, `forecast_nature`, D-FOY-006).
-  API_VERSION = "0.10.0"
+  # `ForecastReportItemView`, `forecast_nature`, D-FOY-006 ; 0.11.0 :
+  # amendements du socle du 13 octobre 2026, relevés OFX et QIF,
+  # `check_attachment`, ICS de la société, saut de page et niveaux de titre
+  # du PDF neutre, `incompatible_with_kind`, D-AMD-001 à D-AMD-006).
+  API_VERSION = "0.11.0"
 end
 
 module Partiduo

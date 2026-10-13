@@ -56,6 +56,7 @@ module Partiduo
     #   depends_on "ACCOUNTING"
     #   depends_on_any "INVOICING", "ACCOUNTING"
     #   incompatible_with "INVOICING", "MICRO"
+    #   incompatible_with_kind "household"
     #   permission "skel.page.view"
     #   menu "SKEL", parent: "EXTENSION", order: 100, route: "skel:index", permission: "skel.page.view"
     #   ui "bulma", path: "ui/bulma"
@@ -68,6 +69,7 @@ module Partiduo
       getter dependencies = [] of Dependency
       getter depends_on_any = [] of Array(String)
       getter incompatibilities = [] of String
+      getter excluded_kinds = [] of String
       getter uis = [] of UiEntry
       getter subscriptions = {} of String => Array(Partiduo::Events::Handler)
 
@@ -164,6 +166,26 @@ module Partiduo
           end
           raise ArgumentError.new("#{code} ne peut pas être incompatible avec lui-même") if other == code
           @incompatibilities << other unless @incompatibilities.includes?(other)
+        end
+      end
+
+      # Types de dossier dont la pièce s'exclut (A-AMO-1).
+      def incompatible_with_kind : Array(String)
+        @excluded_kinds
+      end
+
+      # La pièce ne peut pas être active dans un dossier de l'un de ces types
+      # (`household`…, A-AMO-1). Contrôlé à l'activation
+      # (`Partiduo::Api::Modules.activate`), au démarrage (`check!`) et au
+      # provisionnement, comme les modules exclus d'un type
+      # (`Partiduo::Api::InitialData.excluded_modules`). Un type inconnu
+      # n'est pas une erreur (extension qui le déclarerait absente).
+      def incompatible_with_kind(*kinds : String) : Nil
+        kinds.each do |kind|
+          unless kind.matches?(/\A[a-z][a-z0-9_]*\z/)
+            raise ArgumentError.new("type de dossier invalide (minuscules, chiffres, _) : #{kind}")
+          end
+          @excluded_kinds << kind unless @excluded_kinds.includes?(kind)
         end
       end
 

@@ -9,3 +9,4 @@ fr:
         required_by: "%{dependent} requiert %{module} : désactivez d'abord %{dependent}."
         incompatible: "%{module} est incompatible avec cette instance : %{detail}"
         incompatible_with: "%{module} est incompatible avec %{other}, actif dans ce dossier : désactivez d'abord %{other}."
+        excluded_kind: "%{module} ne peut pas être actif dans un dossier de ce type (%{kind})."

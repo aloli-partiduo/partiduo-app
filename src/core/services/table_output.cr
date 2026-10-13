@@ -32,9 +32,11 @@ module Partiduo
         end
       end
 
-      # Ligne : `style` `:line`, `:heading`, `:subtotal` ou `:total` ;
-      # `indent` : retrait de la première cellule.
-      record Row, cells : Array(Cell), style : Symbol = :line, indent : Int32 = 0
+      # Ligne : `style` `:line`, `:heading`, `:subtotal`, `:total` ou
+      # `:page_break` (saut de page, cellules ignorées) ; `indent` : retrait
+      # de la première cellule ; `level` : niveau d'un titre, 0 (ordinaire)
+      # ou 1 à 3 (A-REP-4).
+      record Row, cells : Array(Cell), style : Symbol = :line, indent : Int32 = 0, level : Int32 = 0
 
       record Table,
         name : String,
@@ -86,6 +88,7 @@ module Partiduo
         CSV.build(separator: ';') do |csv|
           csv.row table.columns.map { |column| csv_text(column.title) }
           table.rows.each do |row|
+            next if row.style == :page_break
             csv.row(row.cells.map do |cell|
               case cell
               when BigDecimal then plain(cell)
@@ -133,6 +136,8 @@ module Partiduo
         @page : PDF::Page? = nil
         @y = 0.0
         @edges = [] of {Float64, Float64}
+        # Rien n'a encore été écrit sous l'en-tête de la page courante.
+        @fresh = true
 
         def initialize(@document : PDF::A::Document, @table : Table)
           @width, @height = @table.landscape ? {841.89, 595.28} : {595.28, 841.89}
@@ -149,9 +154,18 @@ module Partiduo
           end
         end
 
+        # Taille du texte d'un titre de niveau 1 à 3 (A-REP-4).
+        HEADING_SIZES = {1 => 11.0, 2 => 9.5, 3 => 8.5}
+
         def draw : Nil
           new_page
-          @table.rows.each { |row| draw_row(row) }
+          @table.rows.each do |row|
+            if row.style == :page_break
+              new_page unless @fresh
+            else
+              draw_row(row)
+            end
+          end
           footers
         end
 
@@ -173,6 +187,7 @@ module Partiduo
           end
           @y -= 6
           header
+          @fresh = true
         end
 
         private def header : Nil
@@ -184,7 +199,9 @@ module Partiduo
         end
 
         private def draw_row(row : Row) : Nil
+          return draw_heading(row) if row.style == :heading && row.level > 0
           new_page if @y - ROW_HEIGHT < BOTTOM
+          @fresh = false
           bold = row.style != :line
           rule(@y + ROW_HEIGHT - 2) if row.style == :total
           row.cells.each_with_index do |value, index|
@@ -200,6 +217,26 @@ module Partiduo
             cell(content, index, column.right?, bold: bold)
           end
           @y -= ROW_HEIGHT
+        end
+
+        # Titre de niveau 1 à 3 : texte de ses cellules réunies sur toute la
+        # largeur, plus grand ; un titre de niveau 1 est souligné. Jamais
+        # seul en bas de page : il passe à la page suivante avec une ligne.
+        private def draw_heading(row : Row) : Nil
+          size = HEADING_SIZES[row.level]
+          height = size + 6
+          new_page if @y - height - ROW_HEIGHT < BOTTOM
+          @fresh = false
+          @y -= 4 if row.level == 1
+          content = row.cells.compact_map { |value| value.is_a?(String) ? value.presence : nil }.join(" — ")
+          content = ("  " * row.indent) + content if row.indent > 0
+          room = @width - 2 * MARGIN - 4
+          while !content.empty? && @bold.string_width(content, size) > room
+            content = content[0, content.size - 1]
+          end
+          text(content, MARGIN + 2, @y, size, bold: true)
+          rule(@y - 3) if row.level == 1
+          @y -= height
         end
 
         private def cell(content : String, index : Int32, right : Bool, bold : Bool = false) : Nil

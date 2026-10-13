@@ -71,7 +71,8 @@ module Partiduo
         domain : String,
         auth_methods : Array(String),
         auth_minimum_level : Int32,
-        session_duration_minutes : Int32
+        session_duration_minutes : Int32,
+        creditor_identifier : String = ""
 
       # Normalise la saisie. Un champ texte `nil` vaut chaîne vide ; un champ
       # qui a une valeur par défaut (pays, langue, politique d'authentification)
@@ -102,6 +103,8 @@ module Partiduo
           auth_minimum_level: integer(input.auth_minimum_level, current.try(&.auth_minimum_level), DEFAULT_AUTH_LEVEL),
           session_duration_minutes: integer(input.session_duration_minutes, current.try(&.session_duration_minutes),
             DEFAULT_SESSION_MINUTES),
+          creditor_identifier: input.creditor_identifier.try { |value| Identifiers.compact(value) } ||
+                               current.try(&.creditor_identifier) || "",
         )
       end
 
@@ -133,6 +136,9 @@ module Partiduo
         end
 
         validate_auth_policy(values, errors)
+        unless values.creditor_identifier.empty? || Identifiers.valid_creditor_identifier?(values.creditor_identifier)
+          errors << error("creditor_identifier", "invalid", {"value" => values.creditor_identifier})
+        end
         errors
       end
 
@@ -157,6 +163,7 @@ module Partiduo
         settings.auth_methods = values.auth_methods.join(',')
         settings.auth_minimum_level = values.auth_minimum_level
         settings.session_duration_minutes = values.session_duration_minutes
+        settings.creditor_identifier = values.creditor_identifier
         settings
       end
 

@@ -58,6 +58,7 @@ nl:
         auth_methods: "Toegestane authenticatiemethoden"
         auth_minimum_level: "Minimaal authenticatieniveau"
         session_duration_minutes: "Sessieduur (minuten)"
+        creditor_identifier: "SEPA-incassant-ID"
       tax_regimes:
         fr: "Frankrijk"
         be: "België"
@@ -168,6 +169,8 @@ nl:
           unreachable: "Geen enkele toegestane methode bereikt niveau %{level}."
         session_duration_minutes:
           out_of_range: "De sessieduur moet tussen %{min} en %{max} minuten liggen."
+        creditor_identifier:
+          invalid: "Het SEPA-incassant-ID „%{value}” is ongeldig (land, controlegetal, activiteitscode, nationale identificatie)."
       provision:
         already_provisioned: "Dit dossier bestaat al."
         admin_email:

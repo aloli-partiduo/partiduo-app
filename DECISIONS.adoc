@@ -15260,3 +15260,109 @@ manifestes des sauvegardes ; les fichiers normés (`CreDtTm` des virements
 SEPA, dates des messages CDAR). Le FEC ne porte que des dates, sans
 heure ; ses dates de lettrage et de validation (`DateLet`, `ValidDate`)
 étaient déjà prises dans le fuseau du dossier : rien n'y change.
+
+== Amendements du contrat adoptés le 13 octobre 2026
+
+Décision de l'utilisateur du 13 octobre 2026 : les amendements proposés par
+les extensions portées les 9 et 10 octobre 2026 et par `partiduo-perso`
+sont adoptés (ADR-003, section « Amendements adoptés le 13 octobre 2026 »).
+Le détail de chacun, avec le contournement en place, est dans le
+`DECISIONS.adoc` de l'extension qui l'a proposé. Ce dépôt réalise ceux du
+cœur ; `partiduo-ui-bulma` ceux de l'interface. Les extensions ne sont pas
+modifiées : une vague suivante retirera leurs contournements.
+
+*Règles communes.* Chaque ajout est rétrocompatible : champ ajouté *en
+dernier* à un `record`, avec une valeur par défaut qui garde le
+comportement antérieur ; nouvelle fonction plutôt que nouvelle signature ;
+un champ ajouté à une saisie « qui décrit la ligne entière » garde la
+valeur enregistrée s'il vaut `nil`. Les extensions publiées compilent et
+passent leurs specs contre le nouveau cœur (vérifié en mode local, D-AMD-030).
+Aucun événement n'est ajouté à la liste fermée d'ADR-003 D7.
+
+*Version du contrat.* `API_VERSION` monte d'une mineure par lot cohérent,
+soit un commit : 0.11.0 (socle), 0.12.0 (fiches), 0.13.0 (lectures de la
+Comptabilité), 0.14.0 (saisie, analytique, FEC, prévisions, libéral),
+0.15.0 (courriels), 0.16.0 (validation à deux). *Pourquoi par lot plutôt
+qu'une fois à la fin* : chaque commit laisse un cœur cohérent qu'on
+pourrait publier seul ; le numéro dit alors exactement ce qu'il contient,
+et une extension de la vague suivante peut viser le premier lot qui lui
+suffit dans la documentation (`doc/api/`, « (0.13.0) »).
+
+=== D-AMD-001 — Relevés OFX et QIF en pièce jointe (A-BKI-1)
+
+*Choix.* `application/x-ofx` (`.ofx`) et `application/qif` (`.qif`)
+rejoignent `Partiduo::Core::Attachments::TYPES`, contrôlés comme du texte
+(aucun octet nul) : OFX 1 (SGML) et OFX 2 (XML) passent tous deux, sans
+exiger d'en-tête précis — un relevé de banque n'en a pas toujours un
+conforme. Le type et l'extension d'origine sont gardés.
+
+*Alternative écartée.* Contrôler l'en-tête `OFXHEADER` ou `<?OFX` : les
+banques en écrivent de toutes sortes, et le relevé est relu par
+l'extension qui l'analyse.
+
+=== D-AMD-002 — Contrôle d'une pièce sans la stocker (A-FRM-3)
+
+*Choix.* `Partiduo::Api::Core.check_attachment(actor, AttachmentInput) :
+Result(AttachmentCheckView)` applique la règle de `store_attachment`, mise
+en commun (`checked_attachment`) : mêmes erreurs, même normalisation du nom
+et du type. Aucun droit : acteur anonyme admis (le contenu vient d'un
+visiteur de la page publique d'un formulaire). En complément,
+`detect_attachment_type(content, among)` reconnaît un type à sa signature
+parmi ceux que l'appelant accepte, et `attachment_types` donne la table
+des types : l'extension n'a plus à recopier les signatures.
+
+*Alternative écartée.* Rendre `Attachments.signature_matches?` public :
+c'est un interne ; le contrat garde la règle entière (taille et nom
+compris).
+
+=== D-AMD-003 — Identifiant créancier SEPA de la société (A-SEPA-2)
+
+*Choix.* Champ `creditor_identifier` de `core_settings` (migration
+core 0005), de `SettingsInput` (`nil` garde la valeur enregistrée, `""`
+l'efface) et de `SettingsView` (dernier champ, `""` par défaut). Forme
+compacte ; clé contrôlée modulo 97 sur l'identifiant national suivi du
+pays et de la clé, le code d'activité étant ignoré (EPC262) ;
+`Identifiers.valid_creditor_identifier?`, et `mod97` mis en commun avec
+l'IBAN. Erreur `core.errors.settings.creditor_identifier.invalid`.
+
+*Pourquoi `nil` garde la valeur.* La saisie « décrit la ligne entière » :
+un champ texte `nil` y vaut chaîne vide. Appliquée à un champ nouveau,
+cette règle ferait effacer l'ICS par toute interface ou extension qui
+construit un `SettingsInput` sans le connaître ; le champ suit donc la
+règle des champs à valeur par défaut.
+
+=== D-AMD-004 — PDF neutre : saut de page et niveaux de titre (A-REP-4)
+
+*Choix.* Style `page_break` (la ligne suivante commence une page, sans
+effet en tête de page ; omis du CSV) et champ `level` de
+`TableRowInput` (dernier champ, 0 par défaut) : 0 garde le titre en gras
+d'avant, 1 à 3 donnent un titre sur toute la largeur, de 11, 9,5 et
+8,5 points, souligné au niveau 1, jamais seul en bas de page. Un niveau
+sur une ligne qui n'est pas un titre est refusé (`core.errors.table.rows.row`).
+
+=== D-AMD-005 — Pièce exclue d'un type de dossier (A-AMO-1)
+
+*Choix.* Déclaration de manifeste `incompatible_with_kind "household"`, et
+`Partiduo::Api::InitialData.exclude(kind, code)` pour exclure une pièce
+sans toucher au manifeste. `InitialData.excluded_modules(kind)` réunit les
+exclusions du type (`excluded:` de `register_kind`), de `exclude` et des
+manifestes ; le provisionnement, l'activation
+(`modules.errors.activation.excluded_kind`) et le démarrage
+(`Partiduo::Modules.check!`, `kind_errors`) la contrôlent. Le type du
+dossier est lu par `Partiduo::Modules::State.folder_kind`, sans erreur SQL
+avant le provisionnement. `ModuleView#incompatible_with_kind` l'expose.
+
+*Conséquence voulue.* Les exclusions du type `household` fixées par le
+cœur (Facturation, micro-entreprise, profession libérale, Stock, Suivi,
+Analytique) ne valaient qu'au provisionnement ; elles valent désormais
+aussi à l'activation et au démarrage, comme `incompatible_with`. Un dossier
+foyer où un module d'entreprise aurait été activé ensuite refuse de
+démarrer, avec un message qui le nomme.
+
+=== D-AMD-006 — Version du contrat 0.11.0
+
+*Choix.* Les ajouts D-AMD-001 à D-AMD-005 forment le premier lot :
+`API_VERSION` 0.11.0. Documentation : `doc/api/socle-referentiel.adoc`
+(pièces jointes), `doc/api/core-settings.adoc` (ICS, PDF neutre),
+`doc/api/modules.adoc` (`incompatible_with_kind`). Specs :
+`spec/core/amendments_socle_spec.cr`, `spec/modules/excluded_kind_spec.cr`.

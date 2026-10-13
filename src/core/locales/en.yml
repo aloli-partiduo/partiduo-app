@@ -58,6 +58,7 @@ en:
         auth_methods: "Allowed authentication methods"
         auth_minimum_level: "Minimum authentication level"
         session_duration_minutes: "Session duration (minutes)"
+        creditor_identifier: "SEPA creditor identifier"
       tax_regimes:
         fr: "France"
         be: "Belgium"
@@ -168,6 +169,8 @@ en:
           unreachable: "No allowed method can reach level %{level}."
         session_duration_minutes:
           out_of_range: "The session duration must be between %{min} and %{max} minutes."
+        creditor_identifier:
+          invalid: "The SEPA creditor identifier “%{value}” is not valid (country, check digits, business code, national identifier)."
       provision:
         already_provisioned: "This company file already exists."
         admin_email:

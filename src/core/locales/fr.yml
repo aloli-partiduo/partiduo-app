@@ -58,6 +58,7 @@ fr:
         auth_methods: "Méthodes d'authentification autorisées"
         auth_minimum_level: "Niveau d'authentification minimum"
         session_duration_minutes: "Durée de session (minutes)"
+        creditor_identifier: "Identifiant créancier SEPA (ICS)"
       tax_regimes:
         fr: "France"
         be: "Belgique"
@@ -168,6 +169,8 @@ fr:
           unreachable: "Aucune méthode autorisée ne permet d'atteindre le niveau %{level}."
         session_duration_minutes:
           out_of_range: "La durée de session doit être comprise entre %{min} et %{max} minutes."
+        creditor_identifier:
+          invalid: "L'identifiant créancier SEPA « %{value} » n'est pas valide (pays, clé, code d'activité, identifiant national)."
       provision:
         already_provisioned: "Ce dossier est déjà créé."
         admin_email:

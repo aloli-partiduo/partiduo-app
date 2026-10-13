@@ -23,7 +23,9 @@ module Partiduo
       # `domain`, `auth_*`, `session_duration_minutes`) gardent, s'ils valent
       # `nil`, la valeur enregistrée — ou prennent la valeur par défaut à la
       # création. `tax_regime` est obligatoire à la création et ne change plus
-      # ensuite.
+      # ensuite. `creditor_identifier` (ICS, A-SEPA-2) : `nil` garde la valeur
+      # enregistrée (une saisie antérieure au champ ne l'efface pas) ; `""`
+      # l'efface.
       record SettingsInput,
         company_name : String? = nil,
         legal_form : String? = nil,
@@ -43,7 +45,8 @@ module Partiduo
         domain : String? = nil,
         auth_methods : Array(String)? = nil,
         auth_minimum_level : Int32? = nil,
-        session_duration_minutes : Int32? = nil
+        session_duration_minutes : Int32? = nil,
+        creditor_identifier : String? = nil
 
       # Configuration société, vue de l'interface et des extensions.
       record SettingsView,
@@ -67,7 +70,8 @@ module Partiduo
         auth_minimum_level : Int32,
         session_duration_minutes : Int32,
         updated_at : Time?,
-        kind : String = InitialData::COMPANY do
+        kind : String = InitialData::COMPANY,
+        creditor_identifier : String = "" do
         # Dossier d'un foyer (ADR-011) ?
         def household? : Bool
           kind == InitialData::HOUSEHOLD
@@ -91,6 +95,7 @@ module Partiduo
             tax_regime: tax_regime, default_locale: default_locale, domain: domain,
             auth_methods: auth_methods, auth_minimum_level: auth_minimum_level,
             session_duration_minutes: session_duration_minutes,
+            creditor_identifier: creditor_identifier,
           )
         end
 
@@ -118,6 +123,7 @@ module Partiduo
                                        Partiduo::Core::SettingsRules::DEFAULT_SESSION_MINUTES).to_i32,
             updated_at: settings.updated_at,
             kind: settings.kind.presence || InitialData::COMPANY,
+            creditor_identifier: settings.creditor_identifier.to_s,
           )
         end
       end
@@ -249,7 +255,7 @@ module Partiduo
           next if Partiduo::Modules.active?(module_code)
           errors << FieldError.new("kind", "core.errors.provision.kind.required", {"kind" => code, "code" => module_code})
         end
-        kind.excluded.each do |module_code|
+        InitialData.excluded_modules(code).each do |module_code|
           next unless Partiduo::Modules.active?(module_code)
           errors << FieldError.new("kind", "core.errors.provision.kind.excluded", {"kind" => code, "code" => module_code})
         end

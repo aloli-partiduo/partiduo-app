@@ -36,11 +36,26 @@ module Partiduo
       # contrôlée modulo 97 (ISO 7064). Valeur déjà compactée.
       def self.valid_iban?(value : String) : Bool
         return false unless value.matches?(/\A[A-Z]{2}[0-9]{2}[A-Z0-9]{11,30}\z/)
-        rearranged = value[4..] + value[0, 4]
+        mod97(value[4..] + value[0, 4]) == 1
+      end
+
+      # Identifiant créancier SEPA (ICS, A-SEPA-2) : pays, clé, code
+      # d'activité (3 caractères, ignoré par la clé, souvent `ZZZ`),
+      # identifiant national ; 35 caractères au plus. Clé contrôlée modulo 97
+      # sur l'identifiant national suivi du pays et de la clé (EPC262).
+      # Valeur déjà compactée : `FR72ZZZ123456`.
+      def self.valid_creditor_identifier?(value : String) : Bool
+        return false unless value.size <= 35 && value.matches?(/\A[A-Z]{2}[0-9]{2}[A-Z0-9]{3}[A-Z0-9]{1,28}\z/)
+        mod97(value[7..] + value[0, 4]) == 1
+      end
+
+      # Reste modulo 97 d'une chaîne de chiffres et de lettres (A = 10…
+      # Z = 35), calculé chiffre à chiffre (ISO 7064).
+      def self.mod97(value : String) : Int32
         digits = String.build do |io|
-          rearranged.each_char { |char| char.ascii_number? ? io << char : io << (char.ord - 'A'.ord + 10) }
+          value.each_char { |char| char.ascii_number? ? io << char : io << (char.ord - 'A'.ord + 10) }
         end
-        digits.each_char.reduce(0) { |rest, char| (rest * 10 + char.to_i) % 97 } == 1
+        digits.each_char.reduce(0) { |rest, char| (rest * 10 + char.to_i) % 97 }
       end
 
       # BIC (ISO 9362) : banque (4 lettres), pays (2 lettres), localité

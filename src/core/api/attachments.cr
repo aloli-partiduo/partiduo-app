@@ -19,35 +19,49 @@ module Partiduo
         uploaded_by_id : Int64?,
         created_at : Time
 
+      # Pièce contrôlée sans être stockée (A-FRM-3) : type MIME normalisé,
+      # nom affichable, taille et empreinte du contenu.
+      record AttachmentCheckView,
+        filename : String,
+        content_type : String,
+        byte_size : Int64,
+        sha256 : String
+
+      # Contrôle d'une pièce *sans la stocker* (A-FRM-3) : mêmes règles que
+      # `store_attachment` (type admis, signature du contenu, taille, nom),
+      # mêmes erreurs. Aucun droit exigé, acteur anonyme admis : une
+      # extension contrôle ainsi un fichier reçu du public avant de le
+      # mettre en quarantaine ; le versement (`store_attachment`) recontrôle.
+      def self.check_attachment(actor : Actor, input : AttachmentInput) : Result(AttachmentCheckView)
+        Guard.require_module!("CORE")
+        filename, content_type, bytes, errors = checked_attachment(input)
+        return Result(AttachmentCheckView).failure(errors) unless errors.empty?
+        Result(AttachmentCheckView).success(AttachmentCheckView.new(filename, content_type, bytes.size.to_i64,
+          Partiduo::Core::Attachments.sha256(bytes)))
+      end
+
+      # Type admis reconnu à la signature du contenu, parmi `among` (types de
+      # `attachment_types`, dans l'ordre donné) ; `nil` si aucun ne
+      # convient. Un type texte (`text/plain`, `text/csv`, OFX, QIF) ne se
+      # reconnaît qu'à l'absence d'octet nul : à citer en dernier.
+      def self.detect_attachment_type(content : Bytes, among : Array(String)) : String?
+        among.find do |content_type|
+          Partiduo::Core::Attachments::TYPES.has_key?(content_type) &&
+            Partiduo::Core::Attachments.signature_matches?(content_type, content)
+        end
+      end
+
+      # Types MIME admis en pièce jointe, et extension du fichier stocké.
+      def self.attachment_types : Hash(String, String)
+        Partiduo::Core::Attachments::TYPES.dup
+      end
+
       # Enregistre une pièce jointe. Le type doit être admis et correspondre
       # au contenu ; la taille est limitée à `Attachments::MAX_BYTES`.
       def self.store_attachment(actor : Actor, input : AttachmentInput) : Result(AttachmentView)
         Guard.authorize!(actor, "core.attachment.write")
         rules = Partiduo::Core::Attachments
-        content_type = input.content_type.split(';').first.strip.downcase
-        filename = rules.clean_filename(input.filename)
-        bytes = read_limited(input.content, Partiduo::Core::Attachments::MAX_BYTES + 1)
-
-        errors = [] of FieldError
-        if filename.empty?
-          errors << FieldError.new("filename", "core.errors.attachment.filename.blank")
-        elsif filename.size > Partiduo::Core::Attachments::MAX_FILENAME
-          errors << FieldError.new("filename", "core.errors.attachment.filename.too_long",
-            {"max" => Partiduo::Core::Attachments::MAX_FILENAME.to_s})
-        end
-        if bytes.empty?
-          errors << FieldError.new("content", "core.errors.attachment.content.empty")
-        elsif bytes.size > Partiduo::Core::Attachments::MAX_BYTES
-          errors << FieldError.new("content", "core.errors.attachment.content.too_large",
-            {"max" => (Partiduo::Core::Attachments::MAX_BYTES // (1024 * 1024)).to_s})
-        end
-        if !Partiduo::Core::Attachments::TYPES.has_key?(content_type)
-          errors << FieldError.new("content_type", "core.errors.attachment.content_type.unsupported",
-            {"value" => content_type})
-        elsif !bytes.empty? && !rules.signature_matches?(content_type, bytes)
-          errors << FieldError.new("content_type", "core.errors.attachment.content_type.mismatch",
-            {"value" => content_type})
-        end
+        filename, content_type, bytes, errors = checked_attachment(input)
         return Result(AttachmentView).failure(errors) unless errors.empty?
 
         Transaction.run do
@@ -103,6 +117,37 @@ module Partiduo
           Partiduo::Events.after_commit { Marten.media_files_storage.delete(name) rescue nil }
           Result(Nil).success(nil)
         end
+      end
+
+      # Nom, type normalisé, contenu lu (jusqu'à la limite plus un octet) et
+      # erreurs : règle commune de `check_attachment` et `store_attachment`.
+      private def self.checked_attachment(input : AttachmentInput) : {String, String, Bytes, Array(FieldError)}
+        rules = Partiduo::Core::Attachments
+        content_type = input.content_type.split(';').first.strip.downcase
+        filename = rules.clean_filename(input.filename)
+        bytes = read_limited(input.content, Partiduo::Core::Attachments::MAX_BYTES + 1)
+
+        errors = [] of FieldError
+        if filename.empty?
+          errors << FieldError.new("filename", "core.errors.attachment.filename.blank")
+        elsif filename.size > Partiduo::Core::Attachments::MAX_FILENAME
+          errors << FieldError.new("filename", "core.errors.attachment.filename.too_long",
+            {"max" => Partiduo::Core::Attachments::MAX_FILENAME.to_s})
+        end
+        if bytes.empty?
+          errors << FieldError.new("content", "core.errors.attachment.content.empty")
+        elsif bytes.size > Partiduo::Core::Attachments::MAX_BYTES
+          errors << FieldError.new("content", "core.errors.attachment.content.too_large",
+            {"max" => (Partiduo::Core::Attachments::MAX_BYTES // (1024 * 1024)).to_s})
+        end
+        if !Partiduo::Core::Attachments::TYPES.has_key?(content_type)
+          errors << FieldError.new("content_type", "core.errors.attachment.content_type.unsupported",
+            {"value" => content_type})
+        elsif !bytes.empty? && !rules.signature_matches?(content_type, bytes)
+          errors << FieldError.new("content_type", "core.errors.attachment.content_type.mismatch",
+            {"value" => content_type})
+        end
+        {filename, content_type, bytes, errors}
       end
 
       private def self.read_limited(io : IO, limit : Int32) : Bytes

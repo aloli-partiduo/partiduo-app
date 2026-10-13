@@ -243,7 +243,9 @@ devise de tenue ne se modifie pas.
 |`store_attachment(actor, AttachmentInput(filename, content_type, io))`
 |`core.attachment.write`
 |Types admis (`Partiduo::Core::Attachments::TYPES` : PDF, PNG, JPEG, WebP,
-HEIC, TIFF, XML, texte, CSV, documents ODT et DOCX), signature du contenu
+HEIC, TIFF, XML, texte, CSV, relevés OFX `application/x-ofx` et QIF
+`application/qif` (0.11.0, A-BKI-1 ; contrôlés comme du texte : aucun
+octet nul), documents ODT et DOCX), signature du contenu
 contrôlée, 20 Mio au plus, empreinte SHA-256. ODT
 (`application/vnd.oasis.opendocument.text`) : archive ZIP (`PK\x03\x04`)
 dont la première entrée est `mimetype`, non compressée, de valeur exacte ce
@@ -251,6 +253,19 @@ type. DOCX
 (`application/vnd.openxmlformats-officedocument.wordprocessingml.document`) :
 archive ZIP lisible qui contient `[Content_Types].xml` et `word/document.xml`
 (DECISIONS D-HOOK-003).
+
+|`check_attachment(actor, AttachmentInput) : Result(AttachmentCheckView)` (0.11.0)
+|aucun (anonyme admis)
+|Mêmes contrôles et mêmes erreurs que `store_attachment` (type, signature,
+taille, nom), *sans stocker* (A-FRM-3) : pour un contenu reçu du public,
+avant sa quarantaine. Vue : `filename` (nettoyé), `content_type`
+(normalisé), `byte_size`, `sha256`. Le versement recontrôle.
+
+|`detect_attachment_type(content : Bytes, among : Array(String)) : String?` (0.11.0)
+|aucun
+|Premier type de `among` admis dont la signature correspond au contenu
+(un type texte ne se reconnaît qu'à l'absence d'octet nul : à citer en
+dernier). `attachment_types` : types admis et extension stockée.
 
 |`attachment(actor, id)`, `attachment_content(actor, id) : Bytes`
 |`core.attachment.read`

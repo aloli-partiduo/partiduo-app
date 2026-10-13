@@ -68,6 +68,35 @@ module Partiduo
         @@kinds[code]?
       end
 
+      @@exclusions = {} of String => Array(String)
+
+      # Exclut une pièce d'un type de dossier (A-AMO-1), déclaré ou non
+      # (une extension peut s'exclure d'un type qu'une autre déclare) :
+      # même effet que `excluded:` de `register_kind` ou que
+      # `incompatible_with_kind` au manifeste.
+      def self.exclude(kind : String, code : String) : Nil
+        list = (@@exclusions[kind] ||= [] of String)
+        list << code unless list.includes?(code)
+      end
+
+      # Pièces qui ne peuvent pas être actives dans un dossier de type
+      # `kind` : exclues par le type, par `exclude` ou par leur manifeste
+      # (`incompatible_with_kind`). Contrôlé au provisionnement, à
+      # l'activation et au démarrage (A-AMO-1).
+      def self.excluded_modules(kind : String) : Array(String)
+        codes = (@@kinds[kind]?.try(&.excluded) || [] of String).dup
+        codes.concat(@@exclusions[kind]? || [] of String)
+        Partiduo::Modules.manifests.each_value do |manifest|
+          codes << manifest.code if manifest.incompatible_with_kind.includes?(kind)
+        end
+        codes.uniq
+      end
+
+      # Specs : retire une exclusion déclarée par un exemple.
+      def self.unexclude(kind : String, code : String) : Nil
+        @@exclusions[kind]?.try(&.delete(code))
+      end
+
       # Types que l'on peut choisir : ceux dont la pièce est active.
       def self.kinds : Array(Kind)
         @@kinds.values.select { |kind| Partiduo::Modules.active?(kind.owner) }

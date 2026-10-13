@@ -62,7 +62,10 @@ Constantes pour l'interface : `Api::Core::TAX_REGIMES` (`fr`, `be`),
 vide, `share_capital` `nil` efface le capital. Les champs à valeur par défaut
 (`country_code`, `default_locale`, `domain`, `auth_methods`,
 `auth_minimum_level`, `session_duration_minutes`) gardent, s'ils valent `nil`,
-la valeur enregistrée — ou prennent le défaut à la création. Pour modifier un
+la valeur enregistrée — ou prennent le défaut à la création. Les champs
+ajoutés au contrat après sa première version (`creditor_identifier`…)
+gardent aussi, s'ils valent `nil`, la valeur enregistrée : une saisie
+construite avant leur ajout ne les efface pas ; `""` les efface. Pour modifier un
 seul champ : `Api::Core.settings(actor).to_input.copy_with(city: "Namur")`.
 
 === Champs
@@ -89,6 +92,10 @@ contrôlée, SIREN cohérent ; BE : modulo 97
 |`auth_minimum_level` |— |1 à 3, atteignable par une méthode autorisée
 (mot de passe + TOTP : 2 ; passkey, fédérée : 3)
 |`session_duration_minutes` |— |5 à 1440
+|`creditor_identifier` (0.11.0) |— |identifiant créancier SEPA (ICS,
+A-SEPA-2) : forme compacte (pays, clé, code d'activité, identifiant
+national ; 35 caractères au plus), clé modulo 97 contrôlée (EPC262) ;
+facultatif. Lu par les prélèvements SEPA et les mentions des factures.
 |===
 
 Erreurs : `core.errors.settings.<champ>.<code>` (`blank`, `too_long`,
@@ -112,9 +119,17 @@ authentifié au niveau exigé peut l'appeler.
 * `TableInput` : `name` (nom du fichier, assaini), `title`, `columns`
   (`TableColumnInput` : `title`, `kind` `text`/`amount`/`date`/`number`,
   `weight` 0,2 à 10), `rows` (`TableRowInput` : `cells` texte, `style`
-  `line`/`heading`/`subtotal`/`total`, `indent` 0 à 10), `subtitle`,
+  `line`/`heading`/`subtotal`/`total`/`page_break`, `indent` 0 à 10,
+  `level` 0 à 3), `subtitle`,
   `landscape` (`nil` : paysage au-delà de six colonnes). 30 colonnes, 20 000
   lignes et 500 caractères par cellule au plus.
+* Saut de page et niveaux de titre (0.11.0, A-REP-4) : une ligne
+  `page_break` fait commencer la suivante sur une nouvelle page (sans
+  effet en tête de page ; ses cellules sont ignorées, et la ligne omise du
+  CSV des éditions). `level` d'une ligne `heading` : 0, titre ordinaire en
+  gras (comme avant) ; 1 à 3, du plus grand au plus petit, texte de ses
+  cellules sur toute la largeur, souligné au niveau 1, jamais seul en bas
+  de page. Un niveau sur une ligne qui n'est pas un titre est refusé.
 * Refus : `core.errors.table.title.blank`, `.columns.count`,
   `.columns.column`, `.rows.count`, `.rows.row`.
 * Rendu commun avec les éditions de la Comptabilité

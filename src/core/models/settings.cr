@@ -31,6 +31,9 @@ module Partiduo
       field :country_code, :string, max_size: 2
       field :phone, :string, max_size: 32, blank: true, default: ""
       field :email, :string, max_size: 254, blank: true, default: ""
+      # Identifiant créancier SEPA (ICS, A-SEPA-2), forme compacte ; vide
+      # si la société ne prélève pas.
+      field :creditor_identifier, :string, max_size: 35, blank: true, default: ""
 
       # Dossier
       field :tax_regime, :string, max_size: 2

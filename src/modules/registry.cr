@@ -152,7 +152,9 @@ module Partiduo
     # lève `ConfigurationError` et empêche le démarrage, au lieu d'échouer à
     # l'usage. Appelée par `Partiduo::Modules::App#setup`.
     def self.check! : Nil
-      errors = structure_errors + activation_errors(State.active_codes)
+      active_codes = State.active_codes
+      errors = structure_errors + activation_errors(active_codes)
+      State.folder_kind.try { |kind| errors.concat(kind_errors(active_codes, kind)) }
       raise ConfigurationError.new(errors.join("\n")) unless errors.empty?
     end
 
@@ -226,6 +228,17 @@ module Partiduo
 
       errors.concat(incompatibility_errors(active_codes))
       errors
+    end
+
+    # Pièces actives exclues du type de dossier `kind` (A-AMO-1) : par le
+    # type (`InitialData.register_kind(…, excluded:)`, `InitialData.exclude`)
+    # ou par leur manifeste (`incompatible_with_kind`).
+    def self.kind_errors(active_codes : Set(String), kind : String) : Array(String)
+      excluded = Partiduo::Api::InitialData.excluded_modules(kind)
+      excluded.compact_map do |code|
+        next unless active_in?(code, active_codes)
+        "#{code} est exclu des dossiers de type #{kind}, actif"
+      end
     end
 
     # Couples de pièces actives ensemble alors que l'une se déclare

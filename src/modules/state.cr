@@ -66,6 +66,19 @@ module Partiduo
         false
       end
 
+      # Type du dossier (`core_settings.kind`, ADR-011 A3), ou `nil` avant
+      # le provisionnement ou si la base est injoignable : lu pour le
+      # contrôle des pièces exclues d'un type (A-AMO-1). Sans erreur SQL, qui
+      # annulerait la transaction en cours.
+      def self.folder_kind : String?
+        Marten::DB::Connection.default.open do |db|
+          next if db.scalar("SELECT to_regclass('core_settings')::text").nil?
+          db.query_one?("SELECT kind FROM core_settings ORDER BY id LIMIT 1", as: String)
+        end
+      rescue DB::ConnectionRefused | Marten::DB::Errors::UnknownConnection
+        nil
+      end
+
       # Pour les specs qui recréent le schéma.
       def self.reset_table_cache : Nil
         @@table_ready = false

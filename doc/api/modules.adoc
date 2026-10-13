@@ -58,6 +58,7 @@ Partiduo::Modules.register do
   depends_on "DOCUMENT", version: ">= 1.0"  # avec contrainte de version
   depends_on_any "INVOICING", "ACCOUNTING"  # au moins une requise
   incompatible_with "MICRO", "LIBERAL"      # jamais actives avec elle
+  incompatible_with_kind "household"        # jamais active dans un dossier foyer
 
   permission "skel.page.view"               # libellé : skel.permissions.page.view
   permission "skel.page.edit", label: "skel.rights.edit"
@@ -97,6 +98,16 @@ absente du registre (extension non installée) n'est pas une erreur. Codes en
 majuscules ; la pièce ne se cite pas elle-même. Exemple : l'extension des
 finances d'un foyer refuse la Facturation, la micro-entreprise, la
 profession libérale.
+
+|`incompatible_with_kind` (0.11.0)
+|Types de dossier (`household`…) où la pièce ne peut pas être active
+(A-AMO-1). Contrôlé à l'activation (`.excluded_kind`), au démarrage
+(`check!`) et au provisionnement (`core.errors.provision.kind.excluded`),
+comme les modules qu'un type exclut (`InitialData.register_kind(…,
+excluded:)`). Même effet sans manifeste :
+`Partiduo::Api::InitialData.exclude("household", "AMORTIS")`. La liste
+réunie : `InitialData.excluded_modules(kind)`. Exemple : les
+amortissements dégressifs n'ont pas de sens dans les comptes d'un foyer.
 
 |`permission`
 |`<préfixe>.<objet>.<action>` en minuscules. Unique dans tout le registre.
@@ -140,7 +151,10 @@ Défauts d'activation (pièces actives) ::
 * aucune pièce active parmi un `depends_on_any` ;
 * version du cœur hors de `requires_core` ;
 * deux pièces incompatibles actives ensemble (`incompatible_with`), chaque
-  couple cité une fois.
+  couple cité une fois ;
+* pièce active exclue du type du dossier provisionné
+  (`incompatible_with_kind`, `InitialData.exclude`, `excluded:` du type ;
+  A-AMO-1).
 
 == Activation par instance
 
@@ -208,7 +222,8 @@ citent pas de permission exigent un acteur authentifié (`Forbidden` sinon).
 |—
 |`Array(ModuleView)` : `code`, `name_key`, `kind` (`socle`, `module`,
 `extension`), `version`, `active`, `depends_on`, `depends_on_any`, `permissions`,
-`incompatible_with` (`API_VERSION` 0.7.0).
+`incompatible_with` (`API_VERSION` 0.7.0), `incompatible_with_kind`
+(0.11.0).
 
 |`get(actor, code)`
 |—
@@ -220,8 +235,9 @@ citent pas de permission exigent un acteur authentifié (`Forbidden` sinon).
 `modules.errors.activation.socle`, `.missing_dependency` (`%{module}`,
 `%{dependency}`), `.incompatible` (`%{module}`, `%{detail}`),
 `.incompatible_with` (`%{module}`, `%{other}` : une par pièce active
-incompatible, quel que soit le côté qui le déclare ; ADR-011 A1). Sans effet
-si la pièce est déjà active.
+incompatible, quel que soit le côté qui le déclare ; ADR-011 A1),
+`.excluded_kind` (`%{module}`, `%{kind}` : pièce exclue du type du
+dossier, A-AMO-1). Sans effet si la pièce est déjà active.
 
 |`deactivate(actor, code)`
 |`core.modules.manage`

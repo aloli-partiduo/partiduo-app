@@ -20,9 +20,14 @@ module Partiduo
       ODT  = "application/vnd.oasis.opendocument.text"
       DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 
+      # Relevés bancaires OFX (1 en SGML, 2 en XML) et QIF (A-BKI-1) :
+      # contrôlés comme du texte (aucun octet nul).
+      OFX = "application/x-ofx"
+      QIF = "application/qif"
+
       # Types admis et extension du fichier stocké. Justificatifs : PDF (dont
-      # Factur-X), photos, XML (UBL, CII), texte et CSV (relevés) ; documents
-      # ODT et DOCX.
+      # Factur-X), photos, XML (UBL, CII), texte et CSV (relevés) ; relevés
+      # OFX et QIF ; documents ODT et DOCX.
       TYPES = {
         "application/pdf" => ".pdf",
         "image/png"       => ".png",
@@ -34,6 +39,8 @@ module Partiduo
         "text/xml"        => ".xml",
         "text/plain"      => ".txt",
         "text/csv"        => ".csv",
+        OFX               => ".ofx",
+        QIF               => ".qif",
         ODT               => ".odt",
         DOCX              => ".docx",
       }

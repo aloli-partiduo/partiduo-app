@@ -10,10 +10,13 @@ module Partiduo
     # société et un pied numéroté.
     module Core
       TABLE_COLUMN_KINDS = %w[text amount date number]
-      TABLE_ROW_STYLES   = %w[line heading subtotal total]
-      MAX_TABLE_COLUMNS  =    30
-      MAX_TABLE_ROWS     = 20000
-      MAX_TABLE_CELL     =   500
+      TABLE_ROW_STYLES   = %w[line heading subtotal total page_break]
+      # Niveaux de titre d'une ligne `heading` (A-REP-4) : 0, titre ordinaire
+      # (gras, comme avant) ; 1 à 3, du plus grand au plus petit.
+      TABLE_HEADING_LEVELS = 0..3
+      MAX_TABLE_COLUMNS    =    30
+      MAX_TABLE_ROWS       = 20000
+      MAX_TABLE_CELL       =   500
 
       # Colonne : titre traduit, nature (`TABLE_COLUMN_KINDS` : les montants et
       # les nombres s'alignent à droite), largeur relative (0,2 à 10).
@@ -21,7 +24,11 @@ module Partiduo
 
       # Ligne : cellules déjà mises en forme (texte affiché), style
       # (`TABLE_ROW_STYLES`), retrait de la première cellule (0 à 10).
-      record TableRowInput, cells : Array(String), style : String = "line", indent : Int32 = 0
+      # `page_break` (A-REP-4) : la ligne suivante commence une nouvelle page
+      # (sans effet en tête de page) ; ses cellules sont ignorées.
+      # `level` (A-REP-4) : niveau d'une ligne `heading` (`TABLE_HEADING_LEVELS`),
+      # nul pour les autres styles.
+      record TableRowInput, cells : Array(String), style : String = "line", indent : Int32 = 0, level : Int32 = 0
 
       # Tableau : nom du fichier (sans extension ; lettres, chiffres, `-`,
       # `_`, `.`), titre, sous-titres (période, filtres), colonnes, lignes ;
@@ -47,7 +54,7 @@ module Partiduo
         end
         rows = input.rows.map do |row|
           cells = row.cells.map { |cell| cell[0, MAX_TABLE_CELL].as(Partiduo::Core::TableOutput::Cell) }
-          Partiduo::Core::TableOutput::Row.new(cells, row_style(row.style), row.indent)
+          Partiduo::Core::TableOutput::Row.new(cells, row_style(row.style), row.indent, row.level)
         end
         name = input.name.gsub(/[^A-Za-z0-9._\-]+/, "-").strip("-.").presence || "export"
         table = Partiduo::Core::TableOutput::Table.new(name, input.title.strip, input.subtitle, columns, rows,
@@ -66,11 +73,19 @@ module Partiduo
 
       private def self.row_style(style : String) : Symbol
         case style
-        when "heading"  then :heading
-        when "subtotal" then :subtotal
-        when "total"    then :total
-        else                 :line
+        when "heading"    then :heading
+        when "subtotal"   then :subtotal
+        when "total"      then :total
+        when "page_break" then :page_break
+        else                   :line
         end
+      end
+
+      # Ligne admise : pas plus de cellules que de colonnes, style connu,
+      # retrait de 0 à 10, niveau de titre réservé aux titres (A-REP-4).
+      private def self.table_row_valid?(row : TableRowInput, columns : Int32) : Bool
+        row.cells.size <= columns && TABLE_ROW_STYLES.includes?(row.style) && (0..10).includes?(row.indent) &&
+          TABLE_HEADING_LEVELS.includes?(row.level) && (row.level.zero? || row.style == "heading")
       end
 
       private def self.table_errors(input : TableInput) : Array(FieldError)
@@ -91,7 +106,7 @@ module Partiduo
         end
         table.call("rows", "rows.count", {"max" => MAX_TABLE_ROWS.to_s}) if input.rows.size > MAX_TABLE_ROWS
         input.rows.each_with_index do |row, index|
-          if row.cells.size > input.columns.size || !TABLE_ROW_STYLES.includes?(row.style) || !(0..10).includes?(row.indent)
+          unless table_row_valid?(row, input.columns.size)
             table.call("rows[#{index}]", "rows.row", none)
             break
           end

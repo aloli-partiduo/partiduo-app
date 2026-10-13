@@ -9,3 +9,4 @@ en:
         required_by: "%{dependent} requires %{module}: disable %{dependent} first."
         incompatible: "%{module} is not compatible with this instance: %{detail}"
         incompatible_with: "%{module} cannot be enabled together with %{other}, which is enabled in this file: disable %{other} first."
+        excluded_kind: "%{module} cannot be active in a file of this type (%{kind})."

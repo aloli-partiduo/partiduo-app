@@ -19,7 +19,8 @@ module Partiduo
         depends_on : Array(String),
         depends_on_any : Array(Array(String)),
         permissions : Array(String),
-        incompatible_with : Array(String)
+        incompatible_with : Array(String),
+        incompatible_with_kind : Array(String) = [] of String
 
       # Une permission cochable dans un profil. `label_key` : clé i18n du libellé.
       record PermissionView, name : String, label_key : String, module_code : String
@@ -55,7 +56,9 @@ module Partiduo
       # (`%{module}`, `%{dependency}`), `modules.errors.activation.incompatible`
       # (`%{module}`, `%{detail}`) et `modules.errors.activation.incompatible_with`
       # (`%{module}`, `%{other}` : pièce active incompatible, quel que soit le
-      # côté qui le déclare, ADR-011 A1). Activer une pièce active ne change rien.
+      # côté qui le déclare, ADR-011 A1), `modules.errors.activation.excluded_kind`
+      # (`%{module}`, `%{kind}` : pièce exclue du type du dossier, A-AMO-1).
+      # Activer une pièce active ne change rien.
       def self.activate(actor : Actor, code : String) : Result(ModuleView)
         Guard.authorize!(actor, MANAGE_MODULES, module_code: MODULE_CODE)
         manifest = Partiduo::Modules[code.upcase]? || raise NotFound.new("module", code)
@@ -160,6 +163,10 @@ module Partiduo
           errors << FieldError.new("code", "modules.errors.activation.incompatible_with",
             {"module" => manifest.code, "other" => other.code})
         end
+        if (kind = Partiduo::Modules::State.folder_kind) && InitialData.excluded_modules(kind).includes?(manifest.code)
+          errors << FieldError.new("code", "modules.errors.activation.excluded_kind",
+            {"module" => manifest.code, "kind" => kind})
+        end
         errors
       end
 
@@ -174,6 +181,7 @@ module Partiduo
           depends_on_any: manifest.depends_on_any,
           permissions: manifest.permissions,
           incompatible_with: manifest.incompatible_with,
+          incompatible_with_kind: manifest.incompatible_with_kind,
         )
       end
     end
