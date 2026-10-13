@@ -207,6 +207,64 @@ describe_module "ACCOUNTING", "Prévisions : cas limites" do
     expect_raises(Partiduo::Api::NotFound) { Api.delete_forecast(system, budget.id) }
   end
 
+  describe "nature des postes (API 0.10.0, D-FOY-006)" do
+    it "déduit la nature de la formule à la création, la garde à la modification, la copie" do
+      EntrySpec.setup
+      budget = forecast
+      charges = category(budget)
+      {"[60%-s]" => "expense", "[70%]-[709%]" => "income", " [ 706-S]" => "income", "{QCODE}+[7]" => "income",
+       "-[601]+[701]" => "expense", "" => "expense"}.each do |formula, nature|
+        {formula, Api.forecast_nature(formula)}.should eq({formula, nature})
+      end
+      salary = item(charges, "Salaire", "[701]", "3000")
+      food = item(charges, "Courses", "[62%-s]", "400")
+      {salary.nature, salary.income?, food.nature, food.income?}.should eq({"income", true, "expense", false})
+
+      # Réglable : une recette hors de la classe 7, une dépense de la classe 7.
+      loan = item(charges, "Remboursement du prêt", "[27%-S]", "150", nature: Api::FORECAST_INCOME)
+      loan.nature.should eq("income")
+      refund = Api.update_forecast_item(system, salary.id, Api::ForecastItemInput.new("Salaire", "[701]", d("3000"),
+        nature: Api::FORECAST_EXPENSE)).value!
+      refund.nature.should eq("expense")
+      # Sans nature, la modification garde celle du poste, même si la formule change.
+      kept = Api.update_forecast_item(system, loan.id, Api::ForecastItemInput.new("Prêt", "[60%]", d("150"))).value!
+      kept.nature.should eq("income")
+
+      report = Api.forecast_report(system, budget.id).categories.first.items
+      report.map { |row| {row.label, row.nature} }.should eq([{"Salaire", "expense"}, {"Courses", "expense"}, {"Prêt", "income"}])
+      copy = Api.clone_forecast(system, budget.id, "Copie").value!
+      copy.categories.first.items.map(&.nature).should eq(%w[expense expense income])
+    end
+
+    it "refuse une nature inconnue, au contrat et en base" do
+      EntrySpec.setup
+      charges = category(forecast)
+      result = Api.check_forecast_item(system, charges.id, Api::ForecastItemInput.new("E", "[6%]", nature: "saving"))
+      result.errors.map { |error| {error.field, error.key} }.should eq([{"nature", "accounting.errors.forecast.nature.invalid"}])
+      ReferentialSpec.expect_translated(result)
+      Api.create_forecast_item(system, charges.id, Api::ForecastItemInput.new("E", "[6%]", nature: "")).error_keys
+        .should eq(["accounting.errors.forecast.nature.invalid"])
+      row = item(charges, "Achats", "[60%-s]")
+      expect_raises(Exception, /accounting_forecast_item_nature_check/) do
+        EntrySpec.sql_transaction(&.exec("UPDATE accounting_forecast_item SET nature = 'saving' WHERE id = $1", row.id))
+      end
+      %w[income expense].each { |nature| I18n.t("accounting.forecast_natures.#{nature}").should_not contain("missing") }
+    end
+
+    it "donne leur nature aux postes existants d'après le premier compte de la formule (migration 0015)" do
+      EntrySpec.setup
+      charges = category(forecast)
+      ids = {"[701]" => "income", "[70%]-[709%]" => "income", "[60%-s]" => "expense", "" => "expense"}.map do |formula, nature|
+        {item(charges, formula.presence || "Vide", formula, nature: Api::FORECAST_EXPENSE).id, nature}
+      end
+      Marten::DB::Connection.default.open(&.exec(Migration::Accounting::V0015::FORWARD))
+      Marten::DB::Connection.default.open(&.exec(Migration::Accounting::V0015::FORWARD)) # rejouée : rien de plus
+      ids.each do |(id, nature)|
+        EntrySpec.scalar("SELECT nature FROM accounting_forecast_item WHERE id = #{id}").should eq(nature)
+      end
+    end
+  end
+
   describe "intégrité en base" do
     it "refuse une période inexistante et deux montants d'un élément pour une même période" do
       EntrySpec.setup

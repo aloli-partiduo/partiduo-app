@@ -61,6 +61,9 @@ nl:
       acc_vat_returns: "Opgeslagen btw-aangiften"
       acc_vat_settings: "Btw-instellingen"
       acc_closing: "Afsluiting"
+    forecast_natures:
+      income: "Ontvangst"
+      expense: "Uitgave"
     account_kinds:
       asset: "Activa"
       liability: "Passiva"
@@ -494,6 +497,8 @@ nl:
           too_long: "De formule telt hoogstens %{max} tekens."
         amount:
           scale: "Het bedrag telt hoogstens %{max} decimalen."
+        nature:
+          invalid: "Kies ontvangst of uitgave."
       fec:
         fiscal_year: "Het FEC dekt één boekjaar: de datums moeten tot hetzelfde boekjaar behoren."
         ledgers: "Het FEC bevat alle dagboeken: u hebt niet tot elk ervan toegang."

@@ -12,6 +12,21 @@ module Partiduo
     # `accounting.report.write` (comme les rapports personnalisés,
     # D-FCT-001). Le réel ne lit que les journaux visibles de l'acteur.
     module Accounting
+      # Nature d'un poste de prévision (API 0.10.0) : recette ou dépense,
+      # mêmes identifiants que les sortes de compte (`AccountKind`).
+      # Libellés : `accounting.forecast_natures.<nature>`.
+      FORECAST_INCOME  = "income"
+      FORECAST_EXPENSE = "expense"
+      FORECAST_NATURES = [FORECAST_INCOME, FORECAST_EXPENSE]
+
+      # Nature déduite de la formule d'un poste : recette si son premier
+      # compte est de la classe 7 (`[701]`, `[70%]-[709%]`, `[706-S]`),
+      # dépense sinon (formule vide comprise). Règle de la création d'un
+      # poste sans nature et de la migration des postes existants.
+      def self.forecast_nature(formula : String) : String
+        formula.matches?(/\A[^\[]*\[\s*7/) ? FORECAST_INCOME : FORECAST_EXPENSE
+      end
+
       # --- Entrées -------------------------------------------------------------------
 
       # Prévision : nom (255 caractères au plus), première et dernière
@@ -28,14 +43,17 @@ module Partiduo
       # rapports, `[70%]-[709%]`, `{QCODE}`…), montant estimé de chaque
       # période, montant ajouté à la première période
       # (`fi_amount_initial`), rang, montants propres à certaines périodes
-      # (remplacent `amount`, D-FCT-002).
+      # (remplacent `amount`, D-FCT-002), nature (`FORECAST_NATURES`, API
+      # 0.10.0) : `nil` la déduit de la formule à la création
+      # (`forecast_nature`) et garde celle du poste à la modification.
       record ForecastItemInput,
         label : String,
         formula : String,
         amount : BigDecimal = BigDecimal.new(0),
         initial_amount : BigDecimal = BigDecimal.new(0),
         position : Int32 = 0,
-        period_amounts : Array(ForecastPeriodAmountInput) = [] of ForecastPeriodAmountInput
+        period_amounts : Array(ForecastPeriodAmountInput) = [] of ForecastPeriodAmountInput,
+        nature : String? = nil
 
       # --- Vues ------------------------------------------------------------------------
 
@@ -49,6 +67,7 @@ module Partiduo
 
       record ForecastPeriodAmountView, period_id : Int64, amount : BigDecimal
 
+      # `nature` : `income` (recette) ou `expense` (dépense), API 0.10.0.
       record ForecastItemView,
         id : Int64,
         category_id : Int64,
@@ -57,7 +76,12 @@ module Partiduo
         amount : BigDecimal,
         initial_amount : BigDecimal,
         position : Int32,
-        period_amounts : Array(ForecastPeriodAmountView)
+        period_amounts : Array(ForecastPeriodAmountView),
+        nature : String = FORECAST_EXPENSE do
+        def income? : Bool
+          nature == FORECAST_INCOME
+        end
+      end
 
       record ForecastCategoryView, id : Int64, label : String, position : Int32, items : Array(ForecastItemView)
 
@@ -73,13 +97,19 @@ module Partiduo
 
       record ForecastPeriodRef, id : Int64, starts_on : Time, ends_on : Time
 
-      # Estimé et réel d'un élément, une valeur par période de la prévision.
+      # Estimé et réel d'un élément, une valeur par période de la prévision ;
+      # `nature` du poste (`income`, `expense`, API 0.10.0).
       record ForecastReportItemView,
         item_id : Int64,
         label : String,
         formula : String,
         estimated : Array(BigDecimal),
-        real : Array(BigDecimal) do
+        real : Array(BigDecimal),
+        nature : String = FORECAST_EXPENSE do
+        def income? : Bool
+          nature == FORECAST_INCOME
+        end
+
         def estimated_total : BigDecimal
           estimated.sum(BigDecimal.new(0))
         end
@@ -262,7 +292,8 @@ module Partiduo
         end
       end
 
-      # Remplace l'élément entier (montants par période compris).
+      # Remplace l'élément entier (montants par période compris) ; sans
+      # nature (`nil`), le poste garde la sienne.
       def self.update_forecast_item(actor : Actor, id : Int64, input : ForecastItemInput) : Result(ForecastItemView)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do

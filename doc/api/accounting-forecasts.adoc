@@ -13,7 +13,7 @@ tables `forecast`, `forecast_category`, `forecast_item` de NOALYSS.
   types dans le même fichier) ; module Comptabilité (D-FCT-001).
 * Tables : `accounting_forecast`, `accounting_forecast_category`,
   `accounting_forecast_item`, `accounting_forecast_amount` (migration
-  accounting 0007).
+  accounting 0007 ; nature des éléments, migration accounting 0015).
 * Permissions : `accounting.report.read` (lecture, comparaison),
   `accounting.report.write` (écriture), comme les rapports personnalisés.
 * Menu : `ACC_FORECASTS` (Éditions), route `accounting:forecasts`.
@@ -27,7 +27,40 @@ tables `forecast`, `forecast_category`, `forecast_item` de NOALYSS.
   `[706-S]`, `{QCODE}`, opérations, `FROM=MM.AAAA` ; pas de `$CODE`),
   montant estimé de chaque période, montant initial ajouté à la première
   période (`fi_amount_initial`), rang, montants propres à certaines périodes
-  (D-FCT-002) ; montants à quatre décimales au plus.
+  (D-FCT-002), *nature* (recette ou dépense, ci-dessous) ; montants à quatre
+  décimales au plus.
+
+== Nature d'un élément (API 0.10.0)
+
+Chaque élément (poste) dit s'il prévoit une recette ou une dépense :
+`nature`, `income` ou `expense` (`FORECAST_INCOME`, `FORECAST_EXPENSE`,
+`FORECAST_NATURES` ; mêmes identifiants que les sortes de compte ; libellés
+`accounting.forecast_natures.<nature>`). Le réel d'une formule sans suffixe
+est un solde en valeur absolue, qui ne dit pas le sens : un tableau de bord
+qui compare dépenses prévues et réalisées lit la nature, il ne la devine
+plus.
+
+* `ForecastItemInput#nature` (`String?`, défaut `nil`) : à la création,
+  `nil` la déduit de la formule (`forecast_nature`) ; à la modification
+  (`update_forecast_item`), `nil` garde celle du poste. Une autre valeur que
+  `income` ou `expense` est refusée : `accounting.errors.forecast.nature.invalid`,
+  champ `nature`.
+* `forecast_nature(formula)` : `income` si le premier compte de la formule
+  est de la classe 7 (`[701]`, `[70%]-[709%]`, `[706-S]`), `expense` sinon,
+  formule vide comprise.
+* `ForecastItemView#nature`, `ForecastReportItemView#nature` (défaut
+  `expense` pour qui construit la vue), `income?`.
+* `clone_forecast` copie la nature.
+* Postes existants : la migration accounting 0015 applique la règle de
+  `forecast_nature` (contrainte `accounting_forecast_item_nature_check`).
+
+[source]
+----
+# Une recette hors de la classe 7 : le remboursement d'un prêt consenti.
+Acc.create_forecast_item(actor, category.id,
+  Acc::ForecastItemInput.new("Remboursement du prêt", "[27%-S]", BigDecimal.new(150),
+    nature: Acc::FORECAST_INCOME))
+----
 
 == Fonctions
 
@@ -52,10 +85,12 @@ omettait).
 
 |`check_forecast_item`, `create_forecast_item`, `update_forecast_item`, `delete_forecast_item`
 |Libellé et formule obligatoires, formule valide ; une période propre à un
-montant appartient à la prévision, une seule fois.
+montant appartient à la prévision, une seule fois ; nature `income` ou
+`expense`, déduite de la formule à la création si elle manque, gardée à la
+modification.
 
 |`forecast_report`
-|Pour chaque élément et chaque période : estimé (montant propre à la période,
+|Pour chaque élément, sa nature, et pour chaque période : estimé (montant propre à la période,
 sinon montant de l'élément ; montant initial à la première) et réel (formule
 calculée sur la seule période, journaux visibles de l'acteur, arrondi au
 centime) ; cumuls (`estimated_cumulative`, `real_cumulative`), totaux,

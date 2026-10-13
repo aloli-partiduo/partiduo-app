@@ -54,6 +54,9 @@ module Partiduo
         end
         errors.concat(amount_errors("amount", input.amount))
         errors.concat(amount_errors("initial_amount", input.initial_amount))
+        if (nature = input.nature) && !Api::FORECAST_NATURES.includes?(nature)
+          errors << error("nature", "nature.invalid")
+        end
         range = period_ids(forecast).to_set
         seen = Set(Int64).new
         input.period_amounts.each_with_index do |row, index|
@@ -101,9 +104,12 @@ module Partiduo
 
       # --- Enregistrement ---------------------------------------------------------------
 
+      # Nature : celle de l'entrée ; à défaut, celle du poste existant, ou
+      # celle que déduit la formule d'un nouveau poste.
       def self.save_item!(item : ForecastItem, input : Api::ForecastItemInput) : ForecastItem
         item.label = input.label.strip
         item.formula = input.formula.strip
+        item.nature = input.nature || (item.persisted? ? item.nature : Api.forecast_nature(item.formula!))
         item.amount = input.amount
         item.initial_amount = input.initial_amount
         item.position = input.position
@@ -125,7 +131,7 @@ module Partiduo
           new_category = ForecastCategory.create!(forecast: copy, label: category.label, position: category.position)
           ForecastItem.filter(category_id: category.pk).order(:position, :id).each do |item|
             new_item = ForecastItem.create!(category: new_category, label: item.label, formula: item.formula,
-              amount: item.amount, initial_amount: item.initial_amount, position: item.position)
+              amount: item.amount, initial_amount: item.initial_amount, position: item.position, nature: item.nature)
             ForecastAmount.filter(item_id: item.pk).each do |row|
               ForecastAmount.create!(item: new_item, period_id: row.period_id, amount: row.amount)
             end
@@ -161,7 +167,7 @@ module Partiduo
               .sort_by { |row| starts[row.period_id!.as(Int64)]? || Time.utc(1970, 1, 1) }
               .map { |row| Api::ForecastPeriodAmountView.new(row.period_id!.as(Int64), row.amount!) }
             Api::ForecastItemView.new(item.pk!.as(Int64), category_id, item.label!, item.formula!, item.amount!,
-              item.initial_amount!, item.position!.to_i32, rows)
+              item.initial_amount!, item.position!.to_i32, rows, item.nature!)
           end
           Api::ForecastCategoryView.new(category_id, category.label!, category.position!.to_i32, item_views)
         end
@@ -212,7 +218,7 @@ module Partiduo
                 BigDecimal.new(0)
               end
             end
-            Api::ForecastReportItemView.new(item.id, item.label, item.formula, estimated, real)
+            Api::ForecastReportItemView.new(item.id, item.label, item.formula, estimated, real, item.nature)
           end
           Api::ForecastReportCategoryView.new(category.id, category.label, rows)
         end

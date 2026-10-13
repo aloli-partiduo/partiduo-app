@@ -28,7 +28,8 @@ module Partiduo
     # Élément d'une catégorie (`forecast_item` à `fi_pid = 0`) : libellé,
     # formule du réel (celle des rapports, `Formula`), montant estimé de
     # chaque période, montant ajouté à la première période
-    # (`fi_amount_initial`), rang.
+    # (`fi_amount_initial`), rang, nature (`income`, recette, ou `expense`,
+    # dépense ; migration accounting 0015).
     class ForecastItem < Marten::Model
       field :id, :big_int, primary_key: true, auto: true
       field :category, :many_to_one, to: Partiduo::Accounting::ForecastCategory, related: :items, on_delete: :cascade
@@ -37,6 +38,7 @@ module Partiduo
       field :amount, :decimal, max_digits: 20, decimal_places: 4, default: BigDecimal.new(0)
       field :initial_amount, :decimal, max_digits: 20, decimal_places: 4, default: BigDecimal.new(0)
       field :position, :int, default: 0
+      field :nature, :string, max_size: 10, default: "expense"
     end
 
     # Estimation propre à une période (`forecast_item` à `fi_pid` = période,

@@ -61,6 +61,9 @@ fr:
       acc_vat_returns: "Déclarations de TVA enregistrées"
       acc_vat_settings: "Paramètres de la TVA"
       acc_closing: "Clôture"
+    forecast_natures:
+      income: "Recette"
+      expense: "Dépense"
     account_kinds:
       asset: "Actif"
       liability: "Passif"
@@ -494,6 +497,8 @@ fr:
           too_long: "La formule compte au plus %{max} caractères."
         amount:
           scale: "Le montant compte au plus %{max} décimales."
+        nature:
+          invalid: "Choisissez recette ou dépense."
       fec:
         fiscal_year: "Le FEC couvre un seul exercice : les dates doivent appartenir au même exercice."
         ledgers: "Le FEC reprend tous les journaux : vous n'avez pas accès à chacun d'eux."

@@ -61,6 +61,9 @@ en:
       acc_vat_returns: "Saved VAT returns"
       acc_vat_settings: "VAT settings"
       acc_closing: "Closing"
+    forecast_natures:
+      income: "Income"
+      expense: "Expense"
     account_kinds:
       asset: "Asset"
       liability: "Liability"
@@ -494,6 +497,8 @@ en:
           too_long: "The formula has at most %{max} characters."
         amount:
           scale: "The amount has at most %{max} decimals."
+        nature:
+          invalid: "Choose income or expense."
       fec:
         fiscal_year: "The FEC covers a single fiscal year: the dates must belong to the same fiscal year."
         ledgers: "The FEC includes every ledger: you do not have access to all of them."

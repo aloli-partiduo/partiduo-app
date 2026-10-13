@@ -15134,3 +15134,81 @@ nom nouveau crée le dossier ; ses modules sont lus dans la base restaurée
 relevée avant et après `pg_dump` comme sur un serveur, D-AFN-012) : le
 dossier local n'a qu'un utilisateur, qui ne dépose rien pendant la
 sauvegarde.
+
+== Dossier foyer : vocabulaire, nature des postes de prévision, heure du dossier (13 octobre 2026)
+
+Changements adoptés par l'utilisateur le 13 octobre 2026, après le dossier
+foyer d'ADR-011 A3 (D-FOY-001 à D-FOY-005) et le fuseau du dossier du
+contrat 0.9.0 (`Core.time_zone`). Code dans le cœur (contrat 0.10.0), dans
+`../partiduo-ui-bulma` et dans `../partiduo-import`.
+
+=== D-FOY-006 — Nature des postes de prévision (contrat 0.10.0)
+
+*Choix.* Un élément (poste) de prévision porte sa *nature*, `income`
+(recette) ou `expense` (dépense) — identifiants des sortes de compte
+(`FORECAST_INCOME`, `FORECAST_EXPENSE`, `FORECAST_NATURES`), libellés
+`accounting.forecast_natures.*` (fr, en, nl). `ForecastItemInput#nature`
+(`nil` par défaut) : à la création, `nil` la déduit de la formule
+(`forecast_nature` : recette si le premier compte est de la classe 7,
+dépense sinon, formule vide comprise) ; à la modification, `nil` garde
+celle du poste, même si la formule change. Refus
+`accounting.errors.forecast.nature.invalid`, champ `nature` ; contrainte
+`accounting_forecast_item_nature_check` en base. Exposée par
+`ForecastItemView#nature` et `ForecastReportItemView#nature` (champs
+ajoutés en dernier, avec défaut : les appels existants restent valables),
+copiée par `clone_forecast`. Migration accounting 0015 : les postes
+existants reçoivent la nature de la règle de `forecast_nature`.
+`API_VERSION` 0.10.0 (ajout). Référence : `doc/api/accounting-forecasts.adoc`.
+
+L'interface la lit : l'écart au budget du tableau de bord du foyer
+(`Dashboard#build_household`) ne compte que les postes de dépense ; le
+formulaire d'un élément offre « Selon la formule », « Recette »,
+« Dépense ». `partiduo-perso` n'a rien à changer : ses formules
+(`[6…%-s]`, `[7…%-S]`) donnent déjà la bonne nature.
+
+*Alternative écartée.* Garder la déduction dans l'interface (expression sur
+la formule) : une recette hors de la classe 7 (remboursement d'un prêt
+consenti, retrait d'épargne budgété) ou une formule qui commence par un
+autre compte y passait pour une dépense, sans moyen de la corriger.
+
+=== D-FOY-007 — Vocabulaire et menus d'un dossier foyer (partiduo-ui-bulma)
+
+*Choix.* Dans un dossier `household` seulement, avec ou sans variante
+d'extension : la balance des tiers et la balance âgée
+(`ACC_AUXILIARY_BALANCE`, `ACC_AGED_BALANCE`) rejoignent
+`SimpleMode::HOUSEHOLD_MENUS` (présentation seulement : les routes restent
+joignables selon les droits) ; « Tiers et articles » se dit « Contacts » et
+« Société » se dit « Foyer » dans le menu, les fils d'Ariane et les titres
+de l'écran de la société (consultation, modification, message
+d'enregistrement, introduction). Table `FolderKind::LABEL_KEYS` (clé
+d'origine → clé du type, `ui.household.menu.*`, `ui.household.company.*`,
+fr, en, nl), appliquée au menu par `FolderKind.relabel` et aux fils
+d'Ariane par `Handler#crumb`, aux titres par `Handler#kind_key`. Les
+dossiers d'entreprise, de micro-entreprise et de profession libérale
+gardent leurs libellés.
+
+*Limite.* Les champs de l'écran (raison sociale, forme juridique, SIREN…)
+restent ceux du cœur : à revoir avec l'écran propre du foyer.
+
+=== D-FOY-008 — Heure du dossier dans tous les écrans
+
+*Choix.* Tout horodatage présenté à l'écran ou dans un courriel l'est dans
+le fuseau du dossier (`Core.time_zone`) : `Format#datetime` par défaut, et
+`Format#timestamp_date` pour la seule date d'un horodatage. Écrans repassés
+de l'UTC : dernière connexion (liste et fiche d'un utilisateur), journal
+d'audit, échéance d'une invitation (message et courriel, qui nomme le
+fuseau), dernière utilisation d'une identité fédérée, date et heure de
+création d'un rapprochement. Repassés de la date UTC ou du fuseau du
+serveur : création et modification d'une fiche, dates des clés d'accès
+(passkeys), modification et figement des lignes et immobilisations de la
+profession libérale, date du nom des exports CSV et PDF, année proposée
+pour le premier exercice, date « déjà importé le » de `partiduo-import`.
+
+Restent en UTC, par nature technique : les horodatages du contrat et de la
+base ; l'instance en ligne de commande (`manage instance`, RFC 3339 en UTC,
+contrat de l'exécutant) et le récapitulatif du provisionnement, qui dit
+« UTC » ; les en-têtes HTTP (expiration des cookies) ; les signatures et
+manifestes des sauvegardes ; les fichiers normés (`CreDtTm` des virements
+SEPA, dates des messages CDAR). Le FEC ne porte que des dates, sans
+heure ; ses dates de lettrage et de validation (`DateLet`, `ValidDate`)
+étaient déjà prises dans le fuseau du dossier : rien n'y change.

@@ -19,8 +19,10 @@ module Partiduo
   # `SettingsView` et `ProvisionInput`, ADR-011 A1 et A3 ; 0.8.0 : imports
   # CSV de fiches et du plan comptable, export du plan, archive des pièces,
   # `Transaction.dry_run`, D-OUT-002 à D-OUT-005 ; 0.9.0 : fuseau du
-  # dossier, `Core.time_zone`).
-  API_VERSION = "0.9.0"
+  # dossier, `Core.time_zone` ; 0.10.0 : nature des postes de prévision,
+  # `nature` de `ForecastItemInput`, `ForecastItemView` et
+  # `ForecastReportItemView`, `forecast_nature`, D-FOY-006).
+  API_VERSION = "0.10.0"
 end
 
 module Partiduo
