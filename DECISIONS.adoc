@@ -11661,6 +11661,34 @@ protègent l'historique.
 façon un chemin de retour, et la sauvegarde resterait sur la production
 jusqu'au passage suivant.
 
+=== D-CHF-025 — Sauvegardes sur le serveur même, sans serveur de sauvegarde
+
+Décision de l'utilisateur (13 octobre 2026) : un exploitant ne doit pas être
+obligé d'avoir deux serveurs. Code dans `../partiduo-admin` (0.1.6).
+
+*Choix.* En production, l'exécutant prend l'un des deux stockages, jamais
+les deux :
+
+* `--store-command` : serveur de sauvegarde (D-CHF-024), conseillé ;
+* `--store-dir` : répertoire de ce serveur, de l'exécutant (partiduo-agent,
+  0700), distinct du répertoire des sauvegardes en préparation
+  (`--backup-dir`), que l'exécutant vide à chaque tâche.
+
+Les règles du stockage ne changent pas (écriture une seule fois, effacement
+de ses seules sauvegardes, archives dans leur durée légale jamais
+effacées), ni le chiffrement, la capsule ou la signature. Au démarrage,
+l'exécutant rappelle que ces sauvegardes disparaissent avec le serveur.
+
+*Limites, écrites noir sur blanc.* Une panne ou une perte du serveur emporte
+ses sauvegardes, s'il n'en existe pas de copie ailleurs. Une compromission
+du serveur permet d'effacer ses sauvegardes récentes, sauf instantanés ZFS
+ou copie extérieure. Le répertoire se copie tel quel (NAS, `zfs send`,
+`rsync` vers un autre support) : il ne contient aucune clé. Restaurer sur
+un autre serveur demande d'y recopier d'abord `<serveur>/<dossier>/`.
+
+*Alternative écartée.* Garder `--store-command` obligatoire : imposerait un
+second serveur à tout exploitant.
+
 == Validation à deux au choix (29 septembre 2026)
 
 Décision de l'utilisateur : la double validation des opérations sensibles
