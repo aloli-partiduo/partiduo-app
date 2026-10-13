@@ -71,6 +71,9 @@ describe_module "INVOICING", "Facturation — date d'émission (clôture du lot 
       issued.due_date.should eq(InvoicingSpec.date("2026-10-28"))
     end
     Partiduo::Config.time_zone.name.should eq("Europe/Paris")
+    # Le contrat expose le même fuseau à l'interface (API 0.9.0).
+    Partiduo::Api::Core.time_zone.should eq(Partiduo::Config.time_zone)
+    Time.utc(2026, 10, 12, 22, 30).in(Partiduo::Api::Core.time_zone).day.should eq(13)
   end
 end
 

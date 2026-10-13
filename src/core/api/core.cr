@@ -16,6 +16,14 @@ module Partiduo
         Partiduo::Config.today
       end
 
+      # Fuseau du dossier, celui de l'instance (`PARTIDUO_TIME_ZONE`,
+      # `Europe/Paris` par défaut ; UTC s'il est inconnu) : les horodatages
+      # du contrat sont en UTC, l'interface les présente dans ce fuseau
+      # (date et heure d'un import, d'un envoi, d'une connexion).
+      def self.time_zone : Time::Location
+        Partiduo::Config.time_zone
+      end
+
       # Description de l'instance : versions et pièces enregistrées.
       # Tout utilisateur authentifié peut la lire.
       def self.instance(actor : Actor) : InstanceView

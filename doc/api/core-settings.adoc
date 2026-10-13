@@ -25,6 +25,18 @@ ADR-002 D1). Le contrat est `Partiduo::Api::Core` et
 |authentifié
 |La société ; `NotFound` avant le provisionnement.
 
+|`Api::Core.today : Time`
+|aucun
+|Date du jour dans le fuseau du dossier, à minuit UTC.
+
+|`Api::Core.time_zone : Time::Location` (0.9.0)
+|aucun
+|Fuseau du dossier : celui de l'instance (`PARTIDUO_TIME_ZONE`,
+`Europe/Paris` par défaut, UTC s'il est inconnu). Les horodatages du
+contrat (`created_at`, `sent_at`…) sont en UTC ; l'interface les présente
+dans ce fuseau, sans quoi un import fait le 13 octobre à 23 h à Paris
+s'afficherait au 12.
+
 |`Api::Core.check_settings(actor, SettingsInput) : Result(Nil)`
 |`core.settings.manage`
 |Contrôle instantané, même règle que la modification.
