@@ -38,10 +38,14 @@ module Partiduo
           return if card.nil?
           clauses << "EXISTS (SELECT 1 FROM accounting_entry_line x WHERE x.entry_id = e.id AND x.card_id = #{param.call(card.id)})"
         end
-        query.receipt.try(&.strip).presence.try { |text| clauses << "e.receipt ILIKE #{param.call("%#{escape_like(text)}%")}" }
+        if text = query.receipt.try(&.strip).presence
+          placeholder = param.call("%#{escape_like(text)}%")
+          clauses << "(e.receipt ILIKE #{placeholder} OR e.external_reference ILIKE #{placeholder})"
+        end
         if text = query.text.try(&.strip).presence
           placeholder = param.call("%#{escape_like(text)}%")
-          clauses << "(e.label ILIKE #{placeholder} OR e.internal_code ILIKE #{placeholder} OR e.receipt ILIKE #{placeholder})"
+          clauses << "(e.label ILIKE #{placeholder} OR e.internal_code ILIKE #{placeholder} OR e.receipt ILIKE #{placeholder} " \
+                     "OR e.external_reference ILIKE #{placeholder})"
         end
         query.amount_min.try { |amount| clauses << "e.amount >= #{param.call(amount.to_s)}::numeric" }
         query.amount_max.try { |amount| clauses << "e.amount <= #{param.call(amount.to_s)}::numeric" }

@@ -15,8 +15,9 @@ module Partiduo
       alias FieldError = Partiduo::Api::FieldError
       alias Side = Partiduo::Api::Accounting::Side
 
-      MAX_RECEIPT =  40
-      MAX_SOURCE  = 100
+      MAX_RECEIPT            =  40
+      MAX_SOURCE             = 100
+      MAX_EXTERNAL_REFERENCE = 100
 
       # En-tête résolu d'une écriture.
       record Header,
@@ -30,7 +31,8 @@ module Partiduo
         base_currency : Bool,
         decimals : Int32,
         attachment_id : Int64?,
-        source : String
+        source : String,
+        external_reference : String = ""
 
       # Ligne prête à écrire : montant en devise de tenue, positif.
       record DraftLine,
@@ -92,13 +94,19 @@ module Partiduo
       def self.header(ledger : Ledger, date : Time, due_date : Time?, receipt : String?,
                       currency_code : String?, currency_rate : BigDecimal?, attachment_id : Int64?,
                       source : String, errors : Array(FieldError), date_field : String = "date",
-                      receipt_field : String = "receipt") : Header?
+                      receipt_field : String = "receipt", external_reference : String = "",
+                      external_reference_field : String = "external_reference") : Header?
         day = Posting.day(date)
         errors << FieldError.new("ledger_id", "accounting.errors.entry.ledger.disabled") unless ledger.enabled
         period_id = period_errors(day, errors, date_field)
         receipt = receipt_errors(ledger, receipt, receipt_field, errors)
         source = source.strip
         reference_errors(source, attachment_id, errors)
+        external_reference = external_reference.gsub(/[[:cntrl:]]/, " ").strip
+        if external_reference.size > MAX_EXTERNAL_REFERENCE
+          errors << FieldError.new(external_reference_field, "accounting.errors.entry.external_reference.too_long",
+            {"max" => MAX_EXTERNAL_REFERENCE.to_s})
+        end
         code, rate, base = currency(ledger, currency_code, currency_rate, day, errors)
 
         return unless errors.empty? && period_id
@@ -106,6 +114,7 @@ module Partiduo
           ledger: ledger, date: day, period_id: period_id, due_date: due_date.try { |value| Posting.day(value) },
           receipt: receipt, currency_code: code, currency_rate: rate, base_currency: base,
           decimals: base_currency.try(&.decimals) || 2, attachment_id: attachment_id, source: source,
+          external_reference: external_reference,
         )
       end
 
@@ -246,18 +255,24 @@ module Partiduo
                        ledger : Ledger) : {Draft?, Array(FieldError)}
         errors = [] of FieldError
         header = header(ledger, input.date, input.due_date, input.receipt, input.currency_code,
-          input.currency_rate, input.attachment_id, input.source, errors)
+          input.currency_rate, input.attachment_id, input.source, errors,
+          external_reference: input.external_reference)
         line_errors = line_errors(input.lines)
         targets = input.lines.map_with_index do |line, index|
           target(line, "lines[#{index}]", line_errors)
+        end
+        vat = input.lines.map_with_index do |line, index|
+          line_vat(line, targets[index]?.try(&.account), "lines[#{index}]", line_errors)
         end
         errors.concat(line_errors)
         return {nil, errors} unless errors.empty? && header
 
         lines = input.lines.zip(targets.compact).map_with_index do |(line, target), index|
+          rate, role = vat[index]
           DraftLine.new(account: target.account, side: line.side, amount: to_base(header, line.amount),
             currency_amount: header.base_currency ? nil : line.amount, card_id: target.card_id,
-            card_code: target.card_code, label: line.label.strip, input_index: index)
+            card_code: target.card_code, label: line.label.strip, input_index: index,
+            vat_rate_id: rate.try(&.id), vat_rate_code: rate.try(&.code), vat_role: role)
         end
         balance_rounding!(lines)
         {Draft.new(header, input.label.strip, lines), errors}
@@ -288,6 +303,43 @@ module Partiduo
         end
       end
 
+      # Taux et rôle de TVA d'une ligne saisie (A-IMP-1) : taux existant et
+      # actif ; rôle `base` ou `tax`, déduit du compte s'il est omis (`tax`
+      # pour l'un des comptes de TVA du taux, `base` sinon) ; un rôle sans
+      # taux est refusé.
+      private def self.line_vat(line : Partiduo::Api::Accounting::EntryLineInput, account : Account?, path : String,
+                                errors : Array(FieldError)) : {Partiduo::Api::Vat::RateView?, String?}
+        role = line.vat_role.try(&.strip.downcase).presence
+        code = line.vat_rate.try(&.strip).presence
+        if role && !EntryLine::VAT_ROLES.includes?(role)
+          errors << FieldError.new("#{path}.vat_role", "accounting.errors.entry.vat_role.invalid", {"value" => role})
+          return {nil, nil}
+        end
+        if code.nil?
+          errors << FieldError.new("#{path}.vat_role", "accounting.errors.entry.vat_role.without_rate") if role
+          return {nil, nil}
+        end
+        rate = Partiduo::Api::Vat.rate_by_code(Partiduo::Api::Actor.system, code)
+        if rate.nil?
+          errors << FieldError.new("#{path}.vat_rate", "accounting.errors.entry.vat_rate.not_found", {"code" => code.upcase})
+          return {nil, nil}
+        elsif !rate.enabled
+          errors << FieldError.new("#{path}.vat_rate", "accounting.errors.entry.vat_rate.disabled", {"code" => rate.code})
+          return {nil, nil}
+        end
+        {rate, role || vat_role_of(rate, account)}
+      end
+
+      # Rôle d'une ligne d'après son compte : `tax` pour un compte de TVA du
+      # taux (déductible ou collectée), `base` sinon.
+      private def self.vat_role_of(rate : Partiduo::Api::Vat::RateView, account : Account?) : String
+        return "base" if account.nil?
+        row = VatRateAccount.filter(vat_rate_id: rate.id).first
+        return "base" if row.nil?
+        id = account.pk!.as(Int64)
+        [row.deductible_account, row.collected_account].any? { |tax| tax.try(&.pk) == id } ? "tax" : "base"
+      end
+
       # Écart d'arrondi de conversion en devise de tenue reporté sur la plus
       # grande ligne du côté le plus faible (l'application d'origine passe une ligne
       # « différence de change », D-ACC-013).
@@ -316,7 +368,7 @@ module Partiduo
           label: draft.label, receipt: receipt, amount: draft.total(Side::Debit),
           currency_code: header.currency_code, currency_rate: header.currency_rate,
           reversal_of_id: draft.reversal_of_id, attachment_id: header.attachment_id, source: header.source,
-          created_by_id: actor.user_id,
+          external_reference: header.external_reference, created_by_id: actor.user_id,
         )
         entry.save!
         id = entry.pk!.as(Int64)

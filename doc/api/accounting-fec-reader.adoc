@@ -1,0 +1,107 @@
+= Comptabilité : lecture d'un FEC
+:toc: left
+:toc-title: Table des matières
+:toclevels: 2
+:icons: font
+:source-language: crystal
+
+Lecteur du fichier des écritures comptables (article A47 A-1 du livre des
+procédures fiscales, arrêté du 29 juillet 2013), commun aux outils qui
+reprennent un FEC (A-IMP-4, contrat 0.14.0) : la reprise d'un dossier
+entier (`partiduo-migrate`) et l'import dans un dossier existant
+(`partiduo-import`). Le cœur exporte le FEC (`Accounting.fec`,
+`accounting-reports.adoc`) ; il le relit ici *sans rien écrire* : ce qu'on
+fait des écritures lues (création des comptes, journaux, fiches, saisie
+par `post_entry`) reste à l'appelant.
+
+== Contrat
+
+[source]
+----
+file = Partiduo::Api::Accounting.read_fec(actor, bytes, encoding: nil, strict: false)
+file.valid?          # aucun défaut bloquant
+file.entries         # Array(FecEntryView)
+file.issues          # défauts : ligne, zone, clé i18n, paramètres
+file.warnings        # remarques (encodage douteux)
+----
+
+[cols="2,1,3",options="header"]
+|===
+|Appel |Droit |Rôle
+
+|`read_fec(actor, content : Bytes, encoding : String? = nil, strict : Bool = false) : FecFileView`
+|authentifié, Comptabilité active
+|Lit le fichier ; ne lève pas d'exception sur un fichier mal formé : les
+défauts sont dans `issues`.
+|===
+
+* `encoding` : `nil` ou `auto` pour le reconnaître (BOM UTF-8 ou UTF-16,
+  UTF-8 valide, ISO 8859-15, ou Windows-1252 si l'ISO 8859-15 donne des
+  caractères de contrôle C1), sinon un nom de `Accounting::FEC_ENCODINGS`
+  (`utf-8`, `iso-8859-15`, `latin9`, `windows-1252`, `cp1252`,
+  `iso-8859-1`, `ascii`, `utf-16`). Le nom retenu : `FecFileView#encoding`.
+* `strict` : zones de l'article A47 A-1 exigées (sauf `Montantdevise` et
+  `Idevise`, absentes des fichiers antérieurs à 2014), séparateur
+  tabulation ou barre verticale ; c'est le contrôle d'une reprise
+  complète. Sinon, seules `JournalCode`, `EcritureNum`, `EcritureDate`,
+  `CompteNum` et les montants sont exigées, et le point-virgule est admis.
+
+== Règles de lecture
+
+* Première ligne d'en-tête ; zones reconnues *par leur nom*, sans égard à la
+  casse ; séparateur terminal toléré s'il figure sur l'en-tête ; valeurs
+  entre guillemets dégagées (`""` → `"`).
+* Une ligne qui n'a pas le nombre de zones de l'en-tête est refusée
+  (`field_count` : un séparateur dans un libellé décalerait les zones).
+* Dates `AAAAMMJJ` ; `AAAA-MM-JJ` et `JJ/MM/AAAA` tolérées.
+* Montants à virgule ou point décimal, blancs (insécables compris) et `+`
+  admis, `1.234,56` compris ; vide = zéro.
+* `Debit` et `Credit`, ou `Montant` et `Sens` (`D`, `C`, `+1`, `1`, `-1`).
+  Un débit et un crédit écrits sur la même ligne sont *compensés*
+  (`debit`/`credit` de la ligne) ; les montants tels qu'écrits restent
+  (`raw_debit`, `raw_credit`) et sont totalisés (`FecFileView#raw_debit`,
+  `#raw_credit`) pour un contrôle de lecture.
+* Une ligne sans effet (débit égal au crédit) est ignorée et comptée
+  (`zero_lines`).
+* Les lignes d'un même `EcritureNum` dans un même `JournalCode` forment une
+  écriture (`FecEntryView`), dans l'ordre du fichier ; une date différente
+  de celle de sa première ligne est un défaut (`date_mismatch`) ; une
+  écriture déséquilibrée aussi (`unbalanced`).
+* Échéance : première zone facultative reconnue, `DateEcheance`,
+  `EcheanceDate` ou `DateEch` (non normalisées).
+* Lettrage (`EcritureLet`, `DateLet`), date de validation (`ValidDate`),
+  montant et code de devise (`Montantdevise`, `Idevise`) sont lus tels
+  quels ; les montants du FEC sont dans la monnaie de tenue.
+
+== Vues
+
+`FecFileView` : `encoding`, `separator`, `columns`, `entries`, `issues`,
+`warnings`, `zero_lines`, `raw_debit`, `raw_credit`, `valid?`, et les
+libellés rencontrés par code : `journals`, `accounts`, `parties`
+(comptes auxiliaires).
+
+`FecEntryView` : `row` (ligne du fichier de sa première ligne),
+`journal_code`, `journal_label`, `number`, `date`, `receipt` (`PieceRef`),
+`receipt_date`, `label`, `due_date`, `lines`, `total_debit`,
+`total_credit`, `balanced?`, `reference` (`<journal>/<numéro>`).
+
+`FecLineView` : `row`, `account_number`, `account_label`, `aux_number`,
+`aux_label`, `label`, `debit`, `credit`, `raw_debit`, `raw_credit`,
+`letter`, `letter_date`, `valid_date`, `currency_amount`,
+`currency_code`.
+
+`FecIssueView` : `row` (1 = en-tête, 0 = fichier entier), `column`, `key`
+(`accounting.fec_reader.issues.<code>`), `params`, `message`. Codes :
+`encoding_unknown`, `invalid_utf8`, `unreadable_encoding`,
+`c1_characters` (avertissement), `empty_file`, `separator`,
+`separator_strict`, `missing_column`, `field_count`, `empty_field`,
+`unreadable_date`, `unreadable_amount`, `unreadable_direction`,
+`date_mismatch`, `unbalanced`, `no_entry` ; fr, en, nl.
+
+== Origine
+
+Le lecteur reprend les règles des deux lecteurs qui l'ont précédé : celui
+de `partiduo-migrate` (encodages, zones de l'arrêté, équilibre, montants
+`1.234,56`, totaux de lecture, lettrage et devise) et celui de
+`partiduo-import` (point-virgule, zones minimales, échéance, guillemets).
+Ces deux dépôts l'adopteront dans une vague suivante (DECISIONS D-AMD-020).

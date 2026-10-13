@@ -30,9 +30,11 @@ module Partiduo
           path = "lines[#{index}]"
           line_errors = [] of FieldError
           receipt = receipt(input, index)
+          reference, reference_field = reference(line, input, path)
           header = Posting.header(ledger, line.date || input.date, nil, receipt, input.currency_code,
             input.currency_rate, input.attachment_id, input.source, line_errors,
-            date_field: line.date ? "#{path}.date" : "date", receipt_field: "receipt")
+            date_field: line.date ? "#{path}.date" : "date", receipt_field: "receipt",
+            external_reference: reference, external_reference_field: reference_field)
           amount_errors(line, path, line_errors)
           counterpart = counterpart(line, path, line_errors)
           match_errors(line, counterpart, path, line_errors) if counterpart
@@ -43,12 +45,23 @@ module Partiduo
           currency = header.base_currency ? nil : line.amount
           label = line.label.strip
           lines = [
-            Posting.signed_line(Side::Credit, base, currency, counterpart, label: label),
+            Posting.signed_line(Side::Credit, base, currency, counterpart, label: label, input_index: index),
             Posting.signed_line(Side::Debit, base, currency, bank, label: label),
           ].compact
           planned << Planned.new(Posting::Draft.new(header, label, lines), line.match_line_ids.uniq)
         end
         {planned, errors}
+      end
+
+      # Référence de l'émetteur d'une ligne et son champ : la sienne, sinon
+      # celle de l'extrait (A-IMP-2).
+      private def self.reference(line : Partiduo::Api::Accounting::PaymentLineInput,
+                                 input : Partiduo::Api::Accounting::FinancialInput, path : String) : {String, String}
+        if own = line.external_reference
+          {own, "#{path}.external_reference"}
+        else
+          {input.external_reference, "external_reference"}
+        end
       end
 
       # Pièce de la ligne : celle de l'extrait, suffixée du rang sur trois

@@ -341,6 +341,11 @@ nl:
           disabled: "Btw-tarief %{code} is uitgeschakeld."
           required: "Geef het btw-tarief van het ingevoerde btw-bedrag op."
           no_account: "Btw-tarief %{code} heeft geen rekening voor dit dagboek."
+        vat_role:
+          invalid: "Onbekende btw-rol „%{value}”: grondslag of btw."
+          without_rate: "Geef het btw-tarief van de regel waarvan de rol is opgegeven."
+        external_reference:
+          too_long: "De referentie van de uitgever telt hoogstens %{max} tekens."
         cancel:
           is_reversal: "Een tegenboeking kan niet geannuleerd worden."
           already_cancelled: "Deze boeking is al geannuleerd."
@@ -715,3 +720,21 @@ nl:
     billing:
       rejection_label: "Geweigerde betaling"
       rejection_fees_label: "Kosten van de weigering"
+    fec_reader:
+      issues:
+        encoding_unknown: "Onbekende codering: %{name}."
+        invalid_utf8: "Het bestand is geen geldige UTF-8: kies een andere codering."
+        unreadable_encoding: "Het bestand is niet leesbaar als %{name}."
+        c1_characters: "Stuurtekens gelezen als %{encoding}: het bestand is misschien in Windows-1252."
+        empty_file: "Het bestand is leeg."
+        separator: "Onbekend scheidingsteken: tab, verticale streep of puntkomma."
+        separator_strict: "Onbekend scheidingsteken: tab of verticale streep (artikel A47 A-1)."
+        missing_column: "Veld %{column} ontbreekt in de kopregel."
+        field_count: "%{count} velden in plaats van %{expected} (scheidingsteken in een omschrijving?)."
+        unbalanced: "Boeking %{entry} is niet in evenwicht: debet %{debit}, credit %{credit}."
+        no_entry: "Het bestand bevat geen enkele boeking."
+        empty_field: "Veld %{column} is leeg."
+        unreadable_date: "Onleesbare datum: „%{value}” (JJJJMMDD verwacht)."
+        unreadable_amount: "Onleesbaar bedrag: „%{value}”."
+        unreadable_direction: "Onleesbare richting: „%{value}” (D of C verwacht)."
+        date_mismatch: "Boeking %{entry}: datum %{date} verschilt van die van de eerste regel (%{expected})."

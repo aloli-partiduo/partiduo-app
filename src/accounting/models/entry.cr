@@ -43,6 +43,9 @@ module Partiduo
       # Pièce jointe du socle (`core_attachment`) ; clé étrangère posée par la migration.
       field :attachment_id, :big_int, null: true, blank: true
       field :source, :string, max_size: 100, blank: true, default: ""
+      # Pièce de l'émetteur ou du logiciel d'origine (A-IMP-2), à côté de la
+      # pièce du journal (`receipt`) ; migration accounting 0016.
+      field :external_reference, :string, max_size: 100, blank: true, default: ""
       # Écriture extournée : posé par la base à l'insertion de l'extourne,
       # jamais retiré (migration accounting 0004).
       field :reversed, :bool, default: false

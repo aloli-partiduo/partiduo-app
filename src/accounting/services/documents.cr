@@ -34,7 +34,7 @@ module Partiduo
         end
 
         header = Posting.header(ledger, input.date, input.due_date, input.receipt, input.currency_code,
-          input.currency_rate, input.attachment_id, input.source, errors)
+          input.currency_rate, input.attachment_id, input.source, errors, external_reference: input.external_reference)
         third_party = third_party(input.third_party, errors)
         items = items(input, ledger, kind, errors)
         errors.concat(vat_account_errors(input, ledger))

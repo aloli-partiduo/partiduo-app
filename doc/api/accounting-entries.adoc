@@ -69,7 +69,9 @@ autoliquidée au débit et au crédit.
 |`post_financial(actor, FinancialInput) : Result(Array(EntryView))`
 |idem
 |Extrait financier : une écriture par ligne (banque du journal contre
-contrepartie), lettrage des lignes `match_line_ids`.
+contrepartie), lettrage des lignes `match_line_ids`. Depuis 0.14.0, la
+contrepartie porte le rang de sa ligne d'extrait (`input_index`), pour la
+ventilation analytique (`Api::Analytic.post_financial`, A-IMP-3).
 
 |`cancel_entry(actor, CancelEntryInput) : Result(EntryView)`
 |`accounting.entry.cancel` + `W`
@@ -136,6 +138,24 @@ payment = Api::FinancialInput.new(
   montant négatif d'une facture (avoir) : sens inversé.
 * *Source* : `source` libre (`invoice:42`, `fec:VT-12`), portée par
   `entry.posted` et recherchable.
+* *Référence de l'émetteur* (0.14.0, A-IMP-2) : `external_reference` de
+  `EntryInput`, `DocumentInput` et `FinancialInput` (et de
+  `PaymentLineInput`, qui l'emporte sur celle de l'extrait) — pièce du
+  logiciel ou du document d'origine (numéro de la facture du fournisseur,
+  pièce d'un FEC repris), 100 caractères, caractères de contrôle remplacés
+  par une espace. Gardée à côté de la pièce du journal, qui reste numérotée
+  par le cœur ; rendue par `EntryView#external_reference` ; cherchée par
+  `EntryQuery#receipt` et `#text`. Refus :
+  `accounting.errors.entry.external_reference.too_long`. Une extourne ne la
+  reprend pas.
+* *TVA d'une ligne saisie* (0.14.0, A-IMP-1) : `EntryLineInput#vat_rate`
+  (code du taux) et `#vat_role` (`base` ou `tax`) font d'une ligne d'une
+  écriture saisie ligne à ligne (reprise d'un FEC, opérations diverses)
+  une ligne de TVA reconnue par les déclarations et par `vat_totals`. Rôle
+  omis : `tax` si le compte est le compte de TVA déductible ou collectée du
+  taux, `base` sinon. Refus : `accounting.errors.entry.vat_role.invalid`,
+  `.vat_role.without_rate` (rôle sans taux), `.vat_rate.not_found`,
+  `.vat_rate.disabled`.
 
 == Consultation
 

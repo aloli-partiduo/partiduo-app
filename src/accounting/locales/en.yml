@@ -341,6 +341,11 @@ en:
           disabled: "VAT rate %{code} is disabled."
           required: "Enter the VAT rate of the VAT amount entered."
           no_account: "VAT rate %{code} has no account for this ledger."
+        vat_role:
+          invalid: "Unknown VAT role “%{value}”: base or tax."
+          without_rate: "Give the VAT rate of the line whose role is set."
+        external_reference:
+          too_long: "The issuer's reference has at most %{max} characters."
         cancel:
           is_reversal: "A reversal cannot be cancelled."
           already_cancelled: "This entry is already cancelled."
@@ -715,3 +720,21 @@ en:
     billing:
       rejection_label: "Rejected payment"
       rejection_fees_label: "Rejection charges"
+    fec_reader:
+      issues:
+        encoding_unknown: "Unknown encoding: %{name}."
+        invalid_utf8: "The file is not valid UTF-8: choose another encoding."
+        unreadable_encoding: "The file cannot be read as %{name}."
+        c1_characters: "Control characters read as %{encoding}: the file may be in Windows-1252."
+        empty_file: "The file is empty."
+        separator: "Unknown separator: tab, vertical bar or semicolon."
+        separator_strict: "Unknown separator: tab or vertical bar (article A47 A-1)."
+        missing_column: "Field %{column} missing from the header."
+        field_count: "%{count} fields instead of %{expected} (separator inside a label?)."
+        unbalanced: "Entry %{entry} is unbalanced: debit %{debit}, credit %{credit}."
+        no_entry: "The file contains no entry."
+        empty_field: "Field %{column} is empty."
+        unreadable_date: "Unreadable date: “%{value}” (YYYYMMDD expected)."
+        unreadable_amount: "Unreadable amount: “%{value}”."
+        unreadable_direction: "Unreadable direction: “%{value}” (D or C expected)."
+        date_mismatch: "Entry %{entry}: date %{date} differs from its first line (%{expected})."

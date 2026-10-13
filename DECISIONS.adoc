@@ -15281,8 +15281,8 @@ Aucun événement n'est ajouté à la liste fermée d'ADR-003 D7.
 
 *Version du contrat.* `API_VERSION` monte d'une mineure par lot cohérent,
 soit un commit : 0.11.0 (socle), 0.12.0 (fiches), 0.13.0 (lectures de la
-Comptabilité), 0.14.0 (saisie, analytique, FEC, prévisions, libéral),
-0.15.0 (courriels), 0.16.0 (validation à deux). *Pourquoi par lot plutôt
+Comptabilité), 0.14.0 (saisie, analytique, FEC), 0.15.0 (prévisions,
+profession libérale), 0.16.0 (courriels), 0.17.0 (validation à deux). *Pourquoi par lot plutôt
 qu'une fois à la fin* : chaque commit laisse un cœur cohérent qu'on
 pourrait publier seul ; le numéro dit alors exactement ce qu'il contient,
 et une extension de la vague suivante peut viser le premier lot qui lui
@@ -15478,3 +15478,115 @@ foyer répartie sur plusieurs livrets). Droit : `accounting.entry.read`.
 `doc/api/accounting-entries.adoc` (consultation, date de paiement),
 `doc/api/accounting-reports.adoc` (balances, sommes, TVA). Specs :
 `spec/accounting/amendments_reads_spec.cr`.
+
+=== D-AMD-017 — Code de TVA d'une ligne saisie (A-IMP-1)
+
+*Choix.* `EntryLineInput#vat_rate` et `#vat_role` (derniers champs, `nil`
+par défaut) : `post_entry` écrit le taux et le rôle de la ligne, comme
+`post_purchase` et `post_sale`, et les déclarations de TVA comme
+`vat_totals` les reconnaissent. Le rôle omis est déduit du compte : `tax`
+pour le compte de TVA déductible ou collectée du taux (table des comptes
+de TVA de la Comptabilité), `base` sinon — une ligne de FEC n'a pas de
+rôle, son compte le dit. Un rôle sans taux est refusé ; la base ne
+contrôle que le rôle (`base`, `tax`), comme avant.
+
+*Alternative écartée.* Exiger le rôle : une reprise devrait reproduire la
+table des comptes de TVA du dossier pour le poser.
+
+=== D-AMD-018 — Référence de l'émetteur sur une écriture (A-IMP-2)
+
+*Choix.* Colonne `external_reference` d'`accounting_entry` (migration
+accounting 0016, 100 caractères, vide par défaut), champ des saisies
+(`EntryInput`, `DocumentInput`, `FinancialInput` et, prioritaire,
+`PaymentLineInput`) et d'`EntryView` (derniers champs, `""` par défaut).
+La pièce du journal reste numérotée par le cœur : la référence est à
+côté, jamais à la place. Recherchée par les critères `receipt` et `text`
+d'`EntryQuery`, comme la pièce. L'extourne ne la reprend pas : elle a sa
+propre pièce, et la référence citerait un document qu'elle n'est pas.
+
+=== D-AMD-019 — Extrait financier ventilé (A-IMP-3)
+
+*Choix.* `Api::Analytic.post_financial(actor, FinancialInput,
+distributions)`, sur le modèle de `post_entry`, `post_purchase` et
+`post_sale` : `input_index` désigne la ligne de l'extrait. Pour que la
+ventilation retrouve la contrepartie, la Comptabilité pose désormais
+`input_index` sur la contrepartie de chaque écriture d'un extrait (rang de
+sa ligne d'extrait) ; la ligne de banque, calculée, n'en a pas. Aucune
+lecture existante n'en dépend : le Stock ne lit `input_index` que dans les
+journaux d'achats et de ventes, et `partiduo-import` dans `post_entry`.
+Les erreurs d'une ventilation gardent le rang qu'elle a dans la liste
+donnée ; le mode obligatoire s'applique à chaque écriture de l'extrait.
+
+=== D-AMD-020 — Lecteur FEC commun (A-IMP-4)
+
+*Choix.* `Accounting.read_fec(actor, bytes, encoding, strict) :
+FecFileView`, sans écriture. Il réunit le meilleur des deux lecteurs
+existants, comparés règle par règle :
+
+[cols="2,1,1,2",options="header"]
+|===
+|Règle |`partiduo-migrate` |`partiduo-import` |Lecteur commun
+
+|Encodage
+|BOM, UTF-8, ISO 8859-15, Windows-1252 si C1 ; imposé
+|propre (`Text.decode`)
+|celui de `migrate`, avertissement C1, refus en défaut et non en exception
+
+|Séparateur
+|tabulation, barre verticale
+|+ point-virgule
+|les trois ; point-virgule refusé en lecture `strict`
+
+|Zones exigées
+|les 14 de l'arrêté
+|4 + montants
+|au choix : `strict` ou souple
+
+|Montants
+|virgule, point, `1.234,56`, blancs, `+`
+|`Amounts.parse`
+|ceux de `migrate`
+
+|`Montant` et `Sens`
+|`D`, `C`, `+1`, `1`, `-1`
+|`Parsers.side`
+|les deux, plus `DEBIT`, `CREDIT`
+
+|Débit et crédit sur une ligne
+|compensés, bruts totalisés
+|compensés
+|compensés, bruts gardés par ligne et totalisés
+
+|Écriture déséquilibrée
+|défaut
+|non contrôlée
+|défaut
+
+|Échéance
+|zones facultatives
+|zones facultatives
+|identique
+
+|Lettrage, devise, validation
+|lus
+|lettre seule
+|tous lus
+|===
+
+*Hors du lecteur.* La reprise elle-même (création des comptes, journaux,
+fiches, saisie, lettrage, rapport de réconciliation) reste dans chaque
+outil : `partiduo-migrate` construit un dossier entier, `partiduo-import`
+complète un dossier existant. On ne modifie ni l'un ni l'autre : une
+vague suivante remplacera leur lecteur par celui-ci (`Source::Dataset` se
+construit à partir de `FecFileView`, `Parsed` aussi).
+
+*Droit.* Tout utilisateur authentifié au niveau exigé, Comptabilité
+active : lire un fichier ne touche à aucune donnée du dossier.
+
+=== D-AMD-021 — Version du contrat 0.14.0
+
+*Choix.* D-AMD-017 à D-AMD-020 : `API_VERSION` 0.14.0. Documentation :
+`doc/api/accounting-entries.adoc` (saisie), `doc/api/analytic.adoc`
+(extrait ventilé), `doc/api/accounting-fec-reader.adoc` (nouveau). Specs :
+`spec/accounting/amendments_posting_spec.cr`,
+`spec/analytic/financial_distribution_spec.cr`.

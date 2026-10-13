@@ -341,6 +341,11 @@ fr:
           disabled: "Le taux de TVA %{code} est désactivé."
           required: "Indiquez le taux de TVA du montant de TVA saisi."
           no_account: "Le taux de TVA %{code} n'a pas de compte pour ce journal."
+        vat_role:
+          invalid: "Rôle de TVA « %{value} » inconnu : base ou TVA."
+          without_rate: "Indiquez le taux de TVA de la ligne dont le rôle est donné."
+        external_reference:
+          too_long: "La référence de l'émetteur compte au plus %{max} caractères."
         cancel:
           is_reversal: "Une extourne ne s'annule pas."
           already_cancelled: "Cette écriture est déjà annulée."
@@ -715,3 +720,21 @@ fr:
     billing:
       rejection_label: "Rejet du règlement"
       rejection_fees_label: "Frais de rejet"
+    fec_reader:
+      issues:
+        encoding_unknown: "Encodage inconnu : %{name}."
+        invalid_utf8: "Le fichier n'est pas en UTF-8 valide : choisissez un autre encodage."
+        unreadable_encoding: "Le fichier ne se lit pas en %{name}."
+        c1_characters: "Caractères de contrôle lus en %{encoding} : le fichier est peut-être en Windows-1252."
+        empty_file: "Le fichier est vide."
+        separator: "Séparateur non reconnu : tabulation, barre verticale ou point-virgule."
+        separator_strict: "Séparateur non reconnu : tabulation ou barre verticale (article A47 A-1)."
+        missing_column: "Zone %{column} absente de l'en-tête."
+        field_count: "%{count} zones au lieu de %{expected} (séparateur dans un libellé ?)."
+        unbalanced: "Écriture %{entry} déséquilibrée : débit %{debit}, crédit %{credit}."
+        no_entry: "Le fichier ne contient aucune écriture."
+        empty_field: "Zone %{column} vide."
+        unreadable_date: "Date illisible : « %{value} » (AAAAMMJJ attendu)."
+        unreadable_amount: "Montant illisible : « %{value} »."
+        unreadable_direction: "Sens illisible : « %{value} » (D ou C attendu)."
+        date_mismatch: "Écriture %{entry} : date %{date} différente de celle de sa première ligne (%{expected})."

@@ -370,6 +370,53 @@ module Partiduo
         post_with(actor, distributions, input.lines.size) { Partiduo::Api::Accounting.post_sale(actor, input) }
       end
 
+      # Extrait financier ventilé (A-IMP-3) : `Partiduo::Api::Accounting.post_financial`
+      # et la ventilation de la contrepartie de chaque ligne, dans une seule
+      # transaction. `InputDistributionInput#input_index` désigne la ligne de
+      # l'extrait (`FinancialInput.lines[i]`), donc l'écriture qu'elle
+      # produit ; la ligne de banque n'est pas ventilée. En mode obligatoire,
+      # toute contrepartie d'un compte ventilé doit l'être entièrement dans
+      # chaque plan, sinon rien n'est enregistré. Erreurs sous
+      # `distributions[k]` (ventilation citée), `distributions[input=i]`
+      # (contrepartie de la ligne `i` non ventilée) ou
+      # `distributions[input=i].position=p` (autre ligne de son écriture).
+      def self.post_financial(actor : Actor, input : Partiduo::Api::Accounting::FinancialInput,
+                              distributions : Array(InputDistributionInput)) : Result(Array(Partiduo::Api::Accounting::EntryView))
+        Guard.authorize!(actor, "analytic.operation.write", module_code: MODULE_CODE)
+        Transaction.run do
+          posted = Partiduo::Api::Accounting.post_financial(actor, input)
+          next posted if posted.failure?
+          entries = posted.value!
+          errors = [] of FieldError
+          by_line = {} of Int32 => Partiduo::Api::Accounting::EntryView
+          entries.each do |entry|
+            rows = entry.lines
+            rows.each { |line| line.input_index.try { |index| by_line[index] = entry } }
+          end
+          distributions.each_with_index do |item, index|
+            next if by_line.has_key?(item.input_index)
+            errors << FieldError.new("distributions[#{index}].input_index", "analytic.errors.distribution.line_unknown")
+          end
+          writes = [] of {Partiduo::Api::Accounting::EntryView, Array(LineDistributionInput)}
+          by_line.each do |line_index, entry|
+            numbered = distributions.each_with_index.select { |(item, _)| item.input_index == line_index }.to_a
+            subset = numbered.map(&.[0])
+            found, inputs, paths = Partiduo::Analytic::Distributions.resolve_inputs(entry, subset, input.lines.size)
+            errors.concat(renumber(found, numbered.map(&.[1])))
+            paths.transform_values! { |path| renumber_path(path, numbered.map(&.[1])) }
+            rows = entry.lines
+            rows.each do |line|
+              paths[line.id] ||= line.input_index ? "distributions[input=#{line_index}]" : "distributions[input=#{line_index}].position=#{line.position}"
+            end
+            errors.concat(Partiduo::Analytic::Distributions.entry_errors(actor, entry, inputs, require_all: true, paths: paths))
+            writes << {entry, inputs}
+          end
+          next Result(Array(Partiduo::Api::Accounting::EntryView)).failure(errors) unless errors.empty?
+          writes.each { |(entry, inputs)| Partiduo::Analytic::Distributions.write!(actor, entry, inputs) }
+          posted
+        end
+      end
+
       # Lignes des comptes ventilés, entre deux dates, dont la ventilation
       # manque ou n'atteint pas le montant de la ligne dans un plan au moins
       # (contrôle du mode obligatoire). Extournes et écritures extournées
@@ -566,6 +613,16 @@ module Partiduo
           Partiduo::Analytic::Distributions.write!(actor, entry, inputs)
           posted
         end
+      end
+
+      # Erreurs d'un sous-ensemble de ventilations renumérotées selon leur
+      # rang dans la liste complète (`original[j]` pour `distributions[j]`).
+      private def self.renumber(errors : Array(FieldError), original : Array(Int32)) : Array(FieldError)
+        errors.map { |error| FieldError.new(renumber_path(error.field, original), error.key, error.params) }
+      end
+
+      private def self.renumber_path(path : String, original : Array(Int32)) : String
+        path.sub(/\Adistributions\[(\d+)\]/) { "distributions[#{original[$1.to_i]? || $1}]" }
       end
 
       private def self.cancelled_error : FieldError

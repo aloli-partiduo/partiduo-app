@@ -29,12 +29,20 @@ module Partiduo
       # numéro du compte ; vide si `card` (quick code) est donné, le compte
       # étant alors celui de la fiche. Montant strictement positif, dans la
       # devise de l'écriture, en `BigDecimal`.
+      #
+      # `vat_rate` (A-IMP-1) : code du taux de TVA de la ligne, pour qu'une
+      # écriture saisie ligne à ligne (reprise d'un FEC) porte des lignes de
+      # TVA reconnues par les déclarations ; `vat_role` : `base` ou `tax`.
+      # Rôle omis : `tax` si le compte est l'un des comptes de TVA du taux,
+      # `base` sinon. Un rôle sans taux est refusé.
       record EntryLineInput,
         account : String,
         side : Side,
         amount : BigDecimal,
         card : String? = nil,
-        label : String = ""
+        label : String = "",
+        vat_rate : String? = nil,
+        vat_role : String? = nil
 
       # Requête de contrôle de l'équilibre seul (retour instantané de la saisie).
       record CheckEntryInput, lines : Array(EntryLineInput)
@@ -50,7 +58,10 @@ module Partiduo
       #   devise de tenue ; les montants saisis sont dans la devise de
       #   l'écriture, convertis en devise de tenue (montant ÷ cours) ;
       # * `source` : référence libre de l'émetteur (`invoice:42`, `fec:…`),
-      #   pour relire l'écriture depuis un abonné d'événement.
+      #   pour relire l'écriture depuis un abonné d'événement ;
+      # * `external_reference` (A-IMP-2) : pièce du logiciel ou du document
+      #   d'origine (100 caractères), gardée à côté de la pièce du journal,
+      #   affichée et cherchée comme elle.
       record EntryInput,
         ledger_id : Int64,
         date : Time,
@@ -61,7 +72,8 @@ module Partiduo
         currency_code : String? = nil,
         currency_rate : BigDecimal? = nil,
         attachment_id : Int64? = nil,
-        source : String = ""
+        source : String = "",
+        external_reference : String = ""
 
       # Ligne d'une facture d'achat ou de vente (`e_march<i>`,
       # `e_march<i>_price`, `e_quant<i>`, `e_march<i>_tva_id`,
@@ -89,7 +101,8 @@ module Partiduo
 
       # Facture ou avoir d'achat (`Acc_Ledger_Purchase::insert`) ou de vente
       # (`Acc_Ledger_Sale::insert`) : `third_party` est le quick code du
-      # fournisseur ou du client, `due_date` l'échéance (`e_ech`).
+      # fournisseur ou du client, `due_date` l'échéance (`e_ech`) ;
+      # `external_reference` (A-IMP-2) : numéro de la facture chez l'émetteur.
       record DocumentInput,
         ledger_id : Int64,
         date : Time,
@@ -101,7 +114,8 @@ module Partiduo
         currency_code : String? = nil,
         currency_rate : BigDecimal? = nil,
         attachment_id : Int64? = nil,
-        source : String = ""
+        source : String = "",
+        external_reference : String = ""
 
       # Ligne d'un extrait financier (`e_other<i>`, `e_other<i>_amount`,
       # `e_other<i>_comment`, `e_concerned<i>`) : contrepartie par fiche
@@ -110,18 +124,22 @@ module Partiduo
       # `match_line_ids` : lignes d'écritures à lettrer avec la ligne de
       # contrepartie (facture payée : `jrn_rapt` et lettrage), du même compte.
       # `date` : date propre de la ligne (`chdate = 2`), sinon celle de
-      # l'extrait.
+      # l'extrait. `external_reference` (A-IMP-2) : référence de l'émetteur
+      # propre à la ligne, sinon celle de l'extrait.
       record PaymentLineInput,
         amount : BigDecimal,
         card : String? = nil,
         account : String? = nil,
         label : String = "",
         date : Time? = nil,
-        match_line_ids : Array(Int64) = [] of Int64
+        match_line_ids : Array(Int64) = [] of Int64,
+        external_reference : String? = nil
 
       # Extrait d'un journal financier (`Acc_Ledger_Fin::insert`) : *une
       # écriture par ligne*, chacune avec sa pièce. `receipt` donné : pièce de
-      # l'extrait, suffixée du rang de la ligne s'il y en a plusieurs.
+      # l'extrait, suffixée du rang de la ligne s'il y en a plusieurs ;
+      # `external_reference` (A-IMP-2) : référence de l'émetteur de
+      # l'extrait, reprise par chaque écriture.
       record FinancialInput,
         ledger_id : Int64,
         date : Time,
@@ -130,7 +148,8 @@ module Partiduo
         currency_code : String? = nil,
         currency_rate : BigDecimal? = nil,
         attachment_id : Int64? = nil,
-        source : String = ""
+        source : String = "",
+        external_reference : String = ""
 
       # Annulation par extourne (`Acc_Ledger::reverse`) : écriture inverse à
       # `date` (celle de l'écriture si `nil`), dans une période ouverte ;
@@ -229,7 +248,8 @@ module Partiduo
         source : String,
         created_by_id : Int64?,
         created_at : Time,
-        lines : Array(EntryLineView) do
+        lines : Array(EntryLineView),
+        external_reference : String = "" do
         # Écriture annulée par une extourne.
         def cancelled? : Bool
           !reversed_by_id.nil?
@@ -255,6 +275,8 @@ module Partiduo
       # journal, dates, période, compte (numéro exact, ou préfixe avec
       # `account_prefix`), fiche (quick code), pièce, libellé ou code interne
       # (contient, sans casse), montant d'en-tête, écritures annulées ou non.
+      # `receipt` et `text` cherchent aussi la référence de l'émetteur
+      # (`external_reference`, A-IMP-2).
       #
       # `date_basis` (A-REP-6) : date à laquelle s'appliquent `date_from` et
       # `date_to` (`DateBasis`, date de l'écriture par défaut) ; `paid` :

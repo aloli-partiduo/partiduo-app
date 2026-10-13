@@ -243,7 +243,7 @@ module Partiduo
             currency_rate: entry.currency_rate!, reversal_of_id: entry.reversal_of_id.try(&.as(Int).to_i64),
             reversed_by_id: reversed_by[id]?, attachment_id: entry.attachment_id.try(&.to_i64),
             source: entry.source.to_s, created_by_id: entry.created_by_id.try(&.to_i64),
-            created_at: entry.created_at || Time.utc,
+            created_at: entry.created_at || Time.utc, external_reference: entry.external_reference.to_s,
             lines: (lines[id]? || [] of Partiduo::Accounting::EntryLine).map do |line|
               account = accounts[line.account_id.as(Int).to_i64]
               card_id = line.card_id.try(&.to_i64)

@@ -153,16 +153,31 @@ ventilé absente est refusée (`distributions[input=<n>]`, ou
 `distributions[position=<p>]` pour une ligne calculée) et rien n'est
 enregistré.
 
+*Extrait financier ventilé* (0.14.0, A-IMP-3) :
+`Api::Analytic.post_financial(actor, FinancialInput, distributions) :
+Result(Array(EntryView))` enregistre l'extrait
+(`Api::Accounting.post_financial`, une écriture par ligne) et la
+ventilation de la *contrepartie* de chaque ligne, dans une seule
+transaction. `input_index` désigne la ligne de l'extrait
+(`FinancialInput.lines[i]`) : depuis 0.14.0, la contrepartie de chaque
+écriture d'un extrait porte ce rang (`EntryLineView#input_index`) ; la
+ligne de banque, calculée, n'en a pas et n'est pas ventilée. Erreurs sous
+`distributions[k]` (rang hors de l'extrait : `.input_index`), et en mode
+obligatoire `distributions[input=<i>]` (contrepartie non ventilée) ou
+`distributions[input=<i>].position=<p>` (autre ligne de cette écriture).
+
 === Chemins qui échappent au mode obligatoire
 
 Le mode obligatoire est contrôlé *à l'enregistrement* seulement par
-`post_entry`, `post_purchase`, `post_sale` de ce contrat. Les écritures
-enregistrées autrement ne sont pas ventilées d'office :
+`post_entry`, `post_purchase`, `post_sale` et `post_financial` de ce
+contrat. Les écritures enregistrées autrement ne sont pas ventilées
+d'office :
 
 * `Api::Accounting.post_entry`, `post_purchase`, `post_sale` appelés
   directement — notamment par un acteur sans `analytic.operation.write`
   (l'interface l'avertit, `distribution_required?`) ;
-* les extraits financiers (`Api::Accounting.post_financial`) ;
+* les extraits financiers enregistrés par `Api::Accounting.post_financial`
+  directement ;
 * les écritures nées d'événements (`invoice.issued`, `payment.recorded`),
   la reprise `partiduo-migrate` et l'import FEC ;
 * les extournes : elles reçoivent la ventilation inverse de l'écriture

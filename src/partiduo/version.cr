@@ -28,8 +28,10 @@ module Partiduo
   # 0.12.0 : fiches, critère `iban` de `CardQuery`, pièces jointes d'une
   # fiche, D-AMD-007 à D-AMD-009 ; 0.13.0 : lectures de la Comptabilité,
   # `entry_line`, `account_balance`, `open_items`, `line_sums`,
-  # `vat_totals`, `DateBasis` et `paid`, D-AMD-010 à D-AMD-016).
-  API_VERSION = "0.13.0"
+  # `vat_totals`, `DateBasis` et `paid`, D-AMD-010 à D-AMD-016 ; 0.14.0 :
+  # saisie et reprise, TVA d'une ligne saisie, référence de l'émetteur,
+  # extrait financier ventilé, `read_fec`, D-AMD-017 à D-AMD-021).
+  API_VERSION = "0.14.0"
 end
 
 module Partiduo
