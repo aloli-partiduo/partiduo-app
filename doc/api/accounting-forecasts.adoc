@@ -30,6 +30,35 @@ tables `forecast`, `forecast_category`, `forecast_item` de NOALYSS.
   (D-FCT-002), *nature* (recette ou dépense, ci-dessous) ; montants à quatre
   décimales au plus.
 
+== Prévision tenue par une extension (API 0.15.0, A-PER-4)
+
+Une extension peut *tenir* une prévision : le budget annuel d'un foyer
+(`partiduo-perso`) est une prévision que l'écran « Prévisions » de la
+Comptabilité ne doit pas modifier ni supprimer.
+
+* `ForecastInput#owner` (`String?`, défaut `nil`) : code du registre de la
+  pièce qui la tient (active ; casse indifférente). À la création, `nil` :
+  aucun propriétaire ; à la modification, `nil` garde le propriétaire
+  enregistré, `""` libère la prévision. Pièce inconnue ou inactive :
+  `accounting.errors.forecast.owner.unknown`, champ `owner`.
+* Toute commande d'écriture (`update_forecast`, `delete_forecast`,
+  `create_forecast_category`, `update_forecast_category`,
+  `delete_forecast_category`, `check_forecast_item`, `create_forecast_item`,
+  `update_forecast_item`, `delete_forecast_item`) prend `owner:` (défaut
+  `nil`). Sur une prévision tenue, elle n'est permise qu'à l'appel qui
+  nomme son propriétaire ; sinon `accounting.errors.forecast.owned`
+  (`%{owner}`, champ `base`). Les droits (`accounting.report.write`)
+  restent exigés.
+* Lecture inchangée, pour tous : `ForecastSummaryView#owner`, `#owned?`
+  (l'écran de la Comptabilité masque alors les commandes).
+* `clone_forecast` copie une prévision tenue *sans* propriétaire : un
+  brouillon libre.
+* Colonne `owner` d'`accounting_forecast` (migration accounting 0017).
+
+*Ce n'est pas une barrière de sécurité* : le code de l'interface et celui
+des extensions sont compilés ensemble ; la réserve empêche une
+modification par l'écran commun, qui casserait le budget de l'extension.
+
 == Nature d'un élément (API 0.10.0)
 
 Chaque élément (poste) dit s'il prévoit une recette ou une dépense :

@@ -489,6 +489,9 @@ en:
         name:
           blank: "Enter the forecast name."
           too_long: "The name has at most %{max} characters."
+        owner:
+          unknown: "No active piece is called %{owner}: it cannot hold the forecast."
+        owned: "This forecast is held by %{owner}: change it from that extension."
         period:
           unknown: "Unknown period (%{id})."
           order: "The last period comes before the first one."

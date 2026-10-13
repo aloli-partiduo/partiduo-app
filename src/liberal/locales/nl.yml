@@ -123,6 +123,7 @@ nl:
       no_fiscal_year: "Geen boekjaar van het dossier dekt %{year}"
       year_open: "Het boekjaar %{year} is niet afgesloten: de 2035 kan nog wijzigen; sluit het af vóór de indiening"
       frozen_changed: "De 2035 van %{year} is gewijzigd sinds het boekjaar werd vastgelegd (identificatie gewijzigd?): controleren vóór elke indiening"
+      asset_register_ignored: "De vaste activa van de 2035 komen uit %{source}: de %{lines} regels van het register van de module worden niet overgenomen"
     reversal_label: "Annulering van %{number}"
     export:
       filename:

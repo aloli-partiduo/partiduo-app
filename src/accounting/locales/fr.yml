@@ -489,6 +489,9 @@ fr:
         name:
           blank: "Indiquez le nom de la prévision."
           too_long: "Le nom compte au plus %{max} caractères."
+        owner:
+          unknown: "Aucune pièce active ne s'appelle %{owner} : elle ne peut pas tenir la prévision."
+        owned: "Cette prévision est tenue par %{owner} : modifiez-la depuis cette extension."
         period:
           unknown: "Période inconnue (%{id})."
           order: "La dernière période précède la première."

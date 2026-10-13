@@ -123,6 +123,7 @@ en:
       no_fiscal_year: "No financial year of the file covers %{year}"
       year_open: "Year %{year} is not closed: the 2035 may still change; close it before filing"
       frozen_changed: "The %{year} 2035 has changed since the year was frozen (identification edited?): check before any filing"
+      asset_register_ignored: "The 2035 fixed assets come from %{source}: the %{lines} lines of the module register are not used"
     reversal_label: "Cancellation of %{number}"
     export:
       filename:

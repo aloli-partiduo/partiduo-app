@@ -489,6 +489,9 @@ nl:
         name:
           blank: "Geef de naam van de prognose op."
           too_long: "De naam telt hoogstens %{max} tekens."
+        owner:
+          unknown: "Er is geen actief onderdeel %{owner}: het kan de prognose niet beheren."
+        owned: "Deze prognose wordt beheerd door %{owner}: wijzig ze vanuit die extensie."
         period:
           unknown: "Onbekende periode (%{id})."
           order: "De laatste periode komt vóór de eerste."

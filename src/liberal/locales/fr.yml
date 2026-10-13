@@ -123,6 +123,7 @@ fr:
       no_fiscal_year: "Aucun exercice du dossier ne couvre %{year}"
       year_open: "L'exercice %{year} n'est pas clôturé : la 2035 peut encore changer ; le clôturer avant de la transmettre"
       frozen_changed: "La 2035 de %{year} a changé depuis que l'exercice est figé (identification modifiée ?) : vérifier avant tout dépôt"
+      asset_register_ignored: "Les immobilisations de la 2035 viennent de %{source} : les %{lines} lignes du registre du module ne sont pas reprises"
     reversal_label: "Annulation de %{number}"
     export:
       filename:

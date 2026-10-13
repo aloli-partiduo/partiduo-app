@@ -13,6 +13,8 @@ module Partiduo
       field :start_period_id, :big_int
       field :end_period_id, :big_int
       field :created_by_id, :big_int, null: true, blank: true
+      # Pièce du registre qui tient la prévision (A-PER-4) ; vide : aucune.
+      field :owner, :string, max_size: 32, blank: true, default: ""
 
       with_timestamp_fields
     end

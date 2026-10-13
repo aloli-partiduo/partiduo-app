@@ -244,7 +244,38 @@ plus bas des plafonds d'amortissement (`vehicle_depreciation_ceiling`,
 D-LIB-012), aucune ligne, année sans exercice, exercice non clôturé
 (`year_open` : à clôturer avant la transmission), 2035 changée
 depuis le figement (`frozen_changed` : identification modifiée) (à
-vérifier).
+vérifier) ; registre du module écarté au profit d'une source
+d'immobilisations (`asset_register_ignored`, `%{source}`, `%{lines}`).
+
+=== Immobilisations fournies par une extension (0.15.0, A-AMO-3)
+
+Un professionnel libéral qui tient la Comptabilité complète et ses
+immobilisations dans une extension (amortissements dégressifs,
+composants, cessions : `partiduo-amortis`) voit sa 2035 préparée avec
+elles, au lieu du registre linéaire du module :
+
+[source]
+----
+Partiduo::Api::Liberal.register_asset_source("AMORTIS") do |actor, year|
+  # actor : acteur système ; nil si l'extension ne tient rien pour l'année
+  Partiduo::Api::Liberal::AssetSourceView.new(rows, disposals, "amortis.module.name")
+end
+----
+
+* `AssetSourceView` : `rows` (`DepreciationRowView` : base, antérieurs,
+  dotation de l'année), `disposals` (`DisposalResultView` : prix, valeur
+  nette, plus ou moins-value court et long terme), `label_key` (nom de la
+  source, clé i18n).
+* La source n'est lue que si sa pièce est active ; la première source
+  active qui rend une vue pour l'année l'emporte. Elle *remplace* le
+  registre du module pour le tableau des immobilisations, la dotation
+  (`depreciation`, `assets_*`), les cessions et les plus ou moins-values ;
+  un registre non vide la même année est signalé
+  (`asset_register_ignored`, avertissement), jamais additionné.
+* `TaxReturnView#asset_source` : code de la source retenue, vide pour le
+  registre. L'empreinte suit les montants : changer de source change
+  l'empreinte, comme toute autre modification.
+* `unregister_asset_source(code)` (specs), `asset_sources`.
 
 == Événements
 

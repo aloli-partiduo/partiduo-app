@@ -63,6 +63,11 @@ module Partiduo
         adjustment_views = Adjustments.views(adjustments)
         rows = Assets.depreciation(year)
         disposals = Assets.disposals(year)
+        source = Api.asset_source_for(year)
+        register_rows = rows.size + disposals.size
+        if source
+          rows, disposals = source[1].rows, source[1].disposals
+        end
         values = amounts(totals, adjustment_views, rows, disposals)
 
         mapping = FormLines.for_year(year)
@@ -76,10 +81,17 @@ module Partiduo
         exercise = Years.view(year)
         fingerprint = fingerprint(year, identity, lines)
         controls = controls(year, totals, lines, rows, identity, exercise)
+        if source && register_rows > 0
+          # Les immobilisations du registre du module ne sont pas lues : elles
+          # feraient double emploi avec celles de la source (A-AMO-3).
+          controls << control("asset_register_ignored", "warning", {"lines"  => register_rows.to_s,
+                                                                    "source" => I18n.t(source[1].label_key)})
+        end
         if exercise.frozen? && !exercise.frozen_fingerprint.empty? && exercise.frozen_fingerprint != fingerprint
           controls << control("frozen_changed", "warning", {"year" => year.to_s})
         end
-        Api::TaxReturnView.new(year, identity, lines, rows, disposals, adjustment_views, controls, fingerprint, exercise)
+        Api::TaxReturnView.new(year, identity, lines, rows, disposals, adjustment_views, controls, fingerprint, exercise,
+          asset_source: source.try(&.[0]) || "")
       end
 
       private def self.default_form(item : String) : String

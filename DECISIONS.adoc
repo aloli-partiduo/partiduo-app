@@ -15590,3 +15590,48 @@ active : lire un fichier ne touche à aucune donnée du dossier.
 (extrait ventilé), `doc/api/accounting-fec-reader.adoc` (nouveau). Specs :
 `spec/accounting/amendments_posting_spec.cr`,
 `spec/analytic/financial_distribution_spec.cr`.
+
+=== D-AMD-022 — Prévision tenue par une extension (A-PER-4)
+
+*Choix.* Colonne `owner` d'`accounting_forecast` (migration accounting
+0017), champ `ForecastInput#owner` et `ForecastSummaryView#owner`
+(derniers champs, défauts sans effet), paramètre nommé `owner:` (défaut
+`nil`) de chaque commande d'écriture d'une prévision, de ses catégories et
+de ses éléments. Une prévision tenue n'est écrite que par l'appel qui
+nomme son propriétaire (`accounting.errors.forecast.owned`) ; tous la
+lisent ; sa copie est libre. Le propriétaire doit être une pièce active à
+la création.
+
+*Pourquoi un paramètre et non l'acteur.* `Actor` dit *qui* agit (un
+utilisateur et ses droits), pas *par quel code* : l'extension agit au nom
+de l'utilisateur, avec ses droits. Le cœur ne peut pas distinguer l'appel
+d'une extension de celui de l'interface ; il n'a pas à le faire : la
+réserve protège la prévision de l'écran commun, qui ne se nomme pas, et
+non d'un code malveillant compilé dans la distribution. Écrit dans la
+documentation pour qu'on ne la prenne pas pour une barrière.
+
+*Alternative écartée.* Un réglage par prévision « verrouillée » sans
+propriétaire : n'importe quel écran pourrait la déverrouiller.
+
+=== D-AMD-023 — Immobilisations de la 2035 fournies par une extension (A-AMO-3)
+
+*Choix.* `Partiduo::Api::Liberal.register_asset_source(code) { |actor,
+year| AssetSourceView? }` : la 2035 lit, au lieu du registre linéaire du
+module, les immobilisations, la dotation et les cessions de la première
+source *active* qui en tient pour l'année. Le registre n'est jamais
+additionné à la source : s'il a des lignes la même année, un contrôle
+l'avertit (`asset_register_ignored`). `TaxReturnView#asset_source` (dernier
+champ) nomme la source retenue ; `partiduo-teledec` n'a rien à changer :
+il lit la 2035 préparée.
+
+*Sens de la dépendance.* C'est l'extension qui s'enregistre auprès du
+module `liberal` (accroche du contrat), comme pour les données initiales ;
+`liberal` ne cite aucune extension. Le bloc reçoit l'acteur système : il
+lit les données de l'extension, pas celles de l'utilisateur.
+
+=== D-AMD-024 — Version du contrat 0.15.0
+
+*Choix.* D-AMD-022 et D-AMD-023 : `API_VERSION` 0.15.0. Documentation :
+`doc/api/accounting-forecasts.adoc`, `doc/api/liberal.adoc`. Specs :
+`spec/accounting/forecast_owner_spec.cr`, `spec/liberal/asset_source_spec.cr`
+(`PARTIDUO_MODULES=liberal`).

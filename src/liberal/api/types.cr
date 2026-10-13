@@ -466,7 +466,9 @@ module Partiduo
       # (`partiduo-teledec`) que la déclaration n'a pas changé depuis sa
       # validation. `exercise` : état de l'exercice — ouvert, la 2035 est
       # recalculée à chaque lecture ; figé, ses montants ne changent plus
-      # (DECISIONS D-LIB2-005).
+      # (DECISIONS D-LIB2-005). `asset_source` (A-AMO-3) : pièce qui a fourni
+      # les immobilisations (`register_asset_source`), vide pour le registre
+      # du module.
       record TaxReturnView,
         year : Int32,
         identity : IdentityView,
@@ -476,7 +478,8 @@ module Partiduo
         adjustments : Array(AdjustmentView),
         controls : Array(ControlView),
         fingerprint : String,
-        exercise : YearView do
+        exercise : YearView,
+        asset_source : String = "" do
         # Aucun contrôle bloquant : la 2035 peut être transmise.
         def ready? : Bool
           controls.none?(&.error?)

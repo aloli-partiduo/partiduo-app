@@ -31,7 +31,14 @@ module Partiduo
 
       # Prévision : nom (255 caractères au plus), première et dernière
       # périodes du socle (`f_start_date`, `f_end_date`).
-      record ForecastInput, name : String, start_period_id : Int64, end_period_id : Int64
+      #
+      # `owner` (A-PER-4) : code du registre de la pièce qui *tient* la
+      # prévision (`PERSO` pour le budget d'un foyer), active ; elle seule
+      # peut ensuite la modifier ou la supprimer, et en écrire les
+      # catégories et les éléments, en se nommant (`owner:` des commandes) ;
+      # tous la lisent. `nil` garde le propriétaire enregistré (aucun à la
+      # création) ; `""` libère la prévision.
+      record ForecastInput, name : String, start_period_id : Int64, end_period_id : Int64, owner : String? = nil
 
       # Catégorie (`forecast_category`) : libellé, rang d'affichage.
       record ForecastCategoryInput, label : String, position : Int32 = 0
@@ -57,13 +64,21 @@ module Partiduo
 
       # --- Vues ------------------------------------------------------------------------
 
+      # `owner` (A-PER-4) : pièce qui tient la prévision, vide si aucune.
       record ForecastSummaryView,
         id : Int64,
         name : String,
         start_period_id : Int64,
         end_period_id : Int64,
         starts_on : Time,
-        ends_on : Time
+        ends_on : Time,
+        owner : String = "" do
+        # Prévision tenue par une extension : l'écran de la Comptabilité ne
+        # propose pas de la modifier.
+        def owned? : Bool
+          !owner.empty?
+        end
+      end
 
       record ForecastPeriodAmountView, period_id : Int64, amount : BigDecimal
 
@@ -185,19 +200,23 @@ module Partiduo
           errors = Partiduo::Accounting::Forecasts.forecast_errors(input)
           next Result(ForecastView).failure(errors) unless errors.empty?
           forecast = Partiduo::Accounting::Forecast.create!(name: input.name.strip, start_period_id: input.start_period_id,
-            end_period_id: input.end_period_id, created_by_id: actor.user_id)
+            end_period_id: input.end_period_id, created_by_id: actor.user_id,
+            owner: input.owner.try(&.strip.upcase) || "")
           Result(ForecastView).success(Partiduo::Accounting::Forecasts.view(forecast))
         end
       end
 
       # Changer les périodes retire les montants propres aux périodes sorties
       # de la prévision.
-      def self.update_forecast(actor : Actor, id : Int64, input : ForecastInput) : Result(ForecastView)
+      def self.update_forecast(actor : Actor, id : Int64, input : ForecastInput, owner : String? = nil) : Result(ForecastView)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do
           forecast = find_forecast(id)
+          owned = Partiduo::Accounting::Forecasts.owner_error(forecast, owner)
+          next Result(ForecastView).failure(owned) if owned
           errors = Partiduo::Accounting::Forecasts.forecast_errors(input)
           next Result(ForecastView).failure(errors) unless errors.empty?
+          input.owner.try { |value| forecast.owner = value.strip.upcase }
           forecast.name = input.name.strip
           forecast.start_period_id = input.start_period_id
           forecast.end_period_id = input.end_period_id
@@ -214,15 +233,20 @@ module Partiduo
         end
       end
 
-      def self.delete_forecast(actor : Actor, id : Int64) : Result(Nil)
+      def self.delete_forecast(actor : Actor, id : Int64, owner : String? = nil) : Result(Nil)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do
-          find_forecast(id).delete
+          forecast = find_forecast(id)
+          owned = Partiduo::Accounting::Forecasts.owner_error(forecast, owner)
+          next Result(Nil).failure(owned) if owned
+          forecast.delete
           Result(Nil).success(nil)
         end
       end
 
       # Copie complète sous le nom `name` (`Anticipation::object_clone`).
+      # La copie d'une prévision tenue par une extension n'a pas de
+      # propriétaire : chacun peut s'en servir comme d'un brouillon.
       def self.clone_forecast(actor : Actor, id : Int64, name : String) : Result(ForecastView)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do
@@ -238,10 +262,12 @@ module Partiduo
       # --- Catégories ---------------------------------------------------------------------
 
       def self.create_forecast_category(actor : Actor, forecast_id : Int64,
-                                        input : ForecastCategoryInput) : Result(ForecastCategoryView)
+                                        input : ForecastCategoryInput, owner : String? = nil) : Result(ForecastCategoryView)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do
           forecast = find_forecast(forecast_id)
+          owned = Partiduo::Accounting::Forecasts.owner_error(forecast, owner)
+          next Result(ForecastCategoryView).failure(owned) if owned
           errors = Partiduo::Accounting::Forecasts.category_errors(input)
           next Result(ForecastCategoryView).failure(errors) unless errors.empty?
           category = Partiduo::Accounting::ForecastCategory.create!(forecast: forecast, label: input.label.strip,
@@ -250,10 +276,13 @@ module Partiduo
         end
       end
 
-      def self.update_forecast_category(actor : Actor, id : Int64, input : ForecastCategoryInput) : Result(ForecastCategoryView)
+      def self.update_forecast_category(actor : Actor, id : Int64, input : ForecastCategoryInput,
+                                        owner : String? = nil) : Result(ForecastCategoryView)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do
           category = find_category(id)
+          owned = Partiduo::Accounting::Forecasts.owner_error(category.forecast!, owner)
+          next Result(ForecastCategoryView).failure(owned) if owned
           errors = Partiduo::Accounting::Forecasts.category_errors(input)
           next Result(ForecastCategoryView).failure(errors) unless errors.empty?
           category.label = input.label.strip
@@ -264,27 +293,36 @@ module Partiduo
       end
 
       # Supprime la catégorie et ses éléments.
-      def self.delete_forecast_category(actor : Actor, id : Int64) : Result(Nil)
+      def self.delete_forecast_category(actor : Actor, id : Int64, owner : String? = nil) : Result(Nil)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do
-          find_category(id).delete
+          category = find_category(id)
+          owned = Partiduo::Accounting::Forecasts.owner_error(category.forecast!, owner)
+          next Result(Nil).failure(owned) if owned
+          category.delete
           Result(Nil).success(nil)
         end
       end
 
       # --- Éléments ---------------------------------------------------------------------
 
-      def self.check_forecast_item(actor : Actor, category_id : Int64, input : ForecastItemInput) : Result(Nil)
+      def self.check_forecast_item(actor : Actor, category_id : Int64, input : ForecastItemInput,
+                                   owner : String? = nil) : Result(Nil)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         category = find_category(category_id)
+        owned = Partiduo::Accounting::Forecasts.owner_error(category.forecast!, owner)
+        return Result(Nil).failure(owned) if owned
         errors = Partiduo::Accounting::Forecasts.item_errors(category.forecast!, input)
         errors.empty? ? Result(Nil).success(nil) : Result(Nil).failure(errors)
       end
 
-      def self.create_forecast_item(actor : Actor, category_id : Int64, input : ForecastItemInput) : Result(ForecastItemView)
+      def self.create_forecast_item(actor : Actor, category_id : Int64, input : ForecastItemInput,
+                                    owner : String? = nil) : Result(ForecastItemView)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do
           category = find_category(category_id)
+          owned = Partiduo::Accounting::Forecasts.owner_error(category.forecast!, owner)
+          next Result(ForecastItemView).failure(owned) if owned
           errors = Partiduo::Accounting::Forecasts.item_errors(category.forecast!, input)
           next Result(ForecastItemView).failure(errors) unless errors.empty?
           item = Partiduo::Accounting::Forecasts.save_item!(Partiduo::Accounting::ForecastItem.new(category: category), input)
@@ -294,11 +332,14 @@ module Partiduo
 
       # Remplace l'élément entier (montants par période compris) ; sans
       # nature (`nil`), le poste garde la sienne.
-      def self.update_forecast_item(actor : Actor, id : Int64, input : ForecastItemInput) : Result(ForecastItemView)
+      def self.update_forecast_item(actor : Actor, id : Int64, input : ForecastItemInput,
+                                    owner : String? = nil) : Result(ForecastItemView)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do
           item = Partiduo::Accounting::ForecastItem.filter(id: id).first || raise NotFound.new("forecast_item", id)
           forecast = item.category!.forecast!
+          owned = Partiduo::Accounting::Forecasts.owner_error(forecast, owner)
+          next Result(ForecastItemView).failure(owned) if owned
           errors = Partiduo::Accounting::Forecasts.item_errors(forecast, input)
           next Result(ForecastItemView).failure(errors) unless errors.empty?
           Partiduo::Accounting::Forecasts.save_item!(item, input)
@@ -306,10 +347,12 @@ module Partiduo
         end
       end
 
-      def self.delete_forecast_item(actor : Actor, id : Int64) : Result(Nil)
+      def self.delete_forecast_item(actor : Actor, id : Int64, owner : String? = nil) : Result(Nil)
         Guard.authorize!(actor, REPORT_WRITE, module_code: MODULE_CODE)
         Transaction.run do
           item = Partiduo::Accounting::ForecastItem.filter(id: id).first || raise NotFound.new("forecast_item", id)
+          owned = Partiduo::Accounting::Forecasts.owner_error(item.category!.forecast!, owner)
+          next Result(Nil).failure(owned) if owned
           item.delete
           Result(Nil).success(nil)
         end

@@ -20,6 +20,9 @@ module Partiduo
 
       def self.forecast_errors(input : Api::ForecastInput) : Array(FieldError)
         errors = [] of FieldError
+        if (owner = input.owner.try(&.strip.upcase).presence) && !Partiduo::Modules.active?(owner)
+          errors << error("owner", "owner.unknown", {"owner" => owner})
+        end
         name = input.name.strip
         if name.empty?
           errors << error("name", "name.blank")
@@ -34,6 +37,14 @@ module Partiduo
           errors << error("end_period_id", "period.order")
         end
         errors
+      end
+
+      # Écriture d'une prévision tenue par une pièce (A-PER-4) : réservée à
+      # l'appel qui se présente comme elle (`owner`) ; `nil` si permise.
+      def self.owner_error(forecast : Forecast, owner : String?) : FieldError?
+        held = forecast.owner.to_s
+        return if held.empty? || owner.try(&.strip.upcase) == held
+        FieldError.base("accounting.errors.forecast.owned", {"owner" => held})
       end
 
       def self.category_errors(input : Api::ForecastCategoryInput) : Array(FieldError)
@@ -147,7 +158,7 @@ module Partiduo
         finish = period(forecast.end_period_id!.as(Int64))
         Api::ForecastSummaryView.new(forecast.pk!.as(Int64), forecast.name!, forecast.start_period_id!.as(Int64),
           forecast.end_period_id!.as(Int64), start.try(&.starts_on!) || Time.utc(1970, 1, 1),
-          finish.try(&.ends_on!) || Time.utc(1970, 1, 1))
+          finish.try(&.ends_on!) || Time.utc(1970, 1, 1), forecast.owner.to_s)
       end
 
       def self.view(forecast : Forecast) : Api::ForecastView
