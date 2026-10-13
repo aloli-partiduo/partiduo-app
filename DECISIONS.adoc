@@ -15090,3 +15090,47 @@ signature est tirée pour le poste. Le code du format, aujourd'hui dans
 `partiduo-admin`, passe dans un shard `partiduo-backup` utilisé par les
 deux (dépôt à créer). Étape 3 : formule Homebrew pour macOS, programme
 `partiduo` dans le paquet FreeBSD.
+
+*Étape 2 faite (13 octobre 2026).* `partiduo dossier sauvegarder` et
+`restaurer`, `partiduo cle ajouter|liste` (`../partiduo-dist`,
+`src/local/backup.cr`) ; essayées en réel : sauvegarde, restauration dans
+un dossier neuf, remplacement avec sauvegarde de sûreté, refus d'une autre
+clé et d'un fichier altéré.
+
+=== D-LOC-007 — Shard `partiduo-backup`
+
+*Choix.* Le format des sauvegardes (chiffrement, capsules, manifeste,
+signature, emplacements, racine du stockage, protocole de `store-serve`,
+flux `age`) vit dans le shard `aloli-partiduo/partiduo-backup`, dont
+dépendent `partiduo-admin` (exécutant et administration, par des alias :
+`BackupCrypto`, `Locator`, `StoreRoot`, `StoreServer`) et `partiduo-dist`
+(commande `partiduo`). Ses specs vérifient le format avec les outils
+officiels (`age`, `ssh-keygen`, `openssl`) ; celles de partiduo-admin
+gardent ce qui est propre à l'exécutant (flux par l'enveloppe de sudo,
+client du stockage, configuration, commandes locales).
+
+*Alternative écartée.* Faire dépendre `partiduo-dist` de `partiduo-admin` :
+toute l'administration et ses dépendances pour un format de fichiers.
+
+=== D-LOC-008 — Sauvegardes d'un dossier local
+
+*Choix.* Sur un poste, l'utilisateur tient le rôle de l'exploitant : ses
+clés publiques `age1pq1…` (`partiduo cle ajouter`, fichier
+`cles.recipients` de son répertoire) chiffrent les capsules ; sa clé privée
+et sa phrase de passe restent hors du poste et ne servent qu'à restaurer
+(`--cle`, `age` demande la phrase de passe). Une clé de signature est
+tirée pour le poste à la première sauvegarde (`backup-signing.key`, 0600) ;
+emplacements `<poste>/<dossier>/<fichier>`, `<poste>` étant le nom court de
+la machine. Stockage par défaut `<PARTIDUO_HOME>/sauvegardes`, `--vers` pour
+une clé USB ou un NAS. La sauvegarde est relue à sa prise ; la restauration
+vérifie la signature (clé du poste, ou `--signataires` pour une sauvegarde
+de serveur), les empreintes, puis authentifie les fichiers en entier avant
+le premier geste ; un dossier existant n'est remplacé qu'avec
+`--remplacer`, fermé, après une sauvegarde de sûreté. Restaurer sous un
+nom nouveau crée le dossier ; ses modules sont lus dans la base restaurée
+(`instance status`).
+
+*Limite.* Les pièces jointes sont archivées en entier (pas de liste
+relevée avant et après `pg_dump` comme sur un serveur, D-AFN-012) : le
+dossier local n'a qu'un utilisateur, qui ne dépose rien pendant la
+sauvegarde.
