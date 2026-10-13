@@ -15399,3 +15399,82 @@ comptabilité de la fiche (`card.saved` n'est pas publié).
 *Choix.* D-AMD-007 et D-AMD-008 : `API_VERSION` 0.12.0. Documentation :
 `doc/api/socle-referentiel.adoc` (fiches). Specs :
 `spec/cards/amendments_cards_spec.cr`.
+
+=== D-AMD-010 — Une ligne d'écriture par son identifiant (A-AMO-4)
+
+*Choix.* `Accounting.entry_line(actor, id) : EntryLineView` et critère
+`line_ids` d'`EntryQuery` (dernier champ) : les deux formes proposées.
+`EntryLineView#entry_id` (dernier champ, `nil` par défaut, toujours rempli
+par le cœur) relie la ligne à son écriture. Journal non lisible : la ligne
+n'existe pas pour l'acteur (`NotFound`, comme `entry`).
+
+=== D-AMD-011 — Écritures ouvertes de toutes les fiches d'une nature (A-SEPA-1)
+
+*Choix.* `Accounting.open_items(actor, kind, as_of, include_partial)` :
+une requête pour les lignes des fiches de la nature, une pour les écarts de
+lettrage, une pour les lettrages qui n'avaient qu'une ligne à la date
+d'arrêt — au lieu d'un relevé par fiche. Mêmes règles que la balance âgée
+arrêtée à `as_of` : une ligne lettrée par une écriture postérieure était
+ouverte ce jour-là. Un lettrage partiel n'est rendu que sur demande, avec
+son reliquat : `partiduo-sepa` ne propose pas de reliquat (D-SEPA-009).
+Vue `PartyOpenItemView`, distincte d'`OpenItemView` (élément de la balance
+âgée, sans fiche ni sens).
+
+*Droit.* `accounting.entry.read`, comme `account_statement` qu'elle
+remplace.
+
+=== D-AMD-012 — Sommes de lignes par critère (A-REP-3)
+
+*Choix.* `Accounting.line_sums(actor, LineSumQuery)` : une agrégation SQL
+par compte. La contrepartie et la fiche portent sur l'*écriture* (une
+ligne d'un compte de contrepartie, une ligne de la fiche), comme la lecture
+page à page de `partiduo-reports` qu'elle remplace (D-REP-006) ; les
+journaux sont ceux de l'acteur. `account_prefix` est un booléen, comme dans
+`EntryQuery`, plutôt qu'une chaîne : le même champ `account` sert au numéro
+exact et au préfixe.
+
+*Droit.* `accounting.report.read` : ce sont des totaux, comme la balance.
+
+=== D-AMD-013 — Totaux par code de TVA (A-REP-5)
+
+*Choix.* `Accounting.vat_totals(actor, VatTotalsQuery)` : base (lignes de
+rôle `base`) et TVA (rôle `tax`) par taux, compte et type de journal,
+signées débit − crédit. Ce n'est pas une déclaration : les déclarations de
+TVA du cœur gardent leurs règles (prorata, autoliquidation, exigibilité) ;
+cette lecture rend le détail « poste et code de TVA » des rapports.
+
+=== D-AMD-014 — Date de paiement ou d'échéance (A-REP-6)
+
+*Choix.* Énumération `DateBasis` (`Operation`, `Payment`, `Due`) et filtre
+`paid` dans `EntryQuery`, `TrialBalanceQuery` (champs ajoutés en dernier,
+défauts : date de l'écriture, pas de filtre), et dans les nouvelles
+`LineSumQuery` et `VatTotalsQuery`. Une seule règle, en SQL
+(`Partiduo::Accounting::EntryDates`) : une écriture est payée quand toutes
+ses lignes de *tiers* sont lettrées par des lettrages équilibrés ; sa date
+de paiement est la plus récente des écritures de ces lettrages, elle
+comprise. Les lignes d'une fiche de banque ou d'article ne comptent pas :
+la ligne de banque d'un règlement, jamais lettrée, ferait sinon passer
+tout règlement pour impayé.
+
+*Alternatives écartées.* Une date de paiement stockée sur l'écriture : à
+tenir à jour à chaque lettrage et délettrage, extourne comprise ; la
+calculer à la lecture suffit pour des éditions. Le rapprochement bancaire
+comme date de paiement : il n'existe pas dans tous les dossiers, et le
+lettrage est déjà ce qui dit qu'une facture est payée (`payment.matched`).
+
+=== D-AMD-015 — Solde d'un compte à une date (A-PER-1)
+
+*Choix.* `Accounting.account_balance(actor, number, as_of, prefix)` : une
+somme SQL, mêmes lignes que le solde d'`account_statement` (journaux
+lisibles, tous exercices, jusqu'à `as_of` inclus), vérifié par la spec.
+`prefix` donne le solde d'un compte et de ses sous-comptes (épargne d'un
+foyer répartie sur plusieurs livrets). Droit : `accounting.entry.read`.
+
+=== D-AMD-016 — Version du contrat 0.13.0
+
+*Choix.* D-AMD-010 à D-AMD-015 : `API_VERSION` 0.13.0. Code :
+`src/accounting/api/sums.cr`, `sum_types.cr`,
+`src/accounting/services/line_sums.cr`, `entry_dates.cr`. Documentation :
+`doc/api/accounting-entries.adoc` (consultation, date de paiement),
+`doc/api/accounting-reports.adoc` (balances, sommes, TVA). Specs :
+`spec/accounting/amendments_reads_spec.cr`.

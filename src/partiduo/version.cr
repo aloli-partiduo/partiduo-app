@@ -26,8 +26,10 @@ module Partiduo
   # `check_attachment`, ICS de la société, saut de page et niveaux de titre
   # du PDF neutre, `incompatible_with_kind`, D-AMD-001 à D-AMD-006 ;
   # 0.12.0 : fiches, critère `iban` de `CardQuery`, pièces jointes d'une
-  # fiche, D-AMD-007 à D-AMD-009).
-  API_VERSION = "0.12.0"
+  # fiche, D-AMD-007 à D-AMD-009 ; 0.13.0 : lectures de la Comptabilité,
+  # `entry_line`, `account_balance`, `open_items`, `line_sums`,
+  # `vat_totals`, `DateBasis` et `paid`, D-AMD-010 à D-AMD-016).
+  API_VERSION = "0.13.0"
 end
 
 module Partiduo

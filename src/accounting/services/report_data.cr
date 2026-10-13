@@ -71,27 +71,33 @@ module Partiduo
       # lignes de l'exercice antérieures à `from` ; par compte, ou par
       # compte et fiche (`by_card`). `card_ids` : lignes de ces fiches
       # seulement ; `account_prefix` : comptes qui commencent par ce numéro.
+      # `date_basis` et `paid` (A-REP-6) : date qui situe chaque écriture
+      # (`EntryDates`) et filtre « payé / non payé ».
       def self.sums(ledger_ids : Array(Int64), from : Time, to : Time, *, by_card : Bool = false,
                     account_from : String? = nil, account_to : String? = nil, account_prefix : String? = nil,
-                    card_ids : Array(Int64)? = nil, opening : Bool = true) : Array(Sum)
+                    card_ids : Array(Int64)? = nil, opening : Bool = true,
+                    date_basis : Api::DateBasis = Api::DateBasis::Operation, paid : Bool? = nil) : Array(Sum)
         return [] of Sum if ledger_ids.empty? || from > to
         return [] of Sum if card_ids && card_ids.empty?
         start = opening ? (fiscal_start(from) || from) : from
         start = from if start > from
+        date = EntryDates.expression(date_basis)
         args = [start, from, to] of ::DB::Any
-        clauses = ["e.ledger_id IN (#{ledger_ids.join(", ")})", "e.date >= $1::date", "e.date <= $3::date"]
+        clauses = ["e.ledger_id IN (#{ledger_ids.join(", ")})", "#{date} >= $1::date", "#{date} <= $3::date"]
         clauses.concat(account_clauses(args, account_from, account_to, account_prefix))
         clauses << "x.card_id IN (#{card_ids.join(", ")})" if card_ids
+        EntryDates.paid_clause(paid).try { |clause| clauses << clause }
         card_column = by_card ? "x.card_id" : "NULL::bigint"
         sql = <<-SQL
           SELECT a.number, a.label, a.kind, #{card_column},
-                 COALESCE(sum(CASE WHEN x.side = 'debit' THEN x.amount ELSE -x.amount END) FILTER (WHERE e.date < $2::date), 0),
-                 COALESCE(sum(x.amount) FILTER (WHERE e.date >= $2::date AND x.side = 'debit'), 0),
-                 COALESCE(sum(x.amount) FILTER (WHERE e.date >= $2::date AND x.side = 'credit'), 0),
-                 count(*) FILTER (WHERE e.date >= $2::date)
+                 COALESCE(sum(CASE WHEN x.side = 'debit' THEN x.amount ELSE -x.amount END) FILTER (WHERE #{date} < $2::date), 0),
+                 COALESCE(sum(x.amount) FILTER (WHERE #{date} >= $2::date AND x.side = 'debit'), 0),
+                 COALESCE(sum(x.amount) FILTER (WHERE #{date} >= $2::date AND x.side = 'credit'), 0),
+                 count(*) FILTER (WHERE #{date} >= $2::date)
           FROM accounting_entry_line x
           JOIN accounting_entry e ON e.id = x.entry_id
           JOIN accounting_account a ON a.id = x.account_id
+          #{EntryDates.join(date_basis, paid)}
           WHERE #{clauses.join(" AND ")}
           GROUP BY a.number, a.label, a.kind#{by_card ? ", x.card_id" : ""}
           ORDER BY a.number#{by_card ? ", x.card_id" : ""}

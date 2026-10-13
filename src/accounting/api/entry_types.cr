@@ -179,7 +179,7 @@ module Partiduo
       # saisie d'origine (`EntryInput.lines[i]`, article `DocumentInput.lines[i]`)
       # — nul pour une ligne calculée (TVA, tiers, banque) ou antérieure au
       # lot 5 ; une extourne reprend celui de la ligne qu'elle annule
-      # (D-ANA-012).
+      # (D-ANA-012). `entry_id` (A-AMO-4) : écriture de la ligne.
       record EntryLineView,
         id : Int64,
         position : Int32,
@@ -198,7 +198,8 @@ module Partiduo
         quantity : BigDecimal?,
         matching_id : Int64?,
         matching_code : String?,
-        input_index : Int32? = nil do
+        input_index : Int32? = nil,
+        entry_id : Int64? = nil do
         def debit : BigDecimal
           side.debit? ? amount : BigDecimal.new(0)
         end
@@ -254,6 +255,11 @@ module Partiduo
       # journal, dates, période, compte (numéro exact, ou préfixe avec
       # `account_prefix`), fiche (quick code), pièce, libellé ou code interne
       # (contient, sans casse), montant d'en-tête, écritures annulées ou non.
+      #
+      # `date_basis` (A-REP-6) : date à laquelle s'appliquent `date_from` et
+      # `date_to` (`DateBasis`, date de l'écriture par défaut) ; `paid` :
+      # `true` écritures payées, `false` écritures de tiers non payées.
+      # `line_ids` (A-AMO-4) : écritures qui portent l'une de ces lignes.
       record EntryQuery,
         ledger_id : Int64? = nil,
         ledger_kind : LedgerKind? = nil,
@@ -270,7 +276,10 @@ module Partiduo
         source : String? = nil,
         include_cancelled : Bool = true,
         offset : Int32 = 0,
-        limit : Int32 = 50
+        limit : Int32 = 50,
+        date_basis : DateBasis = DateBasis::Operation,
+        paid : Bool? = nil,
+        line_ids : Array(Int64)? = nil
 
       # --- Lettrage --------------------------------------------------------------
 

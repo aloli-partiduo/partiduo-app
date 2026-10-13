@@ -21,8 +21,11 @@ module Partiduo
 
         query.ledger_id.try { |id| clauses << "e.ledger_id = #{param.call(id)}" }
         query.ledger_kind.try { |kind| clauses << "l.kind = #{param.call(kind.code)}" }
-        query.date_from.try { |day| clauses << "e.date >= #{param.call(Posting.day(day))}::date" }
-        query.date_to.try { |day| clauses << "e.date <= #{param.call(Posting.day(day))}::date" }
+        clauses.concat(EntryDates.clauses(args, query.date_basis, query.paid, query.date_from, query.date_to))
+        if line_ids = query.line_ids
+          return if line_ids.empty?
+          clauses << "EXISTS (SELECT 1 FROM accounting_entry_line z WHERE z.entry_id = e.id AND z.id IN (#{line_ids.join(", ")}))"
+        end
         query.period_id.try { |id| clauses << "e.period_id = #{param.call(id)}" }
         if number = query.account.try(&.strip).presence
           normalized = Chart.normalize(number)
@@ -57,6 +60,7 @@ module Partiduo
         limit = query.limit.clamp(1, 500)
         offset = Math.max(query.offset, 0)
         sql = "SELECT e.id FROM accounting_entry e JOIN accounting_ledger l ON l.id = e.ledger_id " \
+              "#{EntryDates.join(query.date_basis, query.paid)} " \
               "WHERE #{clause} ORDER BY e.date, e.id LIMIT #{limit} OFFSET #{offset}"
         Marten::DB::Connection.default.open do |db|
           db.query_all(sql, args: args, as: Int64)
@@ -67,7 +71,8 @@ module Partiduo
         where = where(query, ledger_ids)
         return 0_i64 if where.nil?
         clause, args = where
-        sql = "SELECT count(*) FROM accounting_entry e JOIN accounting_ledger l ON l.id = e.ledger_id WHERE #{clause}"
+        sql = "SELECT count(*) FROM accounting_entry e JOIN accounting_ledger l ON l.id = e.ledger_id " \
+              "#{EntryDates.join(query.date_basis, query.paid)} WHERE #{clause}"
         Marten::DB::Connection.default.open do |db|
           db.query_one(sql, args: args, as: Int64)
         end

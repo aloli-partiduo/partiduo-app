@@ -21,7 +21,8 @@ module Partiduo
       def self.trial_balance(query : Api::TrialBalanceQuery, readable : Array(Int64)) : Api::TrialBalanceView
         from, to = ReportData.range(query.date_from, query.date_to)
         ledger_ids = ReportData.ledgers(readable, query.ledger_ids, query.ledger_kinds)
-        sums = ReportData.sums(ledger_ids, from, to, account_from: query.account_from, account_to: query.account_to)
+        sums = ReportData.sums(ledger_ids, from, to, account_from: query.account_from, account_to: query.account_to,
+          date_basis: query.date_basis, paid: query.paid)
         rows = sums.map { |sum| row(sum.number, sum.label, ReportData.account_kind(sum.kind), [sum]) }
         rows.reject!(&.closing.signed.zero?) if query.nonzero_only
         classes = rows.group_by(&.number[0].to_s).map do |digit, list|

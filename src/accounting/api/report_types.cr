@@ -40,7 +40,10 @@ module Partiduo
       #   (`filter_cat`) ; `nil` = tous les journaux visibles ;
       # * `account_from` / `account_to` : bornes sur le numéro (comparaison
       #   de texte, comme `j_poste::text >= …`) ;
-      # * `nonzero_only` : masque les comptes soldés (`unsold`).
+      # * `nonzero_only` : masque les comptes soldés (`unsold`) ;
+      # * `date_basis`, `paid` (A-REP-6) : date qui situe chaque écriture
+      #   dans la période (`DateBasis`, date de l'écriture par défaut) et
+      #   filtre « payé / non payé », comme pour `EntryQuery`.
       record TrialBalanceQuery,
         date_from : Time? = nil,
         date_to : Time? = nil,
@@ -48,7 +51,9 @@ module Partiduo
         ledger_kinds : Array(LedgerKind)? = nil,
         account_from : String? = nil,
         account_to : String? = nil,
-        nonzero_only : Bool = false
+        nonzero_only : Bool = false,
+        date_basis : DateBasis = DateBasis::Operation,
+        paid : Bool? = nil
 
       # Ligne de balance : solde d'ouverture (lignes de l'exercice
       # antérieures à `date_from`), mouvements de la période, solde final,

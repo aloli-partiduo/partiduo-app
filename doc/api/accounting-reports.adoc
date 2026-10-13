@@ -51,7 +51,10 @@ crédit de la période, solde final, nombre de lignes ; sous-totaux par classe
 (`classes`), total (soldes additionnés colonne par colonne), synthèse des
 classes 1 à 5, 6 et 7 et résultat (`summary_add`), `delta` = débit − crédit.
 Filtres : journaux (`ledger_ids`, `ledger_kinds`), bornes de comptes,
-`nonzero_only` (`unsold`).
+`nonzero_only` (`unsold`) ; depuis 0.13.0, `date_basis` et `paid`
+(A-REP-6, voir `accounting-entries.adoc`, « Date de paiement ou
+d'échéance ») : l'ouverture compte alors les écritures de l'exercice
+situées avant `date_from` selon la même date.
 
 |`auxiliary_balance(actor, AuxiliaryBalanceQuery) : AuxiliaryBalanceView`
 |Balance des tiers (`balance_card.inc.php`) : mêmes colonnes par fiche,
@@ -64,7 +67,28 @@ tranches non échu / 1 à 30 / 31 à 60 / plus de 60 jours (ADR-005 D9) et
 éléments ouverts (ligne non lettrée ; reliquat d'un lettrage partiel daté de
 sa plus ancienne échéance). Mêmes règles que `account_statement` arrêté à
 `as_of` (D-ED-003). `NotFound` si `card` n'existe pas.
+
+|`line_sums(actor, LineSumQuery) : Array(LineSumView)` (0.13.0)
+|Sommes par compte des lignes retenues, calculées par PostgreSQL
+(A-REP-3) : `account` (exact, ou préfixe avec `account_prefix` ; tous si
+`nil`), `counterpart_prefix` (écritures qui portent aussi une ligne d'un
+compte commençant par ce numéro : « poste avec contrepartie »), `card`
+(écritures qui portent une ligne de cette fiche : « chiffre d'affaires par
+client » ; fiche inconnue, aucune somme), `ledger_ids`, `ledger_kinds`,
+`date_from`, `date_to`, `date_basis`, `paid`. Vue : compte, intitulé,
+`debit`, `credit`, `balance`, `lines`. Comptes sans ligne absents.
+
+|`vat_totals(actor, VatTotalsQuery) : Array(VatTotalView)` (0.13.0)
+|Base et TVA par code de taux, compte et type de journal (A-REP-5) : lignes
+de rôle `base` et `tax` portant un taux, signées débit − crédit (positives
+à l'achat, négatives à la vente), `rate` en pour cent, `lines`. Filtres :
+période (`date_basis`, `paid`), journaux ou types, compte (exact ou
+préfixe), codes de taux (`vat_rates`, casse indifférente). Les
+déclarations de TVA restent calculées par `vat_returns.adoc`.
 |===
+
+`line_sums` et `vat_totals` exigent `accounting.report.read`, comme les
+balances, et ne lisent que les journaux visibles de l'acteur.
 
 == Grand livre et journaux
 

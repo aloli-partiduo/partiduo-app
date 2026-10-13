@@ -154,6 +154,34 @@ EntryQuery) : Int64`
 |Recherche (`Acc_Ledger_Search`) : journal ou type, dates, période, compte
 (exact ou préfixe), fiche, pièce, texte (libellé, code interne, pièce),
 montant, source, annulées ou non ; par date ; `offset`/`limit` (500 au plus).
+Depuis 0.13.0 : `date_basis` et `paid` (A-REP-6, voir « Date de paiement
+ou d'échéance »), `line_ids` (écritures qui portent l'une de ces lignes,
+A-AMO-4).
+
+|`entry_line(actor, id) : EntryLineView` (0.13.0)
+|`accounting.entry.read`
+|Une ligne par son identifiant (A-AMO-4), avec `entry_id` (champ ajouté à
+toute `EntryLineView`) ; `NotFound` si elle n'existe pas ou si son journal
+n'est pas lisible.
+
+|`account_balance(actor, number, as_of = aujourd'hui, prefix = false) : BigDecimal` (0.13.0)
+|`accounting.entry.read`
+|Solde débit − crédit d'un compte au jour `as_of` inclus, en une agrégation
+SQL, sans charger ses lignes (A-PER-1) : mêmes lignes que le solde
+d'`account_statement` (journaux lisibles, tous exercices). `prefix` : les
+comptes qui commencent par ce numéro. `NotFound` si aucun compte ne répond.
+
+|`open_items(actor, kind, as_of = aujourd'hui, include_partial = false) : Array(PartyOpenItemView)` (0.13.0)
+|`accounting.entry.read`
+|Lignes ouvertes de *toutes* les fiches de la nature `kind` (`supplier`,
+`customer`…) en deux requêtes (A-SEPA-1) : lignes de tiers non lettrées à
+la date `as_of` (écritures datées au plus tard ce jour-là ; une ligne
+lettrée par une écriture postérieure y est ouverte) et, avec
+`include_partial`, celles d'un lettrage partiel (`matching_id`,
+`matching_remaining` : reliquat débit − crédit du lettrage). Vue : ligne,
+écriture, fiche (`card_id`, `card_code`, `card_name`), compte, journal,
+date, échéance, pièce, libellé, `side`, `amount` (positif), `signed`,
+`overdue`. Triées par fiche, date, écriture.
 
 |`account_statement(actor, StatementQuery) : AccountStatementView`
 |`accounting.entry.read`
@@ -180,6 +208,28 @@ client doit), négatif = créditeur (on doit au fournisseur). Élément ouvert :
 ligne non lettrée, ou lettrage partiel (compté pour son reliquat, daté de sa
 plus ancienne échéance). Date de référence : `as_of`, aujourd'hui par défaut ;
 échéance absente = date de l'écriture.
+
+=== Date de paiement ou d'échéance (0.13.0, A-REP-6)
+
+`EntryQuery`, `TrialBalanceQuery`, `LineSumQuery` et `VatTotalsQuery`
+portent `date_basis` (`DateBasis` : `Operation` par défaut, `Payment`,
+`Due`) et `paid` (`nil` par défaut, `true`, `false`) :
+
+* `Operation` : les bornes de dates s'appliquent à la date de l'écriture
+  (comportement antérieur) ;
+* `Due` : à son échéance, sinon à sa date ;
+* `Payment` : à sa date de paiement ; une écriture non payée n'a pas de
+  date de paiement et n'est pas retenue.
+
+Une écriture est *payée* quand elle porte au moins une ligne de tiers
+(fiche qui n'est ni une banque ni un article), que toutes ses lignes de
+tiers sont lettrées et que chacun de ces lettrages est équilibré ; sa date
+de paiement est la plus récente des écritures de ces lettrages, elle
+comprise (pour une facture, son dernier règlement). `paid: false` retient
+les écritures de tiers non payées ; une écriture sans ligne de tiers n'est
+ni payée ni non payée. Calcul fait par PostgreSQL
+(`Partiduo::Accounting::EntryDates`). Usages : opérations rapprochées, TVA
+sur les encaissements, listes de factures payées ou non.
 
 == Lettrage
 
