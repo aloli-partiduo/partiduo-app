@@ -15766,3 +15766,121 @@ l'interface plus bas (D-AMD-031).
 *Version.* D-AMD-027 et D-AMD-028 : `API_VERSION` 0.17.0. Documentation :
 `doc/api/approvals.adoc` (nouveau), `doc/api/auth.adoc`,
 `doc/api/core-settings.adoc`.
+
+=== D-AMD-030 — Compatibilité des extensions publiées, contournements à retirer
+
+*Vérification (13 octobre 2026).* Mode local (`scripts/override-local.sh`)
+dans `partiduo-bankimport`, `-amortis`, `-sepa`, `-reports`, `-import`,
+`-form`, `-perso`, `-teledec`, `-modeles` et `-dist` : toutes leurs specs
+compilent contre le cœur 0.17.0 et l'interface (`crystal build
+--no-codegen`), la distribution aussi (`src/server.cr`). Suites complètes
+vertes de `bankimport` (66), `amortis` (54), `sepa` (46), `reports` (45),
+`import` (58), `form` (59), `perso` (56). Aucune extension n'a été
+modifiée. Seul changement de comportement visible d'elles : la
+contrepartie d'un extrait financier porte désormais son `input_index`
+(D-AMD-019), que ni `import` ni `bankimport` ne lisent sur ce journal.
+
+*Contournements que la vague suivante pourra retirer.*
+
+[cols="1,3",options="header"]
+|===
+|Extension |Contournement → contrat
+
+|`bankimport`
+|Relevés OFX et QIF gardés en `text/plain` (D-BKI-003) → types
+`application/x-ofx`, `application/qif` ; tiers proposé par les seules
+règles apprises → `CardQuery#iban`.
+
+|`amortis`
+|`ModuleDisabled` dans un foyer et `incompatible_with "PERSO"`
+(D-AMO-002) → `incompatible_with_kind "household"` ; recherche par préfixe
+de compte `2`, 500 écritures au plus (D-AMO-004) → `entry_line`,
+`EntryQuery#line_ids` ; registre de la 2035 tenu et exporté par
+l'extension (D-AMO-014) → `Liberal.register_asset_source`.
+
+|`sepa`
+|Relevé fiche par fiche (D-SEPA-009) → `open_items` ; ICS dans les réglages
+de l'extension → `SettingsView#creditor_identifier` ; `approval_mode`
+propre, sans ré-authentification (D-SEPA-005) → `Approvals.submit`,
+`approve` ou `register_handler`, `consume` (digest du lot).
+
+|`reports`
+|Lecture paginée des écritures, 20 000 au plus (D-REP-006) → `line_sums` ;
+titres en gras sans saut de page → `page_break`, `level` ; détail par code
+de TVA refusé → `vat_totals` ; date de paiement et « payé / non payé »
+refusés → `date_basis`, `paid` ; aucun envoi → `Api::Mail.deliver`.
+
+|`import`
+|Pièce de l'émetteur sur l'opération de l'extension (D-IMP-007) →
+`external_reference` ; factures à déclarer par les formats CSV d'achats et
+de ventes → `EntryLineInput#vat_rate` ; ventilation refusée en journal
+financier (`analytic.financial`) → `Analytic.post_financial` ; lecteur FEC
+propre (D-IMP-011) → `Accounting.read_fec` (de même pour `partiduo-migrate`).
+
+|`form`
+|Route `/f/<jeton>` ajoutée par `Forms::Ui::App#setup` (D-FRM-007) →
+`PartiduoUi::Extensions.public_mount` (garder `/f/` pour les liens remis) ;
+contrôle de signature propre → `Core.check_attachment`,
+`detect_attachment_type` ; pièce citée par la seule réponse →
+`Cards.attach` à l'acceptation ; neutralisation propre des exports reste
+utile pour ses fichiers, celle du cœur est faite (A-FRM-5).
+
+|`perso`
+|Soldes par `account_statement` → `account_balance` ; budget surveillé
+(`budget.forecast.broken`) → prévision tenue (`owner: "PERSO"`).
+|===
+
+=== D-AMD-031 — Écran d'approbation et ré-authentification (A-SEPA-3, partiduo-ui-bulma)
+
+*Choix.* Écran commun « Approbations » de l'interface (`/approvals`,
+routes `core:approvals`, `core:approval`, `…_approve`, `…_reject`,
+`…_cancel`, `…_reauth`) : liste des demandes en attente que l'utilisateur
+peut décider ou qu'il a soumises, avec ce qui reste à faire (« À
+approuver », « Confirmer son identité », « Attend une autre personne ») ;
+détail (extension, opération, montant, référence, personnes, dates, mode,
+commentaire, exécution), détails de l'extension, piste d'audit ;
+approuver (commentaire facultatif, inscrit à la piste), rejeter, retirer.
+L'entrée du menu et la ligne de « À traiter » sont *propres à
+l'interface* et n'apparaissent que s'il y a des demandes en attente : le
+menu des manifestes n'a pas changé, rien n'y paraît dans un dossier dont
+aucune extension ne soumet d'opération.
+
+*Ré-authentification.* Sans authentification forte récente, « Approuver »
+devient « Confirmer mon identité pour approuver » ; une approbation
+refusée pour ce motif (session vieillie entre l'affichage et l'envoi)
+renvoie à la même page. Elle propose la passkey (élévation existante,
+retour `next` à la demande) et le code TOTP (élévation de la session par
+`elevate_with_totp`, refusée avec ses tentatives limitées), jamais un code
+de récupération ; un TOTP sous le niveau qu'exige la personne (passkey
+exigée) est signalé. Le contrat revérifie tout à la décision.
+
+*Réglage.* L'écran de la société propose le mode (une ou deux personnes)
+et le délai, et l'identifiant créancier SEPA (A-SEPA-2) ; un formulaire qui
+ne les envoie pas ne les efface pas.
+
+=== D-AMD-032 — Route publique d'extension (A-FRM-1, partiduo-ui-bulma)
+
+*Choix.* `PartiduoUi::Extensions.public_mount(code, routes, rate_limit:,
+rate_limits:, max_body_bytes:)` : routes servies sous le préfixe réservé
+`/p/<code en minuscules>/`, nommées `<code>_public:<nom>`, par
+`PartiduoUi::PublicExtensionHandler`, qui rend 404 (extension inconnue ou
+inactive, route inconnue), 429 avec `Retry-After` (limite de la route, par
+adresse, `RateLimit.allow?` avec une règle donnée), 413 (taille annoncée),
+puis appelle le handler de l'extension (protection CSRF de Marten). Les
+en-têtes stricts communs (`PUBLIC_HEADERS`, ceux de la page publique des
+formulaires, D-FRM-007) sont posés sauf ceux que le handler a posés
+lui-même. Pages d'erreur sans script ni lien vers le dossier.
+
+*Conséquence pour `partiduo-form`.* Son adresse publique est `/f/<jeton>`
+(liens déjà remis au public) ; en passant au montage public, elle devient
+`/p/form/<jeton>` : la vague suivante garde `/f/` en redirection ou
+continue de le servir, et garde sa limitation durable en base.
+
+=== D-AMD-033 — Formules neutralisées dans l'export CSV commun (A-FRM-5, partiduo-ui-bulma)
+
+*Choix.* `Table#to_csv` passe chaque cellule et chaque titre par
+`Table.csv_safe` : apostrophe devant une valeur qui commence par `=`, `+`,
+`-`, `@`, tabulation, retour chariot ou saut de ligne, comme les éditions
+du cœur (`TableOutput.csv_text`, D-2F-009) — sauf un nombre écrit tel quel
+(`-12.50`, `-3,2`), que le tableur lit comme un nombre et qu'il ne faut
+pas transformer en texte. `-1+1` reste neutralisé.
