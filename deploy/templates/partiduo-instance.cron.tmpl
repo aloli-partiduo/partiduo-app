@@ -3,8 +3,12 @@
 # partiduo-provision. Installé dans /usr/local/etc/cron.d/partiduo-{{DOSSIER}}
 # (cron(8) de FreeBSD : champ utilisateur après l'horaire).
 #
-# Fin de mois de la Facturation (D-INV2-008), commande idempotente avec
-# rattrapage : un passage quotidien suffit.
+# 3 h : fin de mois de la Facturation (D-INV2-008), commande idempotente
+# avec rattrapage : un passage quotidien suffit.
+# 4 h : purge des réponses aux formulaires publics arrivées à l'échéance de
+# leur durée de conservation (partiduo-form, D-FRM-011, D-PKG-010) ;
+# extension inactive : rien n'est fait.
 SHELL=/bin/sh
 PATH=/usr/local/bin:/usr/bin:/bin
 {{DAILY_MINUTE}} 3 * * * {{SYSTEM_USER}} set -a && . {{ENV_FILE}} && set +a && cd {{DATA_DIR}}/{{DOSSIER}} && {{MANAGE_PATH}} {{DAILY_COMMAND}} >>/var/log/partiduo/{{DOSSIER}}.daily.log 2>&1
+{{DAILY_MINUTE}} 4 * * * {{SYSTEM_USER}} set -a && . {{ENV_FILE}} && set +a && cd {{DATA_DIR}}/{{DOSSIER}} && {{MANAGE_PATH}} form_purge >>/var/log/partiduo/{{DOSSIER}}.daily.log 2>&1
