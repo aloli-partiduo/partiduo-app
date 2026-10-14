@@ -11689,6 +11689,32 @@ un autre serveur demande d'y recopier d'abord `<serveur>/<dossier>/`.
 *Alternative écartée.* Garder `--store-command` obligatoire : imposerait un
 second serveur à tout exploitant.
 
+=== D-CHF-026 — Répertoires des sauvegardes sous /var/db, jamais sous /var/backups
+
+Constat (loulou, 14 octobre 2026) : toutes les supervisions échouaient sur
+« Unable to get file info: '/var/backups/partiduo': Permission denied ».
+Sous FreeBSD, `/var/backups` appartient à root:wheel en 0750
+(`etc/mtree/BSD.var.dist`) : ni `partiduo-agent` ni `partiduo` ne peuvent le
+traverser, quels que soient les droits des répertoires qu'il contient. Les
+sauvegardes auraient échoué de même. Code dans `../partiduo-admin` (0.1.12)
+et le port `partiduo-agent`.
+
+*Choix.* Sauvegardes en préparation : `/var/db/partiduo-backups`
+(partiduo:partiduo-agent 0770, `--backup-dir`, `BACKUP_DIR` de
+`helpers.conf`) ; stockage sur le serveur même (D-CHF-025) :
+`/var/db/partiduo-store` (partiduo-agent 0700, `--store-dir`). À côté de
+`/var/db/partiduo` (données des dossiers) et `/var/db/partiduo-stage`, déjà
+utilisés.
+
+*Chiffrement.* Rien dans ces chemins ne dépend du chiffrement : sur un
+serveur de production, des jeux de données ZFS chiffrés (déverrouillés par
+Tang) sont montés à ces emplacements par beryl ; un serveur de test peut
+s'en passer.
+
+*Alternatives écartées.* `/var/backups` en 0751 : modifie un répertoire du
+système de base, qu'une mise à jour (mtree, pkgbase) remet en 0750. Comptes
+de service dans le groupe `wheel` : donne aussi `su` vers root.
+
 == Validation à deux au choix (29 septembre 2026)
 
 Décision de l'utilisateur : la double validation des opérations sensibles
