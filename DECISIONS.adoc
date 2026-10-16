@@ -13909,6 +13909,32 @@ journal, zone, lieu `/f/`, en-têtes écrasés, HSTS, ligne `form_purge`.
 `nginx -t` n'a pas pu tourner sur le poste (bac à sable) : à faire au
 premier déploiement.
 
+=== D-PKG-011 — Un seul binaire pour partiduo-server et partiduo-manage (16 octobre 2026)
+
+*Constat.* Le port `partiduo-app` compilait trois programmes, dont
+`partiduo-server` et `partiduo-manage`, qui embarquent chacun toute
+l'application. En `--release`, le port prenait plus d'une heure, et
+`partiduo-manage` ~47 Go de mémoire sur le builder (64 Go), sur un seul
+cœur (un seul module LLVM) ; la durée doublait d'une version à l'autre
+(35 min début octobre, 1 h 11 pour la 0.1.10, plus d'1 h 18 pour la
+0.1.15, encore en cours).
+
+*Choix.* `src/server.cr` de partiduo-dist est les deux programmes : lancé
+sous le nom `partiduo-manage`, il est la ligne de commande Marten ; sous
+tout autre nom, le serveur. Le paquet compile `partiduo-server` seul et pose
+`bin/partiduo-manage` en lien vers lui : enveloppes de l'exécutant, crons,
+scripts rc et commande `partiduo` gardent leurs chemins. `manage.cr` et la
+cible `partiduo-manage` restent pour le développement. Version 0.1.16 de
+partiduo-dist.
+
+*Avec.* `partiduo-app-devel` compilé sans `--release` (génération de code en
+parallèle ; essai local du binaire unique : 7 min 49 s) ; sur le builder,
+les gros ports ne se construisent plus en même temps
+(`MUTUALLY_EXCLUSIVE_BUILD_PACKAGES`, recette poudriere-builder).
+
+*Alternative écartée.* Ajouter de la mémoire ou des cœurs au builder : la
+compilation `--release` reste mono-cœur et la duplication demeure.
+
 == TELEDEC : réponses du 1er octobre 2026 (T9:teledec)
 
 Réponses de TELEDEC au courriel du 30 septembre 2026
