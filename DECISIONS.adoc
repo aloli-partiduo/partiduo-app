@@ -9912,6 +9912,29 @@ et le jeu de données initial, incompatible avec une restauration.
 l'étape 3) fermerait ce point. *Remplacée par D-AFN-009* (option
 `--files-only`, installation complète).
 
+=== D-ADM-014 — Le paquet d'un dossier est celui de l'administration
+
+Décision de l'utilisateur (16 octobre 2026) : `partiduo-admin-devel` ne crée
+que des dossiers en développement, `partiduo-admin` que des dossiers en
+production. Code dans `../partiduo-admin` (0.1.13) et le port
+`finance/partiduo-admin-devel`.
+
+*Choix.* Le paquet est fixé à la compilation : le port
+`partiduo-admin-devel` compile avec `-Dpartiduo_devel` (dossiers `devel`,
+servis par `partiduo-app-devel`), `partiduo-admin` sans (dossiers `app`,
+`partiduo-app`). Le formulaire de création n'a plus de choix de paquet : il
+affiche celui de l'administration. `Fleet.create_dossier` refuse tout autre
+paquet (`admin.errors.dossier.package_build`), même envoyé à la main.
+
+*Alternatives écartées.* Un réglage d'environnement (`admin.env`) : une
+erreur de configuration suffirait à créer un dossier de production depuis
+l'administration de test. Garder le choix dans le formulaire : rien
+n'empêchait de créer depuis l'administration de production un dossier
+`devel`, sur un serveur où seul `partiduo-app` est installé.
+
+*Dossiers existants.* Leur paquet ne change pas ; leurs tâches (sauvegarde,
+restauration) gardent le paquet enregistré.
+
 == Tests du lot A — interface d'instance, administration, exécutant (A:specs, 28 septembre 2026)
 
 Specs ajoutées : `partiduo-app/spec/core/instance_cli_rules_spec.cr` (17
