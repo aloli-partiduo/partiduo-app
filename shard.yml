@@ -1,5 +1,5 @@
 name: partiduo
-version: 0.1.28
+version: 0.1.29
 
 description: |
   Partiduo — comptabilité et facturation en Crystal.
@@ -46,7 +46,7 @@ dependencies:
     branch: production
   jose:
     github: aloli-crystal/jose
-    version: "~> 0.2"
+    version: "~> 0.2.1"
   saml:
     github: aloli-crystal/saml
     branch: production
@@ -61,4 +61,4 @@ dependencies:
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
-    version: "~> 1.6"
+    version: "~> 1.7"
