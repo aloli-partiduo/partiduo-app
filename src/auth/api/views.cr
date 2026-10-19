@@ -156,6 +156,14 @@ module Partiduo
 
       record FederatedStartView, redirect_url : String, request_id : String
 
+      # Demande d'une connexion fédérée : niveau demandé (`acr`, 0 = celui du
+      # fournisseur), ré-authentification (`fresh`), adresse attendue.
+      record FederatedOptions, acr : Int32 = 0, fresh : Bool = false, login_hint : String = ""
+
+      # Invitation encore valable, pour sa page : adresse de l'invité, lien de
+      # création du compte connect (vide s'il en a un, ADR-012 D6).
+      record InvitationView, email : String, signup_url : String = "", connect : Bool = false
+
       record IdentityProviderView, code : String, kind : String, name : String, level : Int32, active : Bool
 
       # Paramètre d'un type de fournisseur (écrans) : libellé
@@ -193,8 +201,12 @@ module Partiduo
       # langue ; `domain` : nom d'hôte configuré de l'instance (celui du lien,
       # jamais l'en-tête `Host` de la requête) ; `country_code` : pays de la
       # société (présentation des dates).
+      # Jeton remis hors bande. Invitation avec connect (ADR-012 D6) :
+      # `signup_code`, code à transmettre à l'invité par un autre canal que le
+      # courriel (vide s'il a déjà un compte, `connect_account`).
       record TokenView, user_id : Int64, purpose : String, token : String, expires_at : Time,
-        email : String = "", locale : String = "fr", domain : String = "", country_code : String = ""
+        email : String = "", locale : String = "fr", domain : String = "", country_code : String = "",
+        signup_code : String = "", connect_account : Bool = false
 
       record UserView,
         id : Int64,

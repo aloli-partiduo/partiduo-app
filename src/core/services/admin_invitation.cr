@@ -10,7 +10,8 @@ module Partiduo
     # plateforme ne crée, ne donne ni ne rend de droits que la société n'a
     # pas donnés (ADR-002 D3, D-CLI-005 amendée par D-AFN-003).
     module AdminInvitation
-      record Issued, email : String, token : String, expires_at : Time, created : Bool, usable_admins : Int32
+      record Issued, email : String, token : String, expires_at : Time, created : Bool, usable_admins : Int32,
+        signup_code : String = "", connect_account : Bool = false
 
       # À appeler dans une transaction, avec l'inscription au journal
       # d'audit. Lève `InstanceAdmin::Failure` en cas de refus.
@@ -30,7 +31,7 @@ module Partiduo
         end
         raise refused("instance.admin_invitation.revoked", "revoked", user.email) if user.revoked
         token = Partiduo::Api::Auth.issue_invitation(actor, user.id)
-        Issued.new(user.email, token.token, token.expires_at, false, usable)
+        Issued.new(user.email, token.token, token.expires_at, false, usable, token.signup_code, token.connect_account)
       end
 
       private def self.refused(reason : String, key : String, email : String) : Exception

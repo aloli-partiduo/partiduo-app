@@ -51,6 +51,18 @@ Société :
   --session MINUTES       durée de session (défaut : 480)
   --admin-email ADRESSE   administrateur à inviter
 
+connect (ADR-012, fournisseur d'identité commun aux dossiers) :
+  --connect-url URL       émetteur (https://connect.<domaine>) ; avec les deux
+                          suivantes, la connexion des utilisateurs passe par
+                          connect et l'invitation de l'administrateur porte un
+                          code de création de compte
+  --connect-client-id ID  client de ce dossier chez connect
+  --connect-client-secret-file FICHIER
+                          fichier qui contient le secret du client (jamais en
+                          argument : il apparaîtrait dans la liste des
+                          processus) ; recopié dans l'environnement de
+                          l'instance (mode 640)
+
 Modules et extensions :
   --modules LISTE         modules activés (défaut : accounting,invoicing)
                           micro-entrepreneur : micro[,invoicing[,accounting]]
@@ -185,6 +197,11 @@ PROVISION_ARGS=""
 ACME_EMAIL="${PARTIDUO_ACME_EMAIL:-}"
 ACME_WEBROOT="/usr/local/www/letsencrypt"
 ACME_STAGING=0
+# connect (ADR-012) : les trois ensemble, ou aucun.
+CONNECT_URL=""
+CONNECT_CLIENT_ID=""
+CONNECT_SECRET_FILE=""
+CONNECT_CLIENT_SECRET=""
 # Tâche quotidienne de l'instance (fin de mois de la Facturation, D-INV2-008).
 DAILY_COMMAND="invoicing_month_end"
 
@@ -238,6 +255,9 @@ while [ $# -gt 0 ]; do
     --manage) need_value "$@"; MANAGE="$2"; shift ;;
     --acme-email) need_value "$@"; ACME_EMAIL="$2"; shift ;;
     --acme-webroot) need_value "$@"; ACME_WEBROOT="$2"; shift ;;
+    --connect-url) need_value "$@"; CONNECT_URL="$2"; shift ;;
+    --connect-client-id) need_value "$@"; CONNECT_CLIENT_ID="$2"; shift ;;
+    --connect-client-secret-file) need_value "$@"; CONNECT_SECRET_FILE="$2"; shift ;;
     -*) die "option inconnue : $1 (voir --help)" ;;
     *)
       [ -z "$DOSSIER" ] || die "un seul dossier à la fois ($DOSSIER, $1)"
@@ -248,6 +268,16 @@ while [ $# -gt 0 ]; do
 done
 
 [ -n "$DOSSIER" ] || { usage >&2; exit 1; }
+
+if [ -n "$CONNECT_URL$CONNECT_CLIENT_ID$CONNECT_SECRET_FILE" ]; then
+  [ -n "$CONNECT_URL" ] && [ -n "$CONNECT_CLIENT_ID" ] && [ -n "$CONNECT_SECRET_FILE" ] ||
+    die "--connect-url, --connect-client-id et --connect-client-secret-file vont ensemble"
+  [ -r "$CONNECT_SECRET_FILE" ] || die "secret du client connect illisible : $CONNECT_SECRET_FILE"
+  CONNECT_CLIENT_SECRET=$(tr -d ' \n\r\t' <"$CONNECT_SECRET_FILE")
+  case "$CONNECT_CLIENT_SECRET" in
+    '' | *[!A-Za-z0-9_-]*) die "secret du client connect vide ou invalide (base64url attendu)" ;;
+  esac
+fi
 
 # --- Contrôles -----------------------------------------------------------------
 
@@ -328,6 +358,12 @@ fi
 export DATABASE_URL
 export PARTIDUO_MODULES="$ACTIVE"
 export PARTIDUO_DOMAIN="$DOMAIN"
+# connect : l'invitation de l'administrateur (étape 3) demande son code de
+# création de compte ; le secret passe par l'environnement, pas en argument.
+if [ -n "$CONNECT_URL" ]; then
+  export PARTIDUO_CONNECT_URL="$CONNECT_URL" PARTIDUO_CONNECT_CLIENT_ID="$CONNECT_CLIENT_ID"
+  export PARTIDUO_CONNECT_CLIENT_SECRET="$CONNECT_CLIENT_SECRET"
+fi
 if [ "$FILES_ONLY" = 0 ]; then
   echo "== 2. Migrations"
   # shellcheck disable=SC2086 # $MANAGE est une ligne de commande
@@ -377,9 +413,12 @@ TPL_ETC_DIR="$ETC_DIR"
 TPL_ENV_FILE="$ETC_DIR/$DOSSIER.env"
 TPL_SYSTEM_USER="$SYSTEM_USER"
 TPL_ACME_WEBROOT="$ACME_WEBROOT"
+TPL_CONNECT_URL="$CONNECT_URL"
+TPL_CONNECT_CLIENT_ID="$CONNECT_CLIENT_ID"
+TPL_CONNECT_CLIENT_SECRET="$CONNECT_CLIENT_SECRET"
 export TPL_SECRET_KEY TPL_DOSSIER TPL_HOST TPL_DOMAIN TPL_PORT TPL_DATABASE_URL TPL_MODULES TPL_LOCALE \
   TPL_DATA_DIR TPL_PACKAGE TPL_MANAGE_PATH TPL_DAILY_COMMAND TPL_DAILY_MINUTE TPL_ETC_DIR TPL_ENV_FILE \
-  TPL_SYSTEM_USER TPL_ACME_WEBROOT
+  TPL_SYSTEM_USER TPL_ACME_WEBROOT TPL_CONNECT_URL TPL_CONNECT_CLIENT_ID TPL_CONNECT_CLIENT_SECRET
 
 OLD_UMASK=$(umask)
 umask 077

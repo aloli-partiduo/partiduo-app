@@ -307,6 +307,7 @@ nl:
         other: "Aanmaken van het dossier geweigerd: %{count} fouten."
       invalid_number: "Onleesbare numerieke waarde (kapitaal, niveau of sessieduur)."
       invitation: "Uitnodiging voor beheerder %{email}, geldig tot %{expires}, door te geven: %{url}"
+      signup_code: "Code voor het aanmaken van het Partiduo-account van %{email}, door te geven via een ander kanaal dan de link (mondeling, telefonisch): %{code}"
     instance_cli:
       errors:
         option: "Onbekende optie of ontbrekende waarde: %{option}."

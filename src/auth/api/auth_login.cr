@@ -44,6 +44,11 @@ module Partiduo
           Partiduo::Auth::Audit.record("login.password", "FAIL", user: user, ip: context.ip, detail: "access_denied")
           return login_failure("auth.errors.login.access_denied")
         end
+        unless local_login_allowed?(user)
+          Partiduo::Auth::Throttle.release(user, reservation)
+          Partiduo::Auth::Audit.record("login.password", "FAIL", user: user, ip: context.ip, detail: "connect")
+          return login_failure("auth.errors.login.use_connect")
+        end
 
         if second_factor_needed?(user)
           # Mot de passe juste : la tentative est rendue, sans remettre le
@@ -126,6 +131,10 @@ module Partiduo
           Partiduo::Auth::Audit.record("login.passkey", "FAIL", user: user, ip: input.context.ip, detail: "access_denied")
           return login_failure("auth.errors.login.access_denied")
         end
+        unless local_login_allowed?(user)
+          Partiduo::Auth::Audit.record("login.passkey", "FAIL", user: user, ip: input.context.ip, detail: "connect")
+          return login_failure("auth.errors.login.use_connect")
+        end
         authenticated(user, Partiduo::Auth::Levels::PASSKEY, "passkey", "login.passkey", input.context, policy)
       end
 
@@ -135,24 +144,47 @@ module Partiduo
       def self.login_providers(actor : Actor) : Array(IdentityProviderView)
         Guard.require_module!("AUTH")
         return [] of IdentityProviderView unless Partiduo::Auth::Policy.current.allows?("federated")
-        Partiduo::Auth::IdentityProvider.filter(active: true).order(:name).map { |provider| provider_view(provider) }
+        # connect (ADR-012) d'abord : la connexion des utilisateurs.
+        Partiduo::Auth::Connect.provider
+        providers = Partiduo::Auth::IdentityProvider.filter(active: true).order(:name).to_a
+        providers.sort_by! { |provider| Partiduo::Auth::Connect.provider?(provider) ? 0 : 1 }
+        providers.map { |provider| provider_view(provider) }
       end
 
       # Début d'une connexion fédérée : URL du fournisseur et identifiant de
       # requête, que l'interface conserve (cookie) et repasse à `login_federated`.
-      def self.begin_federated_login(actor : Actor, provider_code : String) : FederatedStartView
+      # `options` : niveau demandé (`acr_values`), ré-authentification
+      # (`prompt=login`), adresse attendue (`login_hint`) ; pour connect
+      # (ADR-012) : élévation au niveau 3, ré-authentification d'une
+      # approbation, invitation.
+      def self.begin_federated_login(actor : Actor, provider_code : String,
+                                     options : FederatedOptions = FederatedOptions.new) : FederatedStartView
         Guard.require_module!("AUTH")
         provider = active_provider(provider_code)
         adapter = Partiduo::Auth::Federation.adapter(provider.kind.to_s) || raise NotFound.new("identity_provider", provider_code)
-        start = adapter.begin_login(provider, Partiduo::Auth::Federation.settings_of(provider))
+        settings = Partiduo::Auth::Federation.settings_of(provider)
+        settings["request.acr_values"] = options.acr.to_s if options.acr > 0
+        settings["request.prompt"] = "login" if options.fresh
+        settings["request.login_hint"] = options.login_hint unless options.login_hint.empty?
+        start = adapter.begin_login(provider, settings)
         issued = Partiduo::Auth::Challenges.issue(FEDERATED_PURPOSE, value: start.request_id, data: provider.code.to_s)
         FederatedStartView.new(start.redirect_url, issued.handle)
       end
 
       # Retour du fournisseur. L'identité attestée doit correspondre à un
       # utilisateur *déjà créé* (ADR-002 D3) ; ses droits sont locaux.
+      #
+      # `invitation_token` : invitation acceptée par cette connexion (connect,
+      # ADR-012 D6). Une identité encore inconnue est alors liée à
+      # l'utilisateur invité, si l'adresse que connect a vérifiée est la
+      # sienne : un courriel d'invitation intercepté ne lie donc pas le compte
+      # d'un autre.
+      #
+      # Niveau : celui qu'atteste le fournisseur (`acr` de 1 à 3), plafonné
+      # au niveau reconnu au fournisseur ; à défaut, ce niveau-là.
       def self.login_federated(actor : Actor, provider_code : String, request_id : String,
-                               payload : Hash(String, String), context : LoginContext = LoginContext.new) : Result(LoginView)
+                               payload : Hash(String, String), context : LoginContext = LoginContext.new,
+                               invitation_token : String? = nil) : Result(LoginView)
         Guard.require_module!("AUTH")
         policy = Partiduo::Auth::Policy.current
         return login_failure("auth.errors.login.method_disabled") unless policy.allows?("federated")
@@ -174,6 +206,10 @@ module Partiduo
         end
 
         link = Partiduo::Auth::FederatedIdentity.filter(provider: provider.code, subject: identity.subject).first
+        if link.nil? && invitation_token.presence
+          link, refusal = link_invitation(provider, identity, invitation_token.to_s, context)
+          return login_failure(refusal) if refusal
+        end
         user = link.try(&.user)
         if link.nil? || user.nil?
           Partiduo::Auth::Audit.record("login.federated", "FAIL", label: "#{provider_code}:#{identity.subject}",
@@ -184,10 +220,60 @@ module Partiduo
           Partiduo::Auth::Audit.record("login.federated", "FAIL", user: user, ip: context.ip, detail: "access_denied")
           return login_failure("auth.errors.login.access_denied")
         end
+        # L'adresse vérifiée par connect suit la personne (ADR-012 D8) : le
+        # lien reste le `sub`.
+        refresh_email(user, provider, identity)
         link.last_used_at = Time.utc
         link.save!
-        level = (provider.level || Partiduo::Auth::Levels::TWO_FACTOR).to_i32.clamp(1, 3)
-        authenticated(user, level, "federated", "login.federated", context, policy)
+        authenticated(user, federated_level(provider, identity), "federated", "login.federated", context, policy,
+          federated_sid: identity.attributes["sid"]?.try(&.first?))
+      end
+
+      # Déconnexion par canal arrière (ADR-012 D8) : le fournisseur annonce la
+      # fin d'une session ; les sessions du dossier qu'elle avait ouvertes
+      # sont fermées (par `sid`, sinon toutes celles de la personne). Rend le
+      # nombre de sessions fermées, `nil` si le jeton est refusé.
+      def self.federated_backchannel_logout(provider_code : String, logout_token : String) : Int64?
+        provider = Partiduo::Auth::IdentityProvider.filter(code: provider_code, active: true).first
+        return if provider.nil?
+        adapter = Partiduo::Auth::Federation.adapter(provider.kind.to_s)
+        return if adapter.nil?
+        subject, sid = begin
+          adapter.verify_logout_token(Partiduo::Auth::Federation.settings_of(provider), logout_token)
+        rescue ex : Partiduo::Auth::Federation::Error
+          Partiduo::Auth::Audit.record("logout.backchannel", "FAIL", label: provider_code, detail: ex.message.to_s)
+          return
+        end
+        user = subject.try { |sub| Partiduo::Auth::FederatedIdentity.filter(provider: provider.code, subject: sub).first.try(&.user) }
+        sessions = Partiduo::Auth::Session.filter(revoked_at__isnull: true)
+        if sid
+          sessions = sessions.filter(federated_sid: sid)
+          sessions = sessions.filter(user_id: user.pk) if user
+        elsif user
+          sessions = sessions.filter(user_id: user.pk, method: "federated")
+        else
+          return 0_i64
+        end
+        closed = sessions.update(revoked_at: Time.utc).to_i64
+        Partiduo::Auth::Audit.record("logout.backchannel", "SUCCESS", user: user, label: provider_code,
+          detail: "#{closed} session(s)")
+        closed
+      end
+
+      # connect (ADR-012) : code de son fournisseur, et s'il est réglé sur cette
+      # instance (l'interface ne cite que le contrat, ADR-005 D3).
+      CONNECT_PROVIDER = Partiduo::Auth::Connect::CODE
+
+      def self.connect_configured? : Bool
+        Partiduo::Auth::Connect.configured?
+      end
+
+      # Adresse de déconnexion chez connect, pour une session ouverte par lui
+      # (déconnexion unique, ADR-012 D8) ; `nil` sinon.
+      def self.federated_logout_url(session_token : String?, host : String) : String?
+        session = Partiduo::Auth::Sessions.find(session_token, touch: false)
+        return if session.nil? || session.federated_sid.nil?
+        Partiduo::Auth::Connect.end_session_url(host)
       end
 
       # --- Invitation, remise à zéro, déblocage ------------------------------
@@ -403,9 +489,11 @@ module Partiduo
       end
 
       private def self.authenticated(user : Partiduo::Auth::User, level : Int32, method : String, action : String,
-                                     context : LoginContext, policy = Partiduo::Auth::Policy.current) : Result(LoginView)
+                                     context : LoginContext, policy = Partiduo::Auth::Policy.current,
+                                     federated_sid : String? = nil) : Result(LoginView)
         Partiduo::Auth::Throttle.record_success(user) if level > Partiduo::Auth::Levels::ENROLLMENT
-        opened = Partiduo::Auth::Sessions.open(user, level, method, context.ip, context.user_agent)
+        opened = Partiduo::Auth::Sessions.open(user, level, method, context.ip, context.user_agent,
+          federated_sid: federated_sid)
         required = Partiduo::Auth::Levels.required(user, policy)
         Partiduo::Auth::Audit.record(action, "SUCCESS", user: user, ip: context.ip, detail: "#{method}, niveau #{level}")
         Result(LoginView).success(LoginView.new(
@@ -449,7 +537,65 @@ module Partiduo
         )
       end
 
+      # Connect réglé (ADR-012 D5) : la connexion locale (mot de passe,
+      # passkey du dossier) ne reste qu'aux administrateurs de la société, en
+      # secours ; les autres utilisateurs passent par connect.
+      private def self.local_login_allowed?(user : Partiduo::Auth::User) : Bool
+        return true unless Partiduo::Auth::Connect.configured?
+        !user.accountant? && user.profile.try(&.admin) == true
+      end
+
+      # Niveau d'une connexion fédérée : `acr` attesté (1 à 3), plafonné au
+      # niveau reconnu au fournisseur ; à défaut, ce niveau.
+      private def self.federated_level(provider : Partiduo::Auth::IdentityProvider,
+                                       identity : Partiduo::Auth::Federation::Identity) : Int32
+        ceiling = (provider.level || Partiduo::Auth::Levels::TWO_FACTOR).to_i32.clamp(1, 3)
+        attested = identity.attributes["acr"]?.try(&.first?).try(&.to_i?)
+        attested ? Math.min(attested.clamp(1, 3), ceiling) : ceiling
+      end
+
+      # Invitation acceptée par connect (ADR-012 D6) : l'adresse vérifiée par
+      # connect doit être celle de l'invité, qui n'a pas encore d'identité
+      # connect liée. Rend le lien créé, ou la clé de refus.
+      private def self.link_invitation(provider : Partiduo::Auth::IdentityProvider,
+                                       identity : Partiduo::Auth::Federation::Identity, raw : String,
+                                       context : LoginContext) : {Partiduo::Auth::FederatedIdentity?, String?}
+        return {nil, "auth.errors.federated.unknown_identity"} unless Partiduo::Auth::Connect.provider?(provider)
+        token = Partiduo::Auth::Token.filter(digest: Partiduo::Auth::Secrets.digest(raw), purpose: "invitation",
+          used_at__isnull: true, expires_at__gt: Time.utc).first
+        user = token.try(&.user)
+        return {nil, "auth.errors.token.invalid"} if token.nil? || user.nil?
+        unless normalize_email(identity.email || "") == user.email
+          Partiduo::Auth::Audit.record("login.invitation", "FAIL", user: user, ip: context.ip, detail: "connect_email")
+          return {nil, "auth.errors.federated.invitation_email"}
+        end
+        if Partiduo::Auth::FederatedIdentity.filter(provider: provider.code, user_id: user.pk).exists?
+          return {nil, "auth.errors.federated.already_linked"}
+        end
+        return {nil, "auth.errors.token.invalid"} if Partiduo::Auth::Tokens.consume("invitation", raw).nil?
+        link = Partiduo::Auth::FederatedIdentity.create!(user: user, provider: provider.code, subject: identity.subject)
+        Partiduo::Auth::Audit.record("login.invitation", "SUCCESS", user: user, ip: context.ip, detail: "connect")
+        Partiduo::Auth::Audit.record("user.federated.link", "SUCCESS", user: user, detail: "#{provider.code}:#{identity.subject}")
+        {link, nil}
+      end
+
+      # Adresse changée chez connect : reportée sur le compte local, sauf si
+      # un autre utilisateur du dossier l'a déjà (ADR-012 D8).
+      private def self.refresh_email(user : Partiduo::Auth::User, provider : Partiduo::Auth::IdentityProvider,
+                                     identity : Partiduo::Auth::Federation::Identity) : Nil
+        return unless Partiduo::Auth::Connect.provider?(provider)
+        email = normalize_email(identity.email || "")
+        return if email.empty? || email == user.email
+        return if Partiduo::Auth::User.filter(email: email).exclude(id: user.pk).exists?
+        previous = user.email.to_s
+        user.email = email
+        user.save!
+        Partiduo::Auth::Audit.record("user.email", "SUCCESS", user: user, detail: "connect : #{previous} → #{email}")
+      end
+
       private def self.active_provider(code : String) : Partiduo::Auth::IdentityProvider
+        # connect (ADR-012) : fournisseur créé à la première demande.
+        Partiduo::Auth::Connect.provider if code == Partiduo::Auth::Connect::CODE
         Partiduo::Auth::IdentityProvider.filter(code: code, active: true).first || raise NotFound.new("identity_provider", code)
       end
 
@@ -460,8 +606,33 @@ module Partiduo
         rescue NotFound
           nil
         end
+        domain = settings.try(&.domain.presence) || Partiduo::Config.domain
+        signup_code, has_account = "", false
+        if purpose == "invitation" && Partiduo::Auth::Connect.configured?
+          # Compte connect à créer (ADR-012 D6) : lien gardé avec l'invitation,
+          # code rendu à celui qui invite, jamais conservé ici.
+          outcome = Partiduo::Auth::Connect.signup_ticket(user.email.to_s, user.full_name, user.locale.to_s,
+            "#{Partiduo::Auth::Connect.base_url(domain)}/invitation/#{raw}/connect")
+          has_account = outcome.account
+          if ticket = outcome.ticket
+            token.signup_url = ticket.url
+            token.save!
+            signup_code = ticket.code
+          end
+        end
         TokenView.new(user.pk!.as(Int64), purpose, raw, token.expires_at!, user.email.to_s, user.locale.to_s,
-          settings.try(&.domain.presence) || Partiduo::Config.domain, settings.try(&.country_code) || "")
+          domain, settings.try(&.country_code) || "", signup_code: signup_code, connect_account: has_account)
+      end
+
+      # Invitation encore valable (page de l'invitation), sans la consommer.
+      def self.invitation_view(actor : Actor, token : String) : InvitationView?
+        Guard.require_module!("AUTH")
+        return if token.empty?
+        record = Partiduo::Auth::Token.filter(digest: Partiduo::Auth::Secrets.digest(token), purpose: "invitation",
+          used_at__isnull: true, expires_at__gt: Time.utc).first
+        user = record.try(&.user)
+        return if record.nil? || user.nil?
+        InvitationView.new(user.email.to_s, record.signup_url.to_s, Partiduo::Auth::Connect.configured?)
       end
 
       private def self.store_password(user : Partiduo::Auth::User, password : String) : Nil

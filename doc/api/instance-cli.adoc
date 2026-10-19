@@ -10,7 +10,7 @@ Contrat entre une instance Partiduo et l'*exécutant* de `partiduo-admin`
 traduit en appels, sans jamais entrer dans les données comptables du dossier
 (ADR-008 D3).
 
-*Version du contrat : 1.2.0* (`Partiduo::INSTANCE_CLI_VERSION`, rendue dans
+*Version du contrat : 1.3.0* (`Partiduo::INSTANCE_CLI_VERSION`, rendue dans
 chaque réponse). Versionnage sémantique, comme `Partiduo::Api` : retirer ou
 renommer une action, une option, une clé JSON, un code d'erreur ou un code de
 sortie incrémente la majeure ; en ajouter incrémente la mineure. L'exécutant
@@ -23,7 +23,8 @@ B-VAL2-001) — option `--approval-mode single|dual` d'`admin-invite`, clé
 appel 1.0.0 (sans l'option) garde son sens, deux personnes distinctes ;
 1.2.0 (9 octobre 2026, ADR-011 A1 et A3, D-FOY-001, D-FOY-004) — clé `kind`
 de `status` (type de dossier) et clé `incompatible_with` de chacun de ses
-`modules`. Ajouts seulement.
+`modules`. Ajouts seulement ; 1.3.0 (19 octobre 2026, ADR-012 D6) — clés `signup_code`
+et `connect_account` de la réponse d'`admin-invite`. Ajouts seulement.
 
 == Appel
 
@@ -166,7 +167,7 @@ base.*
 
 [source,json]
 ----
-{"version":"0.1.0","api_version":"0.7.0","contract":"1.2.0",
+{"version":"0.1.0","api_version":"0.7.0","contract":"1.3.0",
  "pieces":[{"code":"CORE","kind":"socle","version":"0.1.0"}, …]}
 ----
 
@@ -268,8 +269,16 @@ société a perdu tout accès administrateur. `--reason`, `--approval-ref` et
 ----
 {"email":"patron@exemple.fr","user_created":false,"token":"…",
  "url":"https://exemple.partiduo.app/invitation/…","expires_at":"2026-10-05T12:31:13Z",
- "usable_admins":0,"approval_mode":"dual"}
+ "usable_admins":0,"approval_mode":"dual","signup_code":"ABCD-EFGH","connect_account":false}
 ----
+
+`signup_code` (1.3.0) : avec connect (ADR-012 D6, instance réglée par
+`PARTIDUO_CONNECT_URL`), code de création du compte connect de l'invité,
+à lui transmettre par un *autre canal* que le lien (de vive voix, par
+téléphone) ; vide s'il a déjà un compte (`connect_account` vrai) ou sans
+connect. L'invitation le mène à connect, qui crée son compte avec le lien
+et le code, puis le lie à cet accès (adresse vérifiée par connect égale à
+celle de l'invité).
 
 `usable_admins` : administrateurs actifs, non révoqués, ayant un moyen
 d'authentification (mot de passe ou passkey) *avant* la réémission — à

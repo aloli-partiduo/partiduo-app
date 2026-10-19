@@ -130,6 +130,10 @@ module Partiduo
             print(I18n.t("core.provision.invitation", email: invitation.email,
               expires: invitation.expires_at.to_utc.to_s("%Y-%m-%d %H:%M UTC"),
               url: "https://#{settings.domain}/invitation/#{invitation.token}"))
+            # connect (ADR-012 D6) : code à transmettre par un autre canal.
+            unless invitation.signup_code.empty?
+              print(I18n.t("core.provision.signup_code", email: invitation.email, code: invitation.signup_code))
+            end
           end
         end
 

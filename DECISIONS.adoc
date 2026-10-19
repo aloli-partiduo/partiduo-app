@@ -15962,3 +15962,79 @@ continue de le servir, et garde sa limitation durable en base.
 du cœur (`TableOutput.csv_text`, D-2F-009) — sauf un nombre écrit tel quel
 (`-12.50`, `-3,2`), que le tableur lit comme un nombre et qu'il ne faut
 pas transformer en texte. `-1+1` reste neutralisé.
+
+== Identité commune : connect (ADR-012, 19 octobre 2026)
+
+=== D-CON-001 — connect, fournisseur `oidc` réglé par l'environnement
+
+*Décision.* connect (`partiduo-admin`, `src/connect/`) est vu par le dossier
+comme un fournisseur OpenID Connect de la fédération existante (D-R5-009),
+de code `connect`, mais réglé par l'environnement de l'instance et non par
+l'écran des fournisseurs : `PARTIDUO_CONNECT_URL`,
+`PARTIDUO_CONNECT_CLIENT_ID`, `PARTIDUO_CONNECT_CLIENT_SECRET` (ou
+`_SECRET_FILE`), posés par `partiduo-provision`. Les adresses de connect se
+déduisent de l'émetteur, celles du dossier de son nom d'hôte. Le
+fournisseur est créé à la première demande (niveau 3, plafond) et placé en
+tête des boutons de connexion.
+
+*Conséquences.* `OidcAdapter` vérifie aussi ES256/ES384 (clés EC du JWKS) ;
+il rend `acr`, `amr`, `sid` et `auth_time` dans les attributs de
+l'identité ; il accepte pour une demande `acr_values`, `prompt=login` et
+`login_hint` (`FederatedOptions`).
+
+=== D-CON-002 — Niveau attesté, plafonné
+
+*Décision.* Le niveau d'une connexion fédérée est l'`acr` attesté (1 à 3),
+plafonné au niveau reconnu au fournisseur ; sans `acr` numérique, ce
+niveau-là (comportement de D-R5-009). Un comptable (niveau 3) est envoyé à
+connect avec `acr_values=3` depuis la page de sécurité ; la
+ré-authentification d'une approbation (A-SEPA-3) y ajoute `prompt=login`.
+
+=== D-CON-003 — Connexion locale réservée aux administrateurs, en secours
+
+*Décision.* connect réglé, le mot de passe et la passkey du dossier ne
+servent plus qu'aux utilisateurs du profil administrateur (non comptables)
+: c'est l'accès de secours d'ADR-012 D5, actif par défaut. Les autres
+reçoivent `auth.errors.login.use_connect` (après la vérification du mot de
+passe : rien n'est révélé à qui ne le connaît pas).
+
+=== D-CON-004 — Invitation : lier un compte connect
+
+*Décision.* À l'émission d'une invitation (`token_view`, seul passage de
+toutes les invitations), le dossier demande à connect une invitation de
+création de compte (`/api/v1/signup-tickets`, secret du client) : le lien
+est gardé avec l'invitation (`auth_token.signup_url`), le code est rendu à
+celui qui invite (`TokenView#signup_code`, sortie de `provision`,
+`admin-invite`) et n'est conservé nulle part. La page d'invitation propose
+de créer le compte (lien de connect) ou de se connecter ; le retour de
+connect lie l'identité à l'invité si l'adresse vérifiée par connect est la
+sienne et qu'il n'a pas déjà un compte connect lié ; l'invitation est alors
+consommée. Un courriel intercepté ne lie donc pas un autre compte. L'adresse
+changée chez connect est reportée sur le compte local à la connexion
+suivante, sauf si un autre utilisateur l'a déjà.
+
+=== D-CON-005 — Déconnexion unique
+
+*Décision.* La session du dossier garde le `sid` de connect
+(`auth_session.federated_sid`). `POST /login/federated/connect/backchannel-logout`
+reçoit le jeton de déconnexion (signature, émetteur, audience, émission à
+cinq minutes près, événement, pas de `nonce`) et ferme les sessions de ce
+`sid`. La déconnexion d'une session ouverte par connect renvoie à son
+`end_session_endpoint`, qui ferme la session commune et celles des autres
+dossiers.
+
+=== D-CON-006 — Client déclaré par l'exécutant du serveur
+
+*Décision.* Le client connect d'un dossier est déclaré par l'exécutant de
+son serveur (registraire, jeton posé par beryl) juste avant
+`partiduo-provision`, à chaque essai (nouveau secret). Le secret ne passe
+jamais par l'administration ni en argument : fichier 0600 effacé aussitôt
+(mode local), entrée standard de l'enveloppe `partiduo-agent-instance`
+(production), dont l'émetteur vient de `helpers.conf` (`CONNECT_URL`,
+root). `partiduo-agent-root install` n'admet dans l'environnement que cet
+émetteur, l'hôte du dossier comme identifiant et un secret base64url.
+
+=== D-CON-007 — Contrat 1.3.0
+
+*Décision.* `admin-invite` rend `signup_code` et `connect_account` :
+contrat de l'interface d'instance 1.3.0 (ajouts seulement).

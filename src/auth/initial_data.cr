@@ -18,6 +18,7 @@ Partiduo::Api::InitialData.register("AUTH", "profiles_and_admin", order: 5) do |
     invitation = result.value!.invitation
     context.invitations << Partiduo::Api::InitialData::Invitation.new(
       email: result.value!.user.email, token: invitation.token, expires_at: invitation.expires_at,
+      signup_code: invitation.signup_code,
     )
   end
 end

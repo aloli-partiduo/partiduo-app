@@ -307,6 +307,7 @@ fr:
         other: "Création du dossier refusée : %{count} erreurs."
       invalid_number: "Valeur numérique illisible (capital, niveau ou durée de session)."
       invitation: "Invitation de l'administrateur %{email}, valable jusqu'au %{expires}, à lui transmettre : %{url}"
+      signup_code: "Code de création du compte Partiduo de %{email}, à lui transmettre par un autre canal que le lien (de vive voix, par téléphone) : %{code}"
     instance_cli:
       errors:
         option: "Option non reconnue ou sans valeur : %{option}."

@@ -17,12 +17,14 @@ module Partiduo
     #   (`Challenges`), jamais dans le navigateur.
     # * Retour (`code`, `state`) : `state` comparé en temps constant, code
     #   échangé au point de jeton (`client_secret_post`, vérificateur PKCE),
-    #   jeton d'identité vérifié : signature RS256/384/512 par la clé
-    #   publiée (`jwks_uri`, `kid`), émetteur, audience (et `azp` si
-    #   plusieurs), expiration et émission (±60 s), `nonce`.
+    #   jeton d'identité vérifié : signature RS256/384/512 ou ES256/384
+    #   par la clé publiée (`jwks_uri`, `kid`), émetteur, audience (et `azp`
+    #   si plusieurs), expiration et émission (±60 s), `nonce`.
     # * Identité : la revendication `sub` (ou celle des paramètres),
     #   rattachée par l'administrateur à un utilisateur *déjà créé* ; pas
-    #   d'auto-provisionnement.
+    #   d'auto-provisionnement. `acr`, `amr`, `sid`, `auth_time` suivent
+    #   dans les attributs (connect, ADR-012).
+    # * Déconnexion par canal arrière : `verify_logout_token`.
     #
     # Adresses en HTTPS (HTTP admis pour `localhost` et `*.localhost`, en
     # développement). Le transport HTTP est remplaçable (specs).
@@ -33,6 +35,10 @@ module Partiduo
       SCOPES   = "openid email"
       # Séparateur des trois valeurs gardées côté serveur (base64url : pas de `~`).
       SEPARATOR = '~'
+      # Paramètres facultatifs d'une demande (OpenID Connect Core 3.1.2.1).
+      REQUEST_PARAMETERS = %w[acr_values prompt max_age login_hint]
+      # Algorithmes de signature admis du jeton d'identité.
+      ALGORITHMS = %w[RS256 RS384 RS512 ES256 ES384]
 
       # Accès HTTP du client : `POST` d'un formulaire, `GET` ; rend {statut, corps}.
       abstract class Transport
@@ -134,6 +140,12 @@ module Partiduo
           form.add "nonce", nonce
           form.add "code_challenge", challenge
           form.add "code_challenge_method", "S256"
+          # Demande propre à cette connexion (élévation, ré-authentification,
+          # invitation) : clés `request.<paramètre>` ajoutées aux paramètres.
+          REQUEST_PARAMETERS.each do |name|
+            value = settings["request.#{name}"]?.presence
+            form.add name, value if value
+          end
         end
         endpoint = settings["authorization_endpoint"]? || ""
         separator = endpoint.includes?('?') ? '&' : '?'
@@ -157,7 +169,7 @@ module Partiduo
         subject_claim = settings["subject_claim"]?.presence || "sub"
         subject = claims[subject_claim]?.try(&.as_s?).presence || invalid("revendication #{subject_claim} absente")
         email = claims["email"]?.try(&.as_s?)
-        Federation::Identity.new(subject: subject, email: email)
+        Federation::Identity.new(subject: subject, email: email, attributes: session_attributes(claims))
       end
 
       private def split_request(request_id : String) : {String, String, String}
@@ -181,28 +193,75 @@ module Partiduo
         json["id_token"]?.try(&.as_s?).presence || invalid("id_token absent")
       end
 
-      # Signature du jeton par une clé RSA publiée (`kid` s'il est donné).
+      # Session de connexion attestée (ADR-012) : niveau (`acr`), méthodes
+      # (`amr`), session du fournisseur (`sid`, déconnexion par canal
+      # arrière), heure de l'authentification (`auth_time`).
+      private def session_attributes(claims : Hash(String, JSON::Any)) : Hash(String, Array(String))
+        attributes = {} of String => Array(String)
+        if acr = claims["acr"]?.try(&.as_s?)
+          attributes["acr"] = [acr]
+        end
+        if amr = claims["amr"]?.try(&.as_a?)
+          attributes["amr"] = amr.compact_map(&.as_s?)
+        end
+        if sid = claims["sid"]?.try(&.as_s?)
+          attributes["sid"] = [sid]
+        end
+        if auth_time = claims["auth_time"]?.try(&.as_i64?)
+          attributes["auth_time"] = [auth_time.to_s]
+        end
+        attributes
+      end
+
+      # Jeton de déconnexion par canal arrière (OpenID Connect Back-Channel
+      # Logout 1.0, section 2.6) : signature, émetteur, audience, émission
+      # récente, événement de déconnexion, pas de `nonce`, `sub` ou `sid`.
+      # Rend `{sub, sid}` (l'un des deux peut manquer).
+      def verify_logout_token(settings : Hash(String, String), token : String,
+                              now : Time = Time.utc) : {String?, String?}
+        claims = verified_claims(token, settings)
+        invalid("émetteur inattendu") unless claims["iss"]?.try(&.as_s?) == settings["issuer"]?
+        check_audience(claims, settings["client_id"]? || "")
+        issued = claims["iat"]?.try(&.as_i64?) || invalid("iat absent")
+        invalid("jeton trop ancien ou futur") unless (now - Time.unix(issued)).abs <= 5.minutes
+        events = claims["events"]?.try(&.as_h?) || invalid("events absent")
+        invalid("événement inattendu") unless events.has_key?("http://schemas.openid.net/event/backchannel-logout")
+        invalid("nonce interdit") if claims.has_key?("nonce")
+        subject = claims["sub"]?.try(&.as_s?)
+        sid = claims["sid"]?.try(&.as_s?)
+        invalid("ni sub ni sid") if subject.nil? && sid.nil?
+        {subject, sid}
+      end
+
+      # Signature du jeton par une clé publiée (`kid` s'il est donné) : RSA
+      # (RS256/384/512) ou courbe elliptique (ES256/384, connect).
       private def verified_claims(token : String, settings : Hash(String, String)) : Hash(String, JSON::Any)
         header = parse(String.new(Secrets.decode64?(token.split('.').first? || "") || Bytes.empty))
         kid = header["kid"]?.try(&.as_s?)
         algorithm = header["alg"]?.try(&.as_s?) || ""
-        invalid("algorithme #{algorithm} refusé") unless algorithm.in?("RS256", "RS384", "RS512")
-        signing_keys(settings, kid).each do |key|
-          jwk = Jose::JWK::RSAKey.from_jwk_hash(key.as_h)
-          return parse(String.new(Jose::JWS.verify(token, jwk)))
+        invalid("algorithme #{algorithm} refusé") unless ALGORITHMS.includes?(algorithm)
+        kty = algorithm.starts_with?("ES") ? "EC" : "RSA"
+        signing_keys(settings, kid, kty).each do |key|
+          payload = if kty == "EC"
+                      Jose::JWS.verify(token, Jose::JWK::ECKey.from_jwk_hash(key.as_h))
+                    else
+                      Jose::JWS.verify(token, Jose::JWK::RSAKey.from_jwk_hash(key.as_h))
+                    end
+          return parse(String.new(payload))
         rescue Jose::JWS::Error | Jose::JWK::Error | ArgumentError | KeyError
           next
         end
         raise Federation::Error.new("auth.errors.federated.signature", "aucune clé ne vérifie le jeton")
       end
 
-      # Clés RSA de signature publiées par le fournisseur (`kid` s'il est donné).
-      private def signing_keys(settings : Hash(String, String), kid : String?) : Array(JSON::Any)
+      # Clés de signature publiées par le fournisseur, du type attendu (`kid`
+      # s'il est donné).
+      private def signing_keys(settings : Hash(String, String), kid : String?, kty : String) : Array(JSON::Any)
         status, body = self.class.transport.get(settings["jwks_uri"]? || "")
         invalid("clés du fournisseur : HTTP #{status}") unless status == 200
         keys = parse(body)["keys"]?.try(&.as_a?) || invalid("jeu de clés illisible")
         keys.select do |key|
-          next false unless key["kty"]?.try(&.as_s?) == "RSA"
+          next false unless key["kty"]?.try(&.as_s?) == kty
           next false if (use = key["use"]?.try(&.as_s?)) && use != "sig"
           kid.nil? || key["kid"]?.try(&.as_s?) == kid
         end

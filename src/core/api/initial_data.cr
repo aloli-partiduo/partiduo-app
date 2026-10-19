@@ -110,7 +110,9 @@ module Partiduo
       # Invitation émise pendant le provisionnement (compte de
       # l'administrateur) : rendue à l'opérateur par `ProvisionView`, seul
       # moyen de transmettre le jeton à l'administrateur d'une instance neuve.
-      record Invitation, email : String, token : String, expires_at : Time
+      # `signup_code` : code de création du compte connect, à transmettre par
+      # un autre canal que le lien (ADR-012 D6).
+      record Invitation, email : String, token : String, expires_at : Time, signup_code : String = ""
 
       # Ce que reçoit un chargeur. `invitations` : un chargeur qui crée un
       # compte y dépose son jeton d'invitation. `kind` : type du dossier ;

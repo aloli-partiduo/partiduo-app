@@ -334,6 +334,10 @@ module Partiduo
             "expires_at"    => invitation.expires_at.to_utc.to_rfc3339,
             "usable_admins" => invitation.usable_admins.to_i64,
             "approval_mode" => mode,
+            # connect (ADR-012 D6) : code à transmettre par un autre canal que
+            # le lien (vide si l'invité a déjà un compte, `connect_account`).
+            "signup_code"     => invitation.signup_code,
+            "connect_account" => invitation.connect_account,
           })
         end
 

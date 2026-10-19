@@ -78,6 +78,12 @@ module Partiduo
         # lève `Error` sinon. `request_id` : celui de `begin_login`.
         abstract def complete_login(provider : IdentityProvider, settings : Hash(String, String),
                                     payload : Hash(String, String), request_id : String) : Identity
+
+        # Déconnexion par canal arrière : rend `{sub, sid}` du jeton vérifié,
+        # lève `Error` sinon. Sans objet pour la plupart des types.
+        def verify_logout_token(settings : Hash(String, String), token : String, now : Time = Time.utc) : {String?, String?}
+          raise Error.new("auth.errors.federated.unsupported", "déconnexion par canal arrière")
+        end
       end
 
       @@adapters = {} of String => Adapter
@@ -94,7 +100,10 @@ module Partiduo
         @@adapters.keys
       end
 
-      def self.settings_of(provider : IdentityProvider) : Hash(String, String)
+      # Paramètres d'un fournisseur ; ceux de connect viennent de
+      # l'environnement de l'instance (ADR-012, `Connect`).
+      def self.settings_of(provider : IdentityProvider, host : String? = nil) : Hash(String, String)
+        return Connect.settings(host || Connect.instance_host) if Connect.provider?(provider) && Connect.configured?
         parsed = JSON.parse(provider.settings.presence || "{}")
         parsed.as_h.transform_values { |value| value.as_s? || value.to_json }
       rescue JSON::ParseException | TypeCastError

@@ -40,6 +40,9 @@ module Partiduo
       # fédérée, au niveau qu'exige l'utilisateur ; jamais un code de
       # récupération ni le mot de passe seul.
       field :strong_auth_at, :date_time, null: true, blank: true
+      # Session de connect qui a ouvert celle-ci (`sid`, ADR-012 D8) : la
+      # déconnexion par canal arrière la ferme.
+      field :federated_sid, :string, max_size: 64, null: true, blank: true
     end
 
     # Défi à usage unique, conservé côté serveur : WebAuthn (enregistrement,
@@ -98,6 +101,9 @@ module Partiduo
       field :created_at, :date_time, auto_now_add: true
       field :expires_at, :date_time
       field :used_at, :date_time, null: true, blank: true
+      # Invitation : lien de création du compte connect (ADR-012 D6), vide
+      # si la personne en a déjà un ou si connect n'est pas réglé.
+      field :signup_url, :string, max_size: 1000, blank: true, default: ""
     end
 
     # Fournisseur d'identité configuré sur l'instance (ADR-002 D3). `kind` :

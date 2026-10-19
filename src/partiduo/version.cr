@@ -48,5 +48,7 @@ module Partiduo
   # majeure ; en ajouter incrémente la mineure.
   # 1.2.0 : clé `kind` de `status` et `incompatible_with` de ses modules
   # (ADR-011 A1, A3).
-  INSTANCE_CLI_VERSION = "1.2.0"
+  # 1.3.0 : clés `signup_code` et `connect_account` d'`admin-invite`
+  # (connect, ADR-012 D6).
+  INSTANCE_CLI_VERSION = "1.3.0"
 end
