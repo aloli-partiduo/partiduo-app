@@ -46,7 +46,8 @@ Société :
   --capital MONTANT       capital social (point décimal)
   --rcs TEXTE             immatriculation (RCS, RPM)
   --street, --street-number, --postcode, --city, --phone, --email TEXTE
-  --auth-methods LISTE    méthodes autorisées (défaut : password,passkey)
+  --auth-methods LISTE    méthodes autorisées (défaut : password,passkey ;
+                          avec connect : password,passkey,federated)
   --auth-level N          niveau d'authentification minimum, 1 à 3 (défaut : 1)
   --session MINUTES       durée de session (défaut : 480)
   --admin-email ADRESSE   administrateur à inviter

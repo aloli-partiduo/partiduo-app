@@ -107,7 +107,7 @@ module Partiduo
             tax_regime: @settings["regime"]?,
             default_locale: @settings["locale"]?,
             domain: @settings["domain"]?,
-            auth_methods: @settings["auth-methods"]?.try { |value| split(value) },
+            auth_methods: auth_methods,
             auth_minimum_level: level,
             session_duration_minutes: session,
           )
@@ -135,6 +135,18 @@ module Partiduo
               print(I18n.t("core.provision.signup_code", email: invitation.email, code: invitation.signup_code))
             end
           end
+        end
+
+        # Méthodes d'authentification : la liste donnée, sinon `nil` (défaut
+        # du cœur), sauf avec connect (ADR-012 D5) : la connexion des
+        # utilisateurs du dossier passe par lui, `federated` s'ajoute au
+        # défaut.
+        private def auth_methods : Array(String)?
+          if value = @settings["auth-methods"]?
+            return split(value)
+          end
+          return unless Partiduo::Auth::Connect.configured?
+          Partiduo::Core::SettingsRules::DEFAULT_AUTH_METHODS + ["federated"]
         end
 
         private def split(value : String) : Array(String)

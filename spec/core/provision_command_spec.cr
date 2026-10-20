@@ -88,6 +88,30 @@ describe Partiduo::Core::Commands::Provision do
     Partiduo::Core::Settings.all.count.should eq(0)
   end
 
+  it "autorise la connexion par connect quand le dossier est créé avec lui (ADR-012 D5)" do
+    ConnectSpec.with_connect do
+      code, _, _ = run_provision("--name=Chouquette", "--regime=fr", "--domain=chouquette.partiduo.localhost")
+      code.should eq(0)
+      Partiduo::Api::Core.settings(actor_with).auth_methods.should eq(%w[password passkey federated])
+      Partiduo::Api::Auth.login_providers(Partiduo::Api::Actor.anonymous).map(&.code)
+        .should eq([Partiduo::Auth::Connect::CODE])
+    end
+  end
+
+  it "garde le défaut sans connect et la liste donnée avec lui" do
+    code, _, _ = run_provision("--name=Sans connect", "--regime=fr", "--domain=sans.partiduo.localhost")
+    code.should eq(0)
+    Partiduo::Api::Core.settings(actor_with).auth_methods.should eq(%w[password passkey])
+
+    Partiduo::Core::Settings.all.delete
+    ConnectSpec.with_connect do
+      code, _, _ = run_provision("--name=Liste", "--regime=fr", "--domain=liste.partiduo.localhost",
+        "--auth-methods=passkey")
+      code.should eq(0)
+      Partiduo::Api::Core.settings(actor_with).auth_methods.should eq(%w[passkey])
+    end
+  end
+
   it "refuse une valeur numérique illisible" do
     code, _, errors = run_provision("--name=X", "--regime=fr", "--capital=dix mille", "--domain=x.partiduo.localhost")
     code.should eq(1)
