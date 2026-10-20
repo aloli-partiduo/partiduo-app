@@ -16161,3 +16161,38 @@ la Comptabilité parmi les modules officiels, à la création comme au
 changement de modules (`admin.errors.dossier.household_modules`), et ne
 garde ni SIREN ni numéro de TVA ; les extensions restent libres, le cœur
 écartant celles d'entreprise. Lève le report de D-FOY-005.
+
+=== D-THM-001 — Thème sombre par les jetons, contrastes vérifiés (partiduo-ui-bulma, partiduo-admin)
+
+*Constat.* En sombre, Bulma 1.0 gardait ses variantes `is-light`
+(notifications, étiquettes, boutons) sur un fond à 90 % : des pavés clairs
+au milieu d'écrans sombres. Le bouton `is-link` portait un texte blanc sur
+un bleu-vert clair (1,9:1) ; les liens du texte prenaient la luminosité de
+l'échelle de Bulma (58 % en clair : 2,2:1 sur blanc), que les jetons de
+`theme.css` ne réglaient pas ; les neutres de Bulma (champs, listes) avaient
+son gris bleuté, distinct des jetons `--pd-*`.
+
+*Choix.* Corriger les jetons de `theme.css`, non empiler des exceptions :
+`--bulma-link-on-scheme-l` (30 % en clair, 68 % en sombre) et
+`--bulma-link-invert-l` ; boutons pleins `is-primary` et `is-link` à 45 %
+en sombre, texte presque noir ; variantes `is-light` en sombre sur
+`--bulma-light-l` (20 %) teinté, texte `<couleur>-light-invert-l` (88 %),
+avec une seule règle pour la notification `is-light` dont Bulma fixe le fond
+à 90 % ; teinte et luminosités des neutres de Bulma (`--bulma-scheme-*`,
+`--bulma-text-*`) alignées sur les jetons ; `--pd-ok` clair assombri
+(4,5:1 sur son fond) ; la ligne d'alerte des tableaux prend `--pd-gap`. Les
+deux déclarations du sombre (préférence du poste, `data-theme="dark"`)
+restent identiques.
+
+*Vérification.* `spec/ui/theme_contrast_spec.cr` calcule, depuis les jetons,
+les rapports WCAG AA des couples principaux en clair et en sombre (texte
+4,5:1, composants 3:1 ; texte, liens, états, étiquettes, barre latérale,
+boutons, variantes `is-light`, champs) et de chaque couleur de texte
+d'`access.css` sur les fonds des pages d'accès. Le logotype (« Parti »,
+« duo ») en est exempté (WCAG 1.4.3). Un audit dans le navigateur (couleur
+calculée de chaque texte sur son fond réel) ne relève plus d'écart sur les
+écrans de connexion, d'invitation, d'enrôlement, les tableaux de bord
+d'entreprise et de foyer, la saisie, les listes, les formulaires et les
+paramètres, en clair comme en sombre. `theme.css` est recopié dans
+`partiduo-admin`, empreintes mises à jour des deux côtés ; `access.css`
+n'a pas changé.
