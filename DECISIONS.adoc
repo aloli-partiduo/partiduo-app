@@ -16106,3 +16106,58 @@ réelle, comme les autres contrôles de session) ; le refus d'une date passée
 dossier (`Config.today`, l'horloge des règles datées, D-2F-012).
 L'interface (`partiduo-ui-bulma`) compare à `Api::Core.today`. Specs autour
 de minuit : `spec/auth/access_ends_on_spec.cr`.
+
+=== D-FOY-009 — Écran « Foyer » et vocabulaire d'un dossier foyer (partiduo-ui-bulma)
+
+*Choix.* Dans un dossier `household` seulement :
+
+* *Une entrée « Foyer ».* Quand une variante d'extension active déclare
+  ses paramètres (`Extensions.simple_mode(…, settings_route:,
+  settings_permission:, settings_label:)`, « Paramètres du foyer » de
+  `PERSO`) et que l'utilisateur peut les ouvrir, leur entrée quitte le menu
+  (`FolderKind.merge_settings`, si le menu a l'entrée « Foyer ») ; l'écran
+  du foyer et celui de l'extension portent deux onglets, « Identité du
+  foyer » et le libellé de l'extension (`FolderKind.tabs`, rendus par la
+  coquille au-dessus du contenu, `Shell#tabs`), et « Foyer » reste l'entrée
+  active sur l'écran de l'extension (`FolderKind.menu_path`). Dans
+  l'interface simplifiée, le lien des paramètres du menu de l'utilisateur
+  mène à « Foyer ». Rien n'est propre à `PERSO` : la règle vaut pour toute
+  variante d'un foyer, et l'extension n'a rien à changer.
+* *Contacts.* L'écran des fiches n'a plus d'onglets « Tiers » / « Articles
+  et services » (pas d'articles dans un foyer) ; titre, tableau, bouton,
+  liste vide et nom d'export disent « Contacts », « Nouveau contact ».
+* *« Comptes et contacts »* pour « Comptes et tiers » : menu, titre, fil
+  d'Ariane, tableau, bouton du lettrage, libellés de la sélection.
+* *Champs de la société.* L'écran « Foyer » ne montre ni ne propose la
+  forme juridique, le capital, le RCS, le SIREN, la TVA intracommunautaire
+  ni l'identifiant créancier SEPA (`FolderKind::BUSINESS_FIELDS`) ; la
+  raison sociale s'y dit « Nom du foyer », le bloc « Identité du foyer ».
+  Le formulaire reprend les valeurs enregistrées de ces champs (la saisie
+  du cœur décrit la ligne entière) ; l'adresse, la langue, le domaine et
+  l'authentification restent.
+
+Libellés `ui.household.*` (fr, en, nl), ajoutés à `FolderKind::LABEL_KEYS`.
+Les dossiers d'entreprise, de micro-entreprise et de profession libérale ne
+changent pas. Specs : `spec/ui/household_spec.cr`. Lève la limite de
+D-FOY-007.
+
+*Alternative écartée.* Écran propre réunissant les deux formulaires : il
+aurait fallu que l'interface rende celui de l'extension, qui lui
+appartient ; les onglets gardent chacun son écran.
+
+=== D-FOY-010 — Type de dossier dans la console d'administration (A-PER-5, partiduo-admin)
+
+*Choix.* Le formulaire de création d'un dossier propose le type
+(« Entreprise », « Foyer »), retenu par le dossier (`admin_dossier.kind`,
+migration admin 0009, `company` pour les dossiers existants), affiché sur
+sa fiche, jamais modifié, recopié par une restauration en instance neuve.
+Il passe à l'exécutant dans les paramètres de `instance.create` (`kind`,
+protocole de l'exécutant 3.1.0 : ajout, absent vaut `company`), qui ajoute
+`--kind household` à `partiduo-provision` pour un foyer et rien pour une
+entreprise (un paquet antérieur au type reste servi) ; tout autre type est
+refusé avant tout appel, par l'exécutant comme par l'enveloppe
+`partiduo-agent-instance` (`company` ou `household`). Un foyer n'admet que
+la Comptabilité parmi les modules officiels, à la création comme au
+changement de modules (`admin.errors.dossier.household_modules`), et ne
+garde ni SIREN ni numéro de TVA ; les extensions restent libres, le cœur
+écartant celles d'entreprise. Lève le report de D-FOY-005.
