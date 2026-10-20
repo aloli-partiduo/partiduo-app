@@ -16222,3 +16222,68 @@ d'entreprise et de foyer, la saisie, les listes, les formulaires et les
 paramètres, en clair comme en sombre. `theme.css` est recopié dans
 `partiduo-admin`, empreintes mises à jour des deux côtés ; `access.css`
 n'a pas changé.
+
+=== D-UI-078 — Rubriques du menu latéral repliables (partiduo-ui-bulma)
+
+*Constat.* Le menu complet aligne une dizaine de rubriques (« Facturation »,
+« Saisie », « Consultation », « Référentiel », « Éditions »…) et leurs
+entrées : il dépasse la hauteur de l'écran et noie la page affichée.
+
+*Choix.*
+
+* Le titre de chaque rubrique est un bouton de divulgation
+  (`aria-expanded`, `aria-controls` vers sa liste, chevron Lucide
+  `chevron-down` de la planche, qui pivote ; transition coupée par
+  `prefers-reduced-motion`). La liste reste nommée par le titre
+  (`aria-labelledby`). Le bouton porte le nom de la rubrique ; l'action
+  (« Déplier la section Saisie », « Replier… », fr, en, nl) est sa
+  description (`title`). L'état est annoncé par `aria-expanded`, sans région
+  d'annonce en plus, qui le dirait deux fois.
+* Le serveur rend toutes les rubriques repliées sauf celle de la page
+  affichée (`Shell::Section#current`). Quand plusieurs entrées
+  correspondent au chemin, seule la plus précise est active
+  (`Shell.most_specific` : sur `/accounting/entries/financial`,
+  « Financier » et non aussi « Écritures ») : une seule rubrique dépliée,
+  un seul `aria-current`.
+* Mémoire : `localStorage` (`partiduo.menu.sections`, code de rubrique →
+  dépliée ou repliée, choix explicites seulement), comme le repli du menu
+  entier (`partiduo.menu.collapsed`, D-UI-005), lu et écrit sous
+  `try/catch` : sans stockage, le choix vaut pour la page. La rubrique de
+  la page affichée est toujours dépliée à l'arrivée.
+* Sans JavaScript : titre en texte (`pd-nojs`), bouton masqué
+  (`pd-jsonly`), toutes les rubriques dépliées ; la règle qui replie ne
+  s'applique que sous `.pd-js`, posée par `shell.js`. Un script qui ne se
+  charge pas laisse donc le menu entier utilisable, et aucun bouton inerte
+  n'est exposé.
+* HTMX : les entrées du menu chargent une page entière ; si une réponse
+  change l'adresse sans rechargement (`hx-push-url`), l'entrée active et sa
+  rubrique suivent le chemin (même règle que `Shell.active?`, la plus
+  précise) ; au retour dans l'historique de HTMX ou si le menu est
+  remplacé, les rubriques sont réglées de nouveau.
+* Mode simplifié (micro-entreprise, profession libérale, foyer d'une
+  extension) : menu réduit sans rubrique, inchangé. Téléphone : mêmes
+  rubriques dans le menu ouvert par le bouton « Menu ».
+
+*Alternatives écartées.*
+
+* `<details>`/`<summary>` : utilisable sans JavaScript, mais `summary`
+  n'admet pas `aria-expanded` ni `aria-controls` explicites, et le rendu
+  sans JavaScript replierait aussi les rubriques ; le bouton de divulgation
+  garde une sémantique exacte dans les deux cas.
+* Préférence côté serveur (`auth_user.interface`, D-UI-077) : elle règle
+  l'interface, un choix rare et propre au compte ; l'état des rubriques
+  change à chaque clic et dépend du poste (écran, téléphone). L'y ranger
+  demanderait un champ et un appel du contrat, une requête par clic, et
+  imposerait l'état d'un poste à l'autre.
+* Opal : quelques lignes de liaison sans logique d'écran ; elles
+  rejoignent `shell.js` (D-UI-005).
+
+*Vérification.* `partiduo-ui-bulma` : `spec/ui/menu_sections_spec.cr`
+(boutons, `aria-expanded`, `aria-controls`, rubrique courante seule
+dépliée, sur un dossier d'entreprise, une micro-entreprise, une profession
+libérale en interface comptable et un foyer ; traductions en et nl ;
+`shell.js` exécuté par JavaScriptCore sur un DOM simulé : choix appliqué,
+clic, stockage refusé, retour dans l'historique, adresse changée par HTMX) ;
+captures en clair, en sombre, au clavier et au téléphone. Les contrastes
+restent ceux de `--pd-sidebar-text` et de l'entrée active sur
+`--pd-sidebar` (`theme_contrast_spec`).
