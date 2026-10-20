@@ -74,20 +74,21 @@ describe "bin/partiduo-provision" do
       cron.should contain("40 4 * * * partiduo set -a && . /usr/local/etc/partiduo/dupont.env && set +a " \
                           "&& cd /var/db/partiduo/dupont && /usr/local/lib/partiduo/bin/partiduo-manage form_purge")
 
-      # Page publique des formulaires (A-FRM-4, D-PKG-010) : jeton absent des
+      # Routes publiques /p/… et /f/… (A-FRM-4, D-PKG-010) : adresse absente des
       # journaux, débit limité, adresse du client jamais reçue du client.
-      vhost.should contain("log_format partiduo_dupont_form\n")
-      vhost.should contain(%("$request_method /f/<jeton> $server_protocol"))
-      vhost.should contain("limit_req_zone $binary_remote_addr zone=partiduo_dupont_form:1m rate=30r/m;")
-      form = vhost[vhost.index!("location ^~ /f/ {\n    limit_req")..]
+      vhost.should contain("log_format partiduo_dupont_public\n")
+      vhost.should contain(%("$request_method <route publique> $server_protocol"))
+      vhost.should contain("limit_req_zone $binary_remote_addr zone=partiduo_dupont_public:1m rate=30r/m;")
+      form = vhost[vhost.index!("location ~ ^/(f|p)/ {\n    limit_req")..]
       form = form[0, form.index!("\n  }") + 4]
-      form.should contain("limit_req           zone=partiduo_dupont_form burst=20 nodelay;")
+      form.should contain("limit_req           zone=partiduo_dupont_public burst=20 nodelay;")
       form.should contain("limit_req_status    429;")
-      form.should contain("access_log /var/log/nginx/partiduo-dupont.access.log partiduo_dupont_form;")
+      form.should contain("access_log /var/log/nginx/partiduo-dupont.access.log partiduo_dupont_public;")
       form.should contain("error_log  /var/log/nginx/partiduo-dupont.error.log crit;")
       form.should_not contain("add_header")
       form.should_not contain("$request_uri")
-      vhost.should contain("location ^~ /f/ {\n    access_log off;\n    return 301 https://$host$request_uri;")
+      vhost.should contain("location ~ ^/(f|p)/ {\n    access_log off;\n    return 301 https://$host$request_uri;")
+      vhost.should_not contain("partiduo_dupont_form")
       vhost.scan("proxy_set_header   X-Real-IP         $remote_addr;").size.should eq(2)
       vhost.scan("proxy_set_header   X-Forwarded-For   $remote_addr;").size.should eq(2)
       vhost.should_not contain("$proxy_add_x_forwarded_for")

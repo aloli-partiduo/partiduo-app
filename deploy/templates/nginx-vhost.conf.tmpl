@@ -8,16 +8,18 @@
 # vhost d'amorçage). Le cron d'acme.sh (/usr/local/etc/cron.d/acme, recette
 # beryl `acme`) le renouvelle et recharge nginx par sudo.
 
-# Page publique des formulaires, /f/<jeton> (partiduo-form, A-FRM-4,
-# D-PKG-010) : le jeton est un secret. Ses requêtes ont leur propre format
-# de journal, qui remplace le chemin par /f/<jeton> et omet le référent (un
-# envoi depuis la page porte le jeton dans Referer), et un débit limité par
-# adresse, commun à tous les processus de l'instance. Noms propres à
-# l'instance : ce fichier est inclus dans le bloc http de nginx.conf.
-log_format partiduo_{{DOSSIER}}_form
-  '$remote_addr - [$time_local] "$request_method /f/<jeton> $server_protocol" '
+# Routes publiques, sans connexion : /p/<extension>/… (public_mount de
+# l'interface, ex. /p/form/<jeton> de partiduo-form) et l'ancienne adresse
+# /f/<jeton>, redirigée en 308 (A-FRM-4, D-PKG-010). L'adresse porte un
+# secret : ces requêtes ont leur propre format de journal, sans chemin
+# (« <route publique> »), sans chaîne de requête ni référent (un envoi depuis
+# la page porte l'adresse dans Referer), et un débit limité par adresse,
+# commun à tous les processus de l'instance. Noms propres à l'instance : ce
+# fichier est inclus dans le bloc http de nginx.conf.
+log_format partiduo_{{DOSSIER}}_public
+  '$remote_addr - [$time_local] "$request_method <route publique> $server_protocol" '
   '$status $body_bytes_sent "$http_user_agent" $request_time';
-limit_req_zone $binary_remote_addr zone=partiduo_{{DOSSIER}}_form:1m rate=30r/m;
+limit_req_zone $binary_remote_addr zone=partiduo_{{DOSSIER}}_public:1m rate=30r/m;
 
 server {
   listen      80;
@@ -30,8 +32,9 @@ server {
     default_type text/plain;
   }
 
-  # Formulaires appelés en HTTP : redirigés sans journaliser le jeton.
-  location ^~ /f/ {
+  # Routes publiques appelées en HTTP : redirigées sans journaliser leur
+  # adresse.
+  location ~ ^/(f|p)/ {
     access_log off;
     return 301 https://$host$request_uri;
   }
@@ -71,16 +74,17 @@ server {
     proxy_read_timeout 300s;
   }
 
-  # Page publique des formulaires : journal sans jeton, débit limité (30
+  # Routes publiques (/p/…, /f/…) : journal sans adresse, débit limité (30
   # requêtes par minute et par adresse, 20 d'avance), refus en 429. Le
   # journal d'erreurs ne garde ici que le critique : un refus de débit ou
-  # une erreur du serveur y écrirait la ligne de requête, donc le jeton.
+  # une erreur du serveur y écrirait la ligne de requête, donc le secret.
   # HSTS : hérité du serveur (aucun add_header ici, qui l'annulerait).
-  location ^~ /f/ {
-    limit_req           zone=partiduo_{{DOSSIER}}_form burst=20 nodelay;
+  # Expression régulière : prioritaire sur « location / », simple préfixe.
+  location ~ ^/(f|p)/ {
+    limit_req           zone=partiduo_{{DOSSIER}}_public burst=20 nodelay;
     limit_req_status    429;
     limit_req_log_level notice;
-    access_log /var/log/nginx/partiduo-{{DOSSIER}}.access.log partiduo_{{DOSSIER}}_form;
+    access_log /var/log/nginx/partiduo-{{DOSSIER}}.access.log partiduo_{{DOSSIER}}_public;
     error_log  /var/log/nginx/partiduo-{{DOSSIER}}.error.log crit;
 
     proxy_pass         http://127.0.0.1:{{PORT}};

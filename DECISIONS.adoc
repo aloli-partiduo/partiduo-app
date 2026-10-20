@@ -13938,6 +13938,32 @@ ports ne se construisent plus en même temps
 *Alternative écartée.* Ajouter de la mémoire ou des cœurs au builder : la
 compilation `--release` reste mono-cœur et la duplication demeure.
 
+=== D-PKG-012 — Toutes les routes publiques au mandataire, /p/ comme /f/ (20 octobre 2026)
+
+*Contexte.* partiduo-form 0.1.4 sert sa page publique sous `/p/form/<jeton>`,
+préfixe générique des routes publiques d'extension
+(`PartiduoUi::Extensions.public_mount`) ; l'ancienne adresse `/f/<jeton>` est
+redirigée en 308 (D-FRM-017). Le traitement de D-PKG-010 ne couvrait que
+`/f/`.
+
+*Choix.* Un seul lieu, `location ~ ^/(f|p)/`, pour toutes les routes
+publiques, présentes et à venir, en HTTP (redirection sans journal) comme en
+HTTPS : format de journal `partiduo_<dossier>_public`, qui n'écrit plus
+aucun chemin (« <route publique> ») puisque le secret n'est pas à la même
+place d'une extension à l'autre ; zone de débit `partiduo_<dossier>_public`,
+commune aux deux préfixes ; `X-Real-IP` et `X-Forwarded-For` écrasés ;
+journal d'erreurs réduit au critique ; HSTS hérité. Une expression régulière
+l'emporte sur `location /`, simple préfixe.
+
+*Reprise `form_attach_files`.* Commande idempotente, sans effet quand
+l'extension est inactive, à lancer une fois après la mise à jour
+(D-FRM-019). Proposée à partiduo-form sous forme de *migration de données*,
+que le script rc.d passe déjà au démarrage de chaque instance : aucune étape
+de déploiement à ajouter. À défaut, à lancer à la main sur chaque instance.
+
+*Vérification.* `spec/deploy/scripts_spec.cr` (sans base). `nginx -t` n'a
+pas pu tourner sur le poste (bac à sable) : à faire au premier déploiement.
+
 == TELEDEC : réponses du 1er octobre 2026 (T9:teledec)
 
 Réponses de TELEDEC au courriel du 30 septembre 2026
