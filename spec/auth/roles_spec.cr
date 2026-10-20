@@ -52,12 +52,13 @@ describe "Rôle comptable (ADR-002 D4)" do
   end
 
   it "perd l'accès après sa date de fin" do
-    created = create_accountant(access_ends_on: Time.utc.at_beginning_of_day)
+    # Jour du dossier (son fuseau) : la connexion se juge à l'heure réelle.
+    created = create_accountant(access_ends_on: Partiduo::Config.today_at(Time.utc))
     AuthSpec.login("expert@cabinet.example").success?.should be_true # jusqu'au jour inclus
     token = AuthSpec.login("expert@cabinet.example").value!.session_token!
 
     user = AuthSpec.user_model(created.user.id)
-    user.access_ends_on = Time.utc.at_beginning_of_day - 1.day
+    user.access_ends_on = Partiduo::Config.today_at(Time.utc) - 1.day
     user.save!
     AuthSpec.login("expert@cabinet.example").error_keys.should eq(["auth.errors.login.access_denied"])
     AuthSpec.actor(token).authenticated?.should be_false
@@ -65,7 +66,7 @@ describe "Rôle comptable (ADR-002 D4)" do
 
   it "refuse une date de fin déjà passée" do
     input = Partiduo::Api::Auth::UserInput.new(email: "expert@cabinet.example", role: "accountant",
-      first_name: "Claire", last_name: "Expert", access_ends_on: Time.utc - 2.days)
+      first_name: "Claire", last_name: "Expert", access_ends_on: Partiduo::Config.today - 2.days)
     Partiduo::Api::Auth.create_user(AuthSpec.system, input).errors_for("access_ends_on").map(&.key)
       .should eq(["auth.errors.user.access_ends_on_past"])
   end

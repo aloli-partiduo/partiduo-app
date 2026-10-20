@@ -104,7 +104,7 @@ La configuration d'une instance tient dans son environnement (ADR-001 D2).
 
 |`PARTIDUO_MODULES`
 |modules et extensions actifs, séparés par des virgules ; `none` pour le socle seul
-|`accounting,invoicing,analytic`
+|les pièces retenues au provisionnement, sinon `accounting,invoicing,analytic`
 
 |`PARTIDUO_DOMAIN`
 |domaine des instances (`<dossier>.<domaine>`), RP ID WebAuthn

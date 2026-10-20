@@ -40,6 +40,11 @@ module Partiduo
       # Type de dossier (ADR-011 A3) : `company`, `household`… Choisi au
       # provisionnement, jamais modifié.
       field :kind, :string, max_size: 32, default: "company"
+      # Pièces non socle actives au provisionnement, en majuscules séparées
+      # par des virgules (D-AMD-034) : l'ensemble actif d'une commande lancée
+      # sans `PARTIDUO_MODULES`, tant que l'administrateur n'a rien activé.
+      # `nil` pour un dossier provisionné avant cette colonne.
+      field :provisioned_modules, :text, blank: true, null: true
       field :default_locale, :string, max_size: 8
       field :domain, :string, max_size: 253
 

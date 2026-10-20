@@ -8,8 +8,14 @@ module Partiduo
     #
     # . la table `modules_activation`, dès qu'elle contient une ligne —
     #   l'administrateur a enregistré un choix (`Partiduo::Api::Modules.activate`) ;
-    # . sinon `PARTIDUO_MODULES` (`Partiduo::Config.active_module_codes`) : valeur
-    #   initiale de l'instance, configuration des specs et de la CI.
+    # . sinon `PARTIDUO_MODULES` (`Partiduo::Config.configured_module_codes`) :
+    #   valeur initiale de l'instance, configuration des specs et de la CI ;
+    # . sinon, variable absente, les pièces actives au provisionnement,
+    #   retenues par la société (`core_settings.provisioned_modules`,
+    #   D-AMD-034) : une commande lancée sans l'environnement de l'instance
+    #   voit les pièces du dossier, pas le défaut ;
+    # . sinon (base pas encore migrée ni provisionnée, ou injoignable) le
+    #   défaut `Partiduo::Config::DEFAULT_MODULES`.
     #
     # La table est relue à chaque appel (une requête courte) : plusieurs
     # processus d'une même instance voient le même état sans cache à invalider.
@@ -17,10 +23,14 @@ module Partiduo
       TABLE = "modules_activation"
 
       @@table_ready = false
+      @@provisioned_column = false
 
       # Codes (en majuscules) des pièces *non socle* actives.
       def self.active_codes : Set(String)
-        stored_codes || Partiduo::Config.active_module_codes.map(&.upcase).to_set
+        stored_codes ||
+          Partiduo::Config.configured_module_codes.try(&.map(&.upcase).to_set) ||
+          provisioned_codes ||
+          Partiduo::Config::DEFAULT_MODULES.map(&.upcase).to_set
       end
 
       # Codes actifs enregistrés en base, ou `nil` si rien n'est enregistré
@@ -79,9 +89,43 @@ module Partiduo
         nil
       end
 
+      # Pièces non socle actives au provisionnement (`Api::Core.provision`),
+      # retenues par la société ; `nil` si rien n'est lisible : base pas
+      # encore migrée (colonne absente, migration core 0008), dossier pas
+      # encore provisionné ou provisionné avant cette colonne, base
+      # injoignable. Sans erreur SQL, qui annulerait la transaction en cours.
+      def self.provisioned_codes : Set(String)?
+        return unless provisioned_column?
+
+        text = Marten::DB::Connection.default.open do |db|
+          db.query_one?("SELECT provisioned_modules FROM core_settings ORDER BY id LIMIT 1", as: String?)
+        end
+        text.try { |value| value.split(',').map(&.strip.upcase).reject(&.empty?).to_set }
+      rescue DB::ConnectionRefused | Marten::DB::Errors::UnknownConnection
+        nil
+      end
+
+      # La colonne `core_settings.provisioned_modules` existe-t-elle ?
+      # Mémorisé une fois vrai, comme `table_ready?`.
+      def self.provisioned_column? : Bool
+        return true if @@provisioned_column
+
+        exists = Marten::DB::Connection.default.open do |db|
+          !db.query_one?(<<-SQL, as: Int32).nil?
+            SELECT 1 FROM information_schema.columns
+            WHERE table_schema = current_schema() AND table_name = 'core_settings'
+              AND column_name = 'provisioned_modules'
+            SQL
+        end
+        @@provisioned_column = exists
+      rescue DB::ConnectionRefused | Marten::DB::Errors::UnknownConnection
+        false
+      end
+
       # Pour les specs qui recréent le schéma.
       def self.reset_table_cache : Nil
         @@table_ready = false
+        @@provisioned_column = false
       end
     end
   end

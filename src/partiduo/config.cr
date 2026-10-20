@@ -34,10 +34,18 @@ module Partiduo
     # Codes (en minuscules) des modules et extensions actifs sur l'instance.
     #
     # `PARTIDUO_MODULES` absent : tous les modules officiels. Vide (`""`) ou
-    # `none` : le socle seul.
+    # `none` : le socle seul. L'ensemble actif d'une instance se lit par
+    # `Partiduo::Modules::State.active_codes`, qui tient compte de la base.
     def self.active_module_codes : Set(String)
-      raw = ENV["PARTIDUO_MODULES"]?
-      return DEFAULT_MODULES.to_set if raw.nil?
+      configured_module_codes || DEFAULT_MODULES.to_set
+    end
+
+    # Codes (en minuscules) posés par `PARTIDUO_MODULES`, ou `nil` si la
+    # variable est absente : l'instance retombe alors sur les modules
+    # retenus à son provisionnement (`Modules::State`, D-AMD-034), sinon sur
+    # le défaut.
+    def self.configured_module_codes : Set(String)?
+      raw = ENV["PARTIDUO_MODULES"]? || return
       return Set(String).new if raw.strip.downcase == "none"
 
       raw.split(',').map(&.strip.downcase).reject(&.empty?).to_set
@@ -80,7 +88,13 @@ module Partiduo
     # Date du jour dans le fuseau de l'instance, à minuit UTC (forme des
     # colonnes `date` relues par Marten).
     def self.today : Time
-      local = now.in(time_zone)
+      today_at(now)
+    end
+
+    # Date de l'instant `instant` dans le fuseau de l'instance, à minuit UTC :
+    # à 23 h 30 UTC le 19, c'est déjà le 20 à Paris.
+    def self.today_at(instant : Time) : Time
+      local = instant.in(time_zone)
       Time.utc(local.year, local.month, local.day)
     end
 

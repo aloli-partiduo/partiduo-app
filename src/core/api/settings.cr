@@ -242,11 +242,13 @@ module Partiduo
           next Result(ProvisionView).failure(errors) unless errors.empty?
 
           kind = InitialData.kind?(kind_code) || raise ArgumentError.new("type de dossier inconnu : #{kind_code}")
+          active = Partiduo::Modules.active_manifests.reject(&.socle?).map(&.code).sort!
           settings = Partiduo::Core::SettingsRules.assign(Partiduo::Core::Settings.new, values)
           settings.kind = kind.code
+          # Retenues pour les commandes lancées sans `PARTIDUO_MODULES` (D-AMD-034).
+          settings.provisioned_modules = active.join(",")
           settings.save!
 
-          active = Partiduo::Modules.active_manifests.reject(&.socle?).map(&.code).sort!
           context = InitialData::Context.new(
             actor: actor,
             tax_regime: values.tax_regime,

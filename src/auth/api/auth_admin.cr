@@ -100,7 +100,7 @@ module Partiduo
       def self.restore_access(actor : Actor, id : Int64, access_ends_on : Time? = nil) : Result(UserView)
         Guard.authorize!(actor, "auth.users.manage", module_code: "AUTH")
         user = find_user(id)
-        if (ends = access_ends_on) && ends < Time.utc.at_beginning_of_day
+        if (ends = access_ends_on) && ends < Partiduo::Config.today
           return Result(UserView).failure(FieldError.new("access_ends_on", "auth.errors.user.access_ends_on_past"))
         end
         Transaction.run do
@@ -434,7 +434,7 @@ module Partiduo
         if (profile_id = input.profile_id) && !Partiduo::Auth::Profile.filter(id: profile_id).exists?
           errors << FieldError.new("profile_id", "auth.errors.user.profile_unknown")
         end
-        if (ends = input.access_ends_on) && ends < Time.utc.at_beginning_of_day &&
+        if (ends = input.access_ends_on) && ends < Partiduo::Config.today &&
            (existing.nil? || existing.access_ends_on != ends.at_beginning_of_day)
           errors << FieldError.new("access_ends_on", "auth.errors.user.access_ends_on_past")
         end

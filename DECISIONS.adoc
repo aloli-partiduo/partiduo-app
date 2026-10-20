@@ -16038,3 +16038,71 @@ root). `partiduo-agent-root install` n'admet dans l'environnement que cet
 
 *Décision.* `admin-invite` rend `signup_code` et `connect_account` :
 contrat de l'interface d'instance 1.3.0 (ajouts seulement).
+
+== Corrections du 20 octobre 2026
+
+Corrections adoptées par l'utilisateur le 20 octobre 2026, à la suite du
+dossier foyer (D-FOY-001 à D-FOY-008) et des amendements du 13 octobre
+(D-AMD-005).
+
+=== D-AMD-034 — Sans `PARTIDUO_MODULES`, les pièces retenues au provisionnement
+
+*Constat.* Depuis D-AMD-005, le démarrage (`Partiduo::Modules.check!`,
+appelé par `Marten.setup`, donc par toute commande de `partiduo-manage`, y
+compris `migrate`) refuse un dossier foyer où une pièce que le type exclut
+est active. Or, tant que l'administrateur n'a rien activé
+(`modules_activation` vide, D-018), une commande lancée sans
+`PARTIDUO_MODULES` voyait le défaut `accounting,invoicing,analytic` : un
+dossier foyer refusait alors de démarrer, puisque `provision` n'écrit pas
+`modules_activation` (D-SET-006, D-J1-004). La démonstration posait la
+variable pour contourner le refus.
+
+*Choix.* `Api::Core.provision` retient dans la société les pièces non socle
+actives à ce moment (`core_settings.provisioned_modules`, migration core
+0008 : codes en majuscules séparés par des virgules, `""` pour le socle
+seul, `NULL` pour un dossier provisionné avant). L'ensemble actif
+(`Modules::State.active_codes`) vient désormais :
+
+. de `modules_activation` dès qu'elle a une ligne (inchangé) ;
+. sinon de `PARTIDUO_MODULES` s'il est posé, même vide ou `none`
+  (`Config.configured_module_codes`, inchangé) ;
+. sinon, variable absente, des pièces retenues au provisionnement
+  (`State.provisioned_codes`) ;
+. sinon du défaut : base pas encore migrée (colonne absente, lue dans
+  `information_schema`, sans erreur SQL qui annulerait la transaction en
+  cours) ou pas encore provisionnée, dossier provisionné avant la colonne,
+  base injoignable. C'est le comportement d'avant, avec son refus pour un
+  foyer : rien ne dit quelles pièces il avait.
+
+*Pourquoi pas `modules_activation`.* L'amendement envisagé par D-J1-004
+(`provision` écrit la table) aurait fait de la base la seule source de
+vérité après le provisionnement : `PARTIDUO_MODULES` de l'environnement
+généré (`instance.env`), par lequel on ajoute aujourd'hui une extension à
+une instance, n'aurait plus rien changé. Ici, la variable garde la priorité
+qu'elle avait ; seule son absence change de sens. Les specs qui changent de
+configuration par `with_active_modules` ne sont pas touchées.
+
+*Conséquence.* La correction de `partiduo-demo/scripts/demo` (variable
+posée dès `partiduo-manage demo charger`) reste valable et sans effet
+contraire ; elle n'est plus nécessaire pour un dossier provisionné par ce
+cœur. Specs : `spec/modules/provisioned_modules_spec.cr`.
+
+=== D-AMD-035 — Fin d'accès au jour du dossier
+
+*Constat.* La date de fin d'accès d'un utilisateur (`access_ends_on`,
+ADR-002 D4) était comparée à la date UTC : à Paris, l'accès qui finissait
+le 19 valait encore de 0 h à 2 h le 20 (heure d'été), et une fin d'accès
+« aujourd'hui » saisie après minuit, heure de Paris, mais avant minuit UTC
+était refusée comme passée le lendemain. L'interface faisait de même en
+rouvrant un accès (`restore_access`), et y perdait la date le jour même.
+
+*Choix.* Le jour qui compte est celui du dossier, dans son fuseau
+(`Api::Core.time_zone`) : `Partiduo::Config.today_at(instant)` (date de
+l'instant dans ce fuseau, à minuit UTC, forme des colonnes `date`), dont
+`Config.today` est le cas de l'horloge. `User#access_expired?` et
+`can_sign_in?` jugent l'instant de la connexion ou de la session (heure
+réelle, comme les autres contrôles de session) ; le refus d'une date passée
+(`create_user`, `update_user`, `restore_access`) juge la date du jour du
+dossier (`Config.today`, l'horloge des règles datées, D-2F-012).
+L'interface (`partiduo-ui-bulma`) compare à `Api::Core.today`. Specs autour
+de minuit : `spec/auth/access_ends_on_spec.cr`.

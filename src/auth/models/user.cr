@@ -78,10 +78,12 @@ module Partiduo
       end
 
       # Date de fin d'accès dépassée (ADR-002 D4) : l'accès vaut jusqu'au jour
-      # inclus.
+      # inclus, jour du dossier (`Partiduo::Config.today_at`, son fuseau) et
+      # non jour UTC : à Paris, l'accès qui finit le 20 vaut jusqu'à 23 h 59
+      # le 20, heure de Paris (D-AMD-035).
       def access_expired?(now : Time = Time.utc) : Bool
         if ends = access_ends_on
-          return now.at_beginning_of_day > ends
+          return Partiduo::Config.today_at(now) > ends
         end
         false
       end

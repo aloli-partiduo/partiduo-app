@@ -109,7 +109,7 @@ describe "Comptable : niveau 3 exigé (ADR-002 D4)" do
     level3 = AuthSpec.passkey_login(authenticator).value!.session_token!
     AuthSpec.actor(level3).permissions.should_not be_empty
 
-    AuthSpec.user_model(created.user.id).tap { |user| user.access_ends_on = Time.utc.at_beginning_of_day - 1.day }.save!
+    AuthSpec.user_model(created.user.id).tap { |user| user.access_ends_on = Partiduo::Config.today_at(Time.utc) - 1.day }.save!
     AuthSpec.actor(level3).authenticated?.should be_false
     AuthSpec.passkey_login(authenticator).error_keys.should eq(["auth.errors.login.access_denied"])
   end

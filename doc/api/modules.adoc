@@ -163,8 +163,13 @@ L'ensemble actif (`Partiduo::Modules::State.active_codes`) vient :
 . de la table `modules_activation`, dès qu'elle contient une ligne : c'est le
   choix enregistré par l'administrateur (`Api::Modules.activate`,
   `deactivate`) ou par `partiduo-provision` ;
-. sinon de `PARTIDUO_MODULES` : `accounting,invoicing` ; absente, les trois
-  modules officiels ; `none` ou vide, le socle seul.
+. sinon de `PARTIDUO_MODULES` : `accounting,invoicing` ; `none` ou vide, le
+  socle seul ;
+. variable absente, des pièces actives au provisionnement, que la société
+  retient (`core_settings.provisioned_modules`, D-AMD-034) : une commande
+  lancée sans l'environnement de l'instance voit les pièces du dossier ;
+. sinon (base pas encore migrée ni provisionnée, dossier provisionné avant
+  la colonne), des trois modules officiels.
 
 Une pièce inactive n'expose ni menu ni permission cochable ; ses commandes et
 requêtes lèvent `Partiduo::Api::ModuleDisabled` (via `Guard.authorize!`) ; ses
