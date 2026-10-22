@@ -59,7 +59,8 @@ situées avant `date_from` selon la même date.
 |`auxiliary_balance(actor, AuxiliaryBalanceQuery) : AuxiliaryBalanceView`
 |Balance des tiers (`balance_card.inc.php`) : mêmes colonnes par fiche,
 compte collectif de la fiche ; `kind` (défaut : clients et fournisseurs),
-`account` (préfixe des comptes retenus, `411`).
+`account` (préfixe des comptes retenus, `411`) ; depuis 0.18.0,
+`date_basis` et `paid` comme pour `trial_balance` (D-AMD-037).
 
 |`aged_balance(actor, AgedBalanceQuery) : AgedBalanceView`
 |Balance âgée (`Balance_Age`) au jour `as_of` : par fiche, reste dû, échu,

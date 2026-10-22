@@ -121,8 +121,10 @@ module Partiduo
       # UTF-8 valide, ISO 8859-15, Windows-1252).
       FEC_ENCODINGS = Partiduo::Accounting::FecReader::ENCODINGS.keys
 
-      # Lit un FEC (A-IMP-4), sans rien écrire. Tout utilisateur authentifié
-      # au niveau exigé, Comptabilité active.
+      # Lit un FEC (A-IMP-4), sans rien écrire ni lire en base. Tout
+      # utilisateur authentifié au niveau exigé, même Comptabilité inactive
+      # (D-AMD-037) : un simple contrôle de fichier, avant la reprise d'un
+      # dossier qui n'a pas encore la Comptabilité, ne doit pas l'exiger.
       #
       # * `encoding` : `nil` ou `auto` pour le reconnaître, sinon un nom de
       #   `FEC_ENCODINGS` (`utf-8`, `iso-8859-15`, `windows-1252`…) ;
@@ -138,7 +140,7 @@ module Partiduo
       # dates `AAAAMMJJ` (`AAAA-MM-JJ` et `JJ/MM/AAAA` tolérées) ; montants
       # à virgule ou point décimal, blancs et `+` admis.
       def self.read_fec(actor : Actor, content : Bytes, encoding : String? = nil, strict : Bool = false) : FecFileView
-        Guard.authorize!(actor, nil, module_code: MODULE_CODE)
+        Guard.authorize!(actor, nil)
         Partiduo::Accounting::FecReader.read(content, encoding, strict)
       end
     end

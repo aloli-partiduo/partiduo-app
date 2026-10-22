@@ -36,8 +36,10 @@ module Partiduo
   # par une extension, `Partiduo::Api::Mail`, D-AMD-025 et D-AMD-026 ;
   # 0.17.0 : approbation des opérations sensibles, `Partiduo::Api::Approvals`,
   # `Actor#strong_auth_at`, réglage `approval_mode` du dossier, D-AMD-027 à
-  # D-AMD-029).
-  API_VERSION = "0.17.0"
+  # D-AMD-029 ; 0.18.0 : `add_to_statement`, `date_basis` et `paid` de
+  # `AuxiliaryBalanceQuery`, `read_fec` sans Comptabilité active,
+  # D-AMD-037).
+  API_VERSION = "0.18.0"
 end
 
 module Partiduo

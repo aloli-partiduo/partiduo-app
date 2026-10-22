@@ -38,6 +38,7 @@ l'interface), total, part rapprochée et non rapprochée.
 ----
 Api::Accounting.reconcile(actor, ReconcileInput) : Result(BankStatementView)
 Api::Accounting.unreconcile(actor, statement_id) : Result(Nil)
+Api::Accounting.add_to_statement(actor, statement_id, entry_ids) : Result(BankStatementView)   # 0.18.0
 ----
 
 Règle de NOALYSS : si les soldes de début et de fin sont donnés et
@@ -46,3 +47,15 @@ différents, le total des opérations cochées doit égaler leur écart
 `selected`, `difference`). Autres erreurs : `.reference.blank`,
 `.reference.too_long`, `.reference.taken`, `.entries.blank`,
 `.entries.invalid` (opération d'un autre journal ou déjà rapprochée).
+
+=== Ajouter à un relevé rapproché (0.18.0, D-AMD-037)
+
+`add_to_statement` rattache des opérations du journal, non rapprochées, à
+un relevé existant *sans le défaire* : il garde son identifiant, son
+numéro, ses soldes et sa pièce. C'est le geste d'une correction (extourne
+et nouvelle écriture, de somme nulle) d'une opération déjà pointée. Si les
+soldes du relevé sont donnés et différents, le total de toutes ses
+opérations, anciennes et ajoutées, doit égaler leur écart (`.mismatch`).
+Autres erreurs : `.entries.blank`, `.entries.invalid` (`%{id}` : opération
+d'un autre journal ou déjà rapprochée). Relevé inconnu ou journal invisible
+: `NotFound` ; journal en lecture seule : `Forbidden`.

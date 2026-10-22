@@ -94,14 +94,17 @@ module Partiduo
 
       # `kind` : nature des fiches (`customer`, `supplier`, `employee`…) ;
       # `nil` = clients et fournisseurs. `account` : lignes des comptes commençant par ce
-      # numéro seulement (`411`).
+      # numéro seulement (`411`). `date_basis`, `paid` (A-REP-6, D-AMD-037) :
+      # comme pour `TrialBalanceQuery`.
       record AuxiliaryBalanceQuery,
         date_from : Time? = nil,
         date_to : Time? = nil,
         kind : String? = nil,
         account : String? = nil,
         ledger_ids : Array(Int64)? = nil,
-        nonzero_only : Bool = false
+        nonzero_only : Bool = false,
+        date_basis : DateBasis = DateBasis::Operation,
+        paid : Bool? = nil
 
       record AuxiliaryBalanceRowView,
         card_id : Int64,

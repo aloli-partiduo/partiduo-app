@@ -135,7 +135,7 @@ module Partiduo
           entries = Partiduo::Accounting::Entry.all.lock.filter(id__in: ids).to_a
           errors = selection_errors(ledger, reference, ids, entries)
           next Result(BankStatementView).failure(errors) unless errors.empty?
-          if mismatch = mismatch_error(ledger, ids, input)
+          if mismatch = mismatch_error(ledger, ids, input.start_balance, input.end_balance)
             next Result(BankStatementView).failure(mismatch)
           end
 
@@ -143,6 +143,49 @@ module Partiduo
             ledger_id: ledger.id, reference: reference, start_balance: input.start_balance,
             end_balance: input.end_balance, attachment_id: input.attachment_id, created_by_id: actor.user_id,
           )
+          entries.each do |entry|
+            entry.statement_id = statement.id!.to_i64
+            entry.save!
+          end
+          Result(BankStatementView).success(Partiduo::Accounting::Reconciliation.statement_view(statement, ledger))
+        end
+      end
+
+      # Ajoute des opérations du journal, non rapprochées, à un relevé déjà
+      # rapproché, sans le défaire : il garde son identifiant, son numéro,
+      # ses soldes et sa pièce. Sert quand une opération du relevé est
+      # corrigée (extourne et nouvelle écriture, dont la somme est nulle).
+      # Soldes de début et de fin donnés et différents : le total de *toutes*
+      # les opérations du relevé, anciennes et ajoutées, doit égaler leur
+      # écart, comme à `reconcile`.
+      #
+      # Erreurs : `accounting.errors.reconciliation.entries.blank`,
+      # `.entries.invalid` (`%{id}`), `.mismatch` (`%{expected}`,
+      # `%{selected}`, `%{difference}`).
+      def self.add_to_statement(actor : Actor, statement_id : Int64, entry_ids : Array(Int64)) : Result(BankStatementView)
+        Guard.authorize!(actor, "accounting.matching.write", module_code: MODULE_CODE)
+        ids = entry_ids.uniq
+        if ids.empty?
+          return Result(BankStatementView).failure(
+            [FieldError.new("entry_ids", "accounting.errors.reconciliation.entries.blank")])
+        end
+
+        Transaction.run do
+          statement = Partiduo::Accounting::BankStatement.all.lock.filter(id: statement_id).first ||
+                      raise NotFound.new("bank_statement", statement_id)
+          ledger = financial_ledger!(actor, statement.ledger_id!.as(Int).to_i64, write: true)
+          entries = Partiduo::Accounting::Entry.all.lock.filter(id__in: ids).to_a
+          errors = ids.compact_map do |id|
+            entry = entries.find(&.id.==(id))
+            next if entry && entry.ledger_id == ledger.id && entry.statement_id.nil?
+            FieldError.new("entry_ids", "accounting.errors.reconciliation.entries.invalid", {"id" => id.to_s})
+          end
+          next Result(BankStatementView).failure(errors) unless errors.empty?
+
+          current = Partiduo::Accounting::Entry.filter(statement_id: statement.id).map(&.id!.to_i64)
+          if mismatch = mismatch_error(ledger, current + ids, statement.start_balance, statement.end_balance)
+            next Result(BankStatementView).failure(mismatch)
+          end
           entries.each do |entry|
             entry.statement_id = statement.id!.to_i64
             entry.save!
@@ -186,8 +229,8 @@ module Partiduo
 
       # Règle d'origine : soldes donnés et différents, le total coché doit
       # égaler leur écart.
-      private def self.mismatch_error(ledger : Partiduo::Accounting::Ledger, ids : Array(Int64), input : ReconcileInput) : FieldError?
-        start, finish = input.start_balance, input.end_balance
+      private def self.mismatch_error(ledger : Partiduo::Accounting::Ledger, ids : Array(Int64), start : BigDecimal?,
+                                      finish : BigDecimal?) : FieldError?
         return if start.nil? || finish.nil?
         expected = finish - start
         amounts = Partiduo::Accounting::Reconciliation.amounts(ids, Partiduo::Accounting::Reconciliation.bank(ledger))

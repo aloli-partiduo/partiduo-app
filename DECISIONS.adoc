@@ -16161,6 +16161,56 @@ les deux.
 
 Specs : `spec/modules/provisioned_modules_spec.cr`.
 
+=== D-AMD-037 — Manques du contrat relevés par la deuxième vague, contrat 0.18.0
+
+*Constat.* La deuxième vague des extensions (D-AMD-030) a branché les
+amendements du 13 octobre, mais quatre manques restaient contournés :
+`partiduo-bankimport` défaisait et refaisait le relevé pointé pour y
+ajouter l'écriture d'une correction (le relevé changeait d'identifiant,
+D-BKI-015, et `partiduo-perso` en héritait, D-PER-022) ;
+`partiduo-reports` refusait la date de paiement et « payé / non payé » sur
+la balance des tiers (D-REP-024) ; `partiduo-migrate` ne pouvait contrôler
+un FEC sans la Comptabilité de l'instance active (D-MIG-023) ;
+`partiduo-form` rouvrait le point d'entrée public de l'interface pour
+masquer ses chemins dans le journal et sécuriser le refus CSRF (A-FRM-6,
+D-FRM-017).
+
+*Choix (ajouts au contrat).*
+
+* `Accounting.add_to_statement(actor, statement_id, entry_ids) :
+  Result(BankStatementView)` : opérations du journal, non rapprochées,
+  ajoutées à un relevé rapproché sans le défaire (même identifiant, même
+  numéro, mêmes soldes, même pièce) ; total de toutes ses opérations
+  contrôlé contre l'écart des soldes comme à `reconcile` ; mêmes erreurs
+  et mêmes droits (`accounting.matching.write`, journal accessible en
+  écriture).
+* `AuxiliaryBalanceQuery#date_basis` et `#paid` : ceux de
+  `TrialBalanceQuery` (D-AMD-014), par la même somme SQL (`ReportData.sums`).
+* `Accounting.read_fec` n'exige plus la Comptabilité active : il ne lit ni
+  n'écrit rien en base ; il reste réservé à un acteur authentifié au niveau
+  exigé.
+* *Interface* (`partiduo-ui-bulma`, hors contrat) :
+  `PublicExtensionHandler#process_dispatch` pose les en-têtes stricts
+  communs (`PUBLIC_HEADERS`) sur *toute* réponse, y compris le refus de la
+  protection CSRF rendu avant son `dispatch`, et masque le chemin servi
+  dans le journal des requêtes du serveur : `/p/<code>/…` pour une
+  extension montée, `/p/…` sinon, quelle que soit la réponse (404, 429,
+  413, 403, 200). `PartiduoUi::Extensions.mask_logged_path(request, path)`
+  sert aux extensions pour leurs autres chemins à cacher (`/f/` de
+  `partiduo-form`).
+
+*Version.* `API_VERSION` 0.18.0 (ajouts seulement). Documentation :
+`doc/api/accounting-reconciliation.adoc`, `doc/api/accounting-reports.adoc`,
+`doc/api/accounting-fec-reader.adoc`. Specs :
+`spec/accounting/amendments_second_wave_spec.cr` ; interface :
+`spec/ui/amendments_spec.cr` de `partiduo-ui-bulma`.
+
+*Contournements retirés.* `partiduo-bankimport` (`Relink.repoint` →
+`add_to_statement`), `partiduo-perso` (relevé gardé, D-PER-022 mis à
+jour), `partiduo-reports` (options `date` et `paid` admises sur la balance
+des tiers), `partiduo-migrate` (contrôle `check` sans Comptabilité),
+`partiduo-form` (`ui/bulma/ext/` retiré).
+
 === D-FOY-009 — Écran « Foyer » et vocabulaire d'un dossier foyer (partiduo-ui-bulma)
 
 *Choix.* Dans un dossier `household` seulement :

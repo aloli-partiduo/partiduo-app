@@ -71,7 +71,8 @@ module Partiduo
         from, to = ReportData.range(query.date_from, query.date_to)
         cards = ReportData.cards(ReportData.kinds(query.kind, TIERS_KINDS))
         ledger_ids = ReportData.ledgers(readable, query.ledger_ids)
-        sums = ReportData.sums(ledger_ids, from, to, by_card: true, account_prefix: query.account, card_ids: cards.keys)
+        sums = ReportData.sums(ledger_ids, from, to, by_card: true, account_prefix: query.account, card_ids: cards.keys,
+          date_basis: query.date_basis, paid: query.paid)
         accounts = CardAccount.filter(card_id__in: cards.keys).join(:account).to_a
           .to_h { |link| {link.card_id!.to_i64, link.account!.number.to_s} }
         rows = sums.group_by { |sum| sum.card_id || 0_i64 }.compact_map do |card_id, list|

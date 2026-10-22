@@ -30,7 +30,7 @@ file.warnings        # remarques (encodage douteux)
 |Appel |Droit |Rôle
 
 |`read_fec(actor, content : Bytes, encoding : String? = nil, strict : Bool = false) : FecFileView`
-|authentifié, Comptabilité active
+|authentifié (Comptabilité active ou non, D-AMD-037)
 |Lit le fichier ; ne lève pas d'exception sur un fichier mal formé : les
 défauts sont dans `issues`.
 |===
