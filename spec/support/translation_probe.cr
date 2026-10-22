@@ -4,9 +4,9 @@ module Partiduo
   # Sonde des traductions pendant la suite de specs (ADR-005 D7) : toute
   # recherche faite par le code (`I18n.t`, message d'une `FieldError`,
   # courriel, PDF, Factur-X, données initiales…), quelle que soit la langue
-  # active, et toute erreur rendue par `Api::Result.failure`, même jamais
-  # affichée, doit avoir sa clé en fr, en et nl, et chaque interpolation de
-  # chaque langue doit recevoir un paramètre. Une recherche avec `default:`,
+  # active, doit avoir sa clé en fr, en et nl ; toute erreur rendue par
+  # `Api::Result.failure`, même jamais affichée, aussi, et chacune de ses
+  # interpolations, dans chaque langue, doit recevoir un paramètre. Une recherche avec `default:`,
   # volontairement tolérante, n'est pas contrôlée. Les défauts sont
   # rapportés en fin de suite, qui échoue alors.
   #
@@ -44,19 +44,14 @@ module Partiduo
     end
 
     # Recherche faite par `I18n::Catalog#translate`.
-    def self.lookup(key : String | Symbol, params, count, scope, default, kwargs) : Nil
+    # Recherche faite par crystal-i18n (`I18n::Catalog#fetch_translation!`,
+    # clé complète, portée appliquée). Les paramètres n'y sont plus connus :
+    # l'existence de la clé dans chaque langue est contrôlée ici ; les
+    # interpolations, par la parité des locales et le texte rendu.
+    def self.lookup(key : String, count, default) : Nil
       return unless default.nil?
       @@lookups += 1
-      full = case scope
-             when Array then (scope.map(&.to_s) << key.to_s).join('.')
-             when Nil   then key.to_s
-             else            "#{scope}.#{key}"
-             end
-      names = Set(String).new
-      params.try &.each { |name, _| names << name.to_s }
-      kwargs.each { |name, _| names << name.to_s }
-      names << "count" unless count.nil?
-      check(full, names, !count.nil?)
+      check(key, nil, !count.nil?)
     end
 
     # Erreurs d'un échec du contrat.
@@ -66,7 +61,7 @@ module Partiduo
       end
     end
 
-    private def self.check(key : String, names : Set(String), plural : Bool) : Nil
+    private def self.check(key : String, names : Set(String)?, plural : Bool) : Nil
       Partiduo::LOCALES.each do |locale|
         problem = problem(locale.to_s, key, names, plural)
         next if problem.nil? || @@failures.has_key?(problem)
@@ -75,11 +70,13 @@ module Partiduo
     end
 
     # Défaut d'une clé dans une langue : absente, sous-arbre demandé sans
-    # compte, interpolation sans paramètre.
-    def self.problem(locale : String, key : String, names : Set(String), plural : Bool) : String?
+    # compte, interpolation sans paramètre (non contrôlée si `names` est
+    # `nil`).
+    def self.problem(locale : String, key : String, names : Set(String)?, plural : Bool) : String?
       catalog = texts[locale]
       return "#{locale}.#{key} absente" unless catalog.has_key?(key)
       value = catalog[key]
+      return "#{locale}.#{key} recherchée avec un compte, sans formes du pluriel" if plural && !value.is_a?(Hash)
       strings = case value
                 when Hash
                   return "#{locale}.#{key} est un sous-arbre, demandé sans compte" unless plural
@@ -89,17 +86,20 @@ module Partiduo
                 when Array then [value.join("\n")]
                 else            [value.to_s]
                 end
+      return if names.nil?
       unresolved = strings.flat_map(&.scan(/%\{(\w+)\}/).map(&.[1])).uniq!.reject { |name| names.includes?(name) }
       "#{locale}.#{key} : #{unresolved.map { |name| "%{#{name}}" }.join(" ")} sans paramètre" unless unresolved.empty?
     end
 
-    # Premier appelant hors de crystal-i18n, du contrat d'erreurs et de
-    # cette sonde.
+    PROBE_FILE = __FILE__
+
+    # Premier appelant du code de Partiduo (handler, service, gabarit
+    # compilé, spec), hors de crystal-i18n, du contrat d'erreurs et de cette
+    # sonde.
     private def self.origin : String
       caller.find do |frame|
-        !frame.includes?("/i18n/") && !frame.includes?("translation_probe.cr") &&
-          !frame.includes?("api/result.cr") && !frame.includes?("api/field_error.cr") &&
-          (frame.includes?("/src/") || frame.includes?("/spec/"))
+        frame.includes?("partiduo") && !frame.includes?("/i18n/") && !frame.includes?(PROBE_FILE) &&
+          !frame.includes?("api/result.cr") && !frame.includes?("api/field_error.cr")
       end.try(&.strip) || "?"
     end
 
@@ -110,9 +110,8 @@ module Partiduo
 end
 
 class I18n::Catalog
-  def translate(key : String | Symbol, params : Hash | NamedTuple? = nil, count : Float | Int? = nil,
-                scope : Array(String | Symbol) | String | Symbol? = nil, default = nil, **kwargs) : String
-    Partiduo::TranslationProbe.lookup(key, params, count, scope, default, kwargs)
+  private def fetch_translation!(locale, key, count = nil, default = nil, ongoing_fallback = false)
+    Partiduo::TranslationProbe.lookup(key.to_s, count, default) unless ongoing_fallback
     previous_def
   end
 end
