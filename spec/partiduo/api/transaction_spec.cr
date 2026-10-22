@@ -22,7 +22,7 @@ describe Partiduo::Api::Transaction do
   it "annule tout quand la commande échoue" do
     result = Partiduo::Api::Transaction.run do
       create_user("annule@example.org")
-      Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("accounting.errors.entry.unbalanced"))
+      Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("accounting.errors.entry.unbalanced", {"difference" => "0.01"}))
     end
 
     result.failure?.should be_true
@@ -68,7 +68,7 @@ describe "Partiduo::Api::Transaction imbriquée (D-024)" do
         create_user("imbriquee@example.org")
         Partiduo::Api::Result(Nil).success(nil)
       end
-      Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("accounting.errors.entry.unbalanced"))
+      Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("accounting.errors.entry.unbalanced", {"difference" => "0.01"}))
     end
 
     result.failure?.should be_true
@@ -99,7 +99,7 @@ describe "Partiduo::Api::Transaction imbriquée (D-024)" do
     Partiduo::Api::Transaction.run do
       Partiduo::Api::Transaction.run do
         Partiduo::Events.after_commit { effects << "annule" }
-        Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("accounting.errors.entry.unbalanced"))
+        Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("accounting.errors.entry.unbalanced", {"difference" => "0.01"}))
       end
       Partiduo::Api::Transaction.run do
         Partiduo::Events.after_commit { effects << "garde" }

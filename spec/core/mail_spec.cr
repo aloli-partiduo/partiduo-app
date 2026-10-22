@@ -82,7 +82,7 @@ describe "Partiduo::Api::Mail (A-REP-2)" do
         queued = Mail.deliver(actor_with, message, "CORE").value!
         queued.status.should eq("queued")
         transport.messages.should be_empty
-        Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("annulé"))
+        Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("accounting.errors.entry.unbalanced", {"difference" => "0.01"}))
       end
       transport.messages.should be_empty
       Partiduo::Core::MailMessage.all.count.should eq(0)

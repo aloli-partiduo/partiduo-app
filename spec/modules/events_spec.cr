@@ -85,7 +85,7 @@ describe Partiduo::Events do
 
     Partiduo::Api::Transaction.run do
       Partiduo::Events.after_commit { effects << "annulé" }
-      Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("modules.errors.activation.socle"))
+      Partiduo::Api::Result(Nil).failure(Partiduo::Api::FieldError.base("modules.errors.activation.socle", {"module" => "CORE"}))
     end
     effects.should eq(["validé"])
 
