@@ -16133,6 +16133,34 @@ dossier (`Config.today`, l'horloge des règles datées, D-2F-012).
 L'interface (`partiduo-ui-bulma`) compare à `Api::Core.today`. Specs autour
 de minuit : `spec/auth/access_ends_on_spec.cr`.
 
+=== D-AMD-036 — Reprise des pièces d'un dossier provisionné avant la colonne
+
+*Constat.* Un dossier provisionné avant la migration core 0008 n'a rien
+dans `core_settings.provisioned_modules` (`NULL`) : sans `PARTIDUO_MODULES`,
+il voit encore le défaut et un dossier foyer refuse de démarrer
+(D-AMD-034, dernier cas).
+
+*Choix.* Au démarrage (`Modules::App#setup`, après `Modules.check!`, donc
+pour toute commande de `partiduo-manage` comme pour le serveur), si
+`PARTIDUO_MODULES` est posé et que la colonne vaut `NULL`,
+`Modules::State.record_provisioned_codes` y enregistre une fois les pièces
+non socle de la variable, en majuscules, dans l'ordre, sans les codes
+inconnus du registre, `""` pour `none` ou une variable vide (socle seul),
+comme `Api::Core.provision`. Une seule requête
+(`UPDATE … WHERE provisioned_modules IS NULL`) : jamais de valeur déjà
+retenue remplacée, même vide ; rien sans variable, avant la migration
+(colonne absente), avant le provisionnement, ni si la base est
+injoignable. Une ligne au journal (`partiduo.modules`) signale la reprise.
+L'environnement de l'instance (`instance.env`) pose la variable : le
+premier démarrage du nouveau cœur suffit, sans commande à lancer.
+
+*Pourquoi la variable et non l'activation enregistrée.* La variable est la
+valeur initiale de l'instance, celle que le provisionnement aurait retenue ;
+`modules_activation`, quand elle a une ligne, l'emporte de toute façon sur
+les deux.
+
+Specs : `spec/modules/provisioned_modules_spec.cr`.
+
 === D-FOY-009 — Écran « Foyer » et vocabulaire d'un dossier foyer (partiduo-ui-bulma)
 
 *Choix.* Dans un dossier `household` seulement :

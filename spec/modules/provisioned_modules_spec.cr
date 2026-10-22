@@ -95,6 +95,61 @@ describe_module "ACCOUNTING", "Pièces retenues au provisionnement (D-AMD-034)" 
   end
 end
 
+describe_module "ACCOUNTING", "Reprise des pièces d'un dossier provisionné avant la colonne (D-AMD-036)" do
+  it "enregistre une fois les pièces de PARTIDUO_MODULES, puis démarre sans la variable" do
+    with_active_modules("accounting") { provision_household }
+    forget_recorded_modules
+    with_active_modules(" Accounting ") do
+      Partiduo::Modules::State.record_provisioned_codes.should be_true
+    end
+    recorded_modules.should eq("ACCOUNTING")
+    with_active_modules(nil) do
+      Partiduo::Modules::State.active_codes.should eq(Set{"ACCOUNTING"})
+      Partiduo::Modules.check!
+    end
+  end
+
+  it "ne remplace jamais une valeur retenue, même le socle seul" do
+    with_active_modules("accounting") { provision_household }
+    with_active_modules("accounting,perso") do
+      Partiduo::Modules::State.record_provisioned_codes.should be_false
+    end
+    recorded_modules.should eq("ACCOUNTING")
+
+    Marten::DB::Connection.default.open { |db| db.exec("UPDATE core_settings SET provisioned_modules = ''") }
+    with_active_modules("accounting") { Partiduo::Modules::State.record_provisioned_codes.should be_false }
+    recorded_modules.should eq("")
+  end
+
+  it "retient le socle seul pour none, en ordre et sans les codes inconnus" do
+    with_active_modules("accounting") { provision_instance }
+    forget_recorded_modules
+    with_active_modules("none") { Partiduo::Modules::State.record_provisioned_codes.should be_true }
+    recorded_modules.should eq("")
+
+    forget_recorded_modules
+    with_active_modules("invoicing,accounting,inconnu") do
+      Partiduo::Modules::State.record_provisioned_codes.should be_true
+    end
+    recorded_modules.should eq("ACCOUNTING,INVOICING")
+  end
+
+  it "ne fait rien sans la variable ni avant le provisionnement" do
+    with_active_modules("accounting") { Partiduo::Modules::State.record_provisioned_codes.should be_false }
+    with_active_modules("accounting") { provision_household }
+    forget_recorded_modules
+    with_active_modules(nil) { Partiduo::Modules::State.record_provisioned_codes.should be_false }
+    recorded_modules.should be_nil
+  end
+
+  it "est jouée au démarrage par l'application des modules" do
+    with_active_modules("accounting") { provision_household }
+    forget_recorded_modules
+    with_active_modules("accounting") { Partiduo::Modules::App.new.setup }
+    recorded_modules.should eq("ACCOUNTING")
+  end
+end
+
 describe "Configuration : PARTIDUO_MODULES posé ou absent" do
   it "distingue la variable absente (nil) de la variable vide ou none (socle seul)" do
     with_active_modules(nil) do

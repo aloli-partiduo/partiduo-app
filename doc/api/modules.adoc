@@ -171,6 +171,12 @@ L'ensemble actif (`Partiduo::Modules::State.active_codes`) vient :
 . sinon (base pas encore migrée ni provisionnée, dossier provisionné avant
   la colonne), des trois modules officiels.
 
+Un dossier provisionné avant la colonne la reçoit au premier démarrage où
+`PARTIDUO_MODULES` est posé : les pièces non socle de la variable y sont
+enregistrées une fois, si elle vaut `NULL`
+(`State.record_provisioned_codes`, appelé par la mise en place de
+l'application des modules ; D-AMD-036).
+
 Une pièce inactive n'expose ni menu ni permission cochable ; ses commandes et
 requêtes lèvent `Partiduo::Api::ModuleDisabled` (via `Guard.authorize!`) ; ses
 abonnés ne sont pas appelés. Ses données sont conservées (ADR-006 D2).

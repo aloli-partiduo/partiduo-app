@@ -105,6 +105,29 @@ module Partiduo
         nil
       end
 
+      # Reprise d'un dossier provisionné avant la colonne (D-AMD-036) : au
+      # démarrage, si `PARTIDUO_MODULES` est posé et que la société n'a rien
+      # retenu (`provisioned_modules` à `NULL`), y enregistre une fois les
+      # pièces non socle de la variable, en majuscules et dans l'ordre, comme
+      # `Api::Core.provision`. Une valeur déjà retenue, même vide (socle
+      # seul), n'est jamais remplacée. Rend `true` si la ligne a été écrite ;
+      # `false` sans variable, sans colonne (base pas encore migrée), sans
+      # société ou base injoignable.
+      def self.record_provisioned_codes : Bool
+        configured = Partiduo::Config.configured_module_codes || return false
+        return false unless provisioned_column?
+
+        known = Partiduo::Modules.manifests.values.reject(&.socle?).map(&.code).to_set
+        codes = configured.map(&.upcase).select { |code| known.includes?(code) }.sort!
+        Marten::DB::Connection.default.open do |db|
+          db.exec(<<-SQL, codes.join(",")).rows_affected > 0
+            UPDATE core_settings SET provisioned_modules = $1 WHERE provisioned_modules IS NULL
+            SQL
+        end
+      rescue DB::ConnectionRefused | Marten::DB::Errors::UnknownConnection
+        false
+      end
+
       # La colonne `core_settings.provisioned_modules` existe-t-elle ?
       # Mémorisé une fois vrai, comme `table_ready?`.
       def self.provisioned_column? : Bool

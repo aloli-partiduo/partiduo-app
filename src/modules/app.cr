@@ -17,6 +17,11 @@ module Partiduo
 
       def setup
         Partiduo::Modules.check!
+        # Dossier provisionné avant `core_settings.provisioned_modules` :
+        # pièces reprises de la variable au premier démarrage (D-AMD-036).
+        if Partiduo::Modules::State.record_provisioned_codes
+          ::Log.for("partiduo.modules").info { "pièces retenues reprises de PARTIDUO_MODULES (D-AMD-036)" }
+        end
       end
     end
   end
