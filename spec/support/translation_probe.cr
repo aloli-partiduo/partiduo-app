@@ -43,13 +43,12 @@ module Partiduo
       end
     end
 
-    # Recherche faite par `I18n::Catalog#translate`.
     # Recherche faite par crystal-i18n (`I18n::Catalog#fetch_translation!`,
     # clé complète, portée appliquée). Les paramètres n'y sont plus connus :
     # l'existence de la clé dans chaque langue est contrôlée ici ; les
     # interpolations, par la parité des locales et le texte rendu.
     def self.lookup(key : String, count, default) : Nil
-      return unless default.nil?
+      return unless default.nil? && @@quiet == 0
       @@lookups += 1
       check(key, nil, !count.nil?)
     end
@@ -65,7 +64,8 @@ module Partiduo
       Partiduo::LOCALES.each do |locale|
         problem = problem(locale.to_s, key, names, plural)
         next if problem.nil? || @@failures.has_key?(problem)
-        @@failures[problem] = origin
+        where = origin
+        @@failures[problem] = where unless spec?(where)
       end
     end
 
@@ -91,16 +91,37 @@ module Partiduo
       "#{locale}.#{key} : #{unresolved.map { |name| "%{#{name}}" }.join(" ")} sans paramètre" unless unresolved.empty?
     end
 
-    PROBE_FILE = __FILE__
+    @@quiet = 0
+
+    # Recherche tolérante de crystal-i18n (`fetch_translation`, sans point
+    # d'exclamation : formats des nombres de `I18n.localize`), absence admise.
+    def self.quietly(&)
+      @@quiet += 1
+      yield
+    ensure
+      @@quiet -= 1
+    end
+
+    # Recherche faite par une spec elle-même (contrôle de conventions qui
+    # sonde les clés, erreur factice), et non par le code : pas un défaut.
+    private def self.spec?(where : String) : Bool
+      (where.starts_with?("spec/") || where.includes?("/spec/")) && !where.includes?("spec/support/")
+    end
+
+    # Chemin relatif : la pile cite le fichier par `lib/…` ou par le dépôt.
+    PROBE_FILE = "spec/support/translation_probe.cr"
 
     # Premier appelant du code de Partiduo (handler, service, gabarit
     # compilé, spec), hors de crystal-i18n, du contrat d'erreurs et de cette
     # sonde.
     private def self.origin : String
       caller.find do |frame|
-        frame.includes?("partiduo") && !frame.includes?("/i18n/") && !frame.includes?(PROBE_FILE) &&
+        (!frame.starts_with?('/') || frame.includes?("partiduo")) && !frame.includes?("/i18n/") && !frame.includes?(PROBE_FILE) &&
           !frame.includes?("api/result.cr") && !frame.includes?("api/field_error.cr")
       end.try(&.strip) || "?"
+    rescue
+      # Pile illisible (programme de specs remplacé par une autre suite).
+      "?"
     end
 
     def self.report : Array(String)
@@ -110,6 +131,10 @@ module Partiduo
 end
 
 class I18n::Catalog
+  private def fetch_translation(locale, key, count = nil, default = nil, ongoing_fallback = false)
+    Partiduo::TranslationProbe.quietly { previous_def }
+  end
+
   private def fetch_translation!(locale, key, count = nil, default = nil, ongoing_fallback = false)
     Partiduo::TranslationProbe.lookup(key.to_s, count, default) unless ongoing_fallback
     previous_def
