@@ -98,12 +98,16 @@ describe Partiduo::Core::Commands::Provision do
     end
   end
 
-  it "garde le défaut sans connect et la liste donnée avec lui" do
+  it "garde le défaut sans connect" do
     code, _, _ = run_provision("--name=Sans connect", "--regime=fr", "--domain=sans.partiduo.localhost")
     code.should eq(0)
     Partiduo::Api::Core.settings(actor_with).auth_methods.should eq(%w[password passkey])
+  end
 
-    Partiduo::Core::Settings.all.delete
+  # Exemple distinct : un second provisionnement dans le même exemple trouverait
+  # le plan comptable du premier (supprimer les réglages ne vide pas la base) et
+  # serait refusé à bon droit (accounting.errors.initial_data.not_empty).
+  it "garde la liste donnée avec connect" do
     ConnectSpec.with_connect do
       code, _, _ = run_provision("--name=Liste", "--regime=fr", "--domain=liste.partiduo.localhost",
         "--auth-methods=passkey")
