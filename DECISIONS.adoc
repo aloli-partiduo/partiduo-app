@@ -16365,3 +16365,98 @@ clic, stockage refusé, retour dans l'historique, adresse changée par HTMX) ;
 captures en clair, en sombre, au clavier et au téléphone. Les contrastes
 restent ceux de `--pd-sidebar-text` et de l'entrée active sur
 `--pd-sidebar` (`theme_contrast_spec`).
+
+== Corrections du 22 octobre 2026
+
+Corrections adoptées ou recommandées, non contestées par l'utilisateur, à
+la suite du thème sombre (D-THM-001), des rubriques repliables (D-UI-078)
+et du dossier foyer (D-FOY-009).
+
+=== D-THM-002 — Champs de saisie sur les jetons --pd-field-* (partiduo-ui-bulma, partiduo-admin)
+
+*Constat.* En sombre, la recherche de la barre supérieure, la période et
+le numéro de pièce étaient signalés sur fond blanc. Les champs de Bulma
+tiraient leur fond de la luminosité que Bulma dérive pour chaque composant
+(`--bulma-input-background-l`, recalculée sur `.input`, `.select`,
+`.control`, et animée par sa transition de `background-color`), les lignes
+de saisie de `--pd-surface` : deux sources pour une même chose, et une
+couleur claire tant que la dérivation de Bulma n'a pas pris les jetons
+sombres. Dans Chromium, les trois champs rendaient déjà sombres une fois la
+page posée (captures « avant ») : l'écart n'a pas été reproduit tel quel,
+la correction retire la cause possible plutôt qu'un symptôme.
+
+*Choix.* Deux jetons par thème dans `theme.css`, `--pd-field-bg` (blanc en
+clair, `#101b1e` en sombre) et `--pd-field-ink`, et une seule règle qui y
+range tous les champs de Bulma (`.input`, `.textarea`, `.select select`) ;
+les lignes de saisie d'`app.css` les emploient aussi. Aucune exception par
+écran ; les états désactivés et `is-static` gardent les règles de Bulma,
+plus précises. Les deux déclarations du sombre restent identiques.
+
+*Vérification.* `spec/ui/theme_contrast_spec.cr` : texte, texte atténué et
+bordure sur `--pd-field-bg` en clair et en sombre (4,5:1 et 3:1), règle
+présente, fond sombre des champs, aucune règle de champ d'`app.css` sur
+blanc ou sur `--pd-surface`. `theme.css` recopié dans `partiduo-admin`,
+empreintes mises à jour des deux côtés. La console a désormais sa propre
+spec de contraste (`spec/admin/theme_contrast_spec.cr`), adaptée de celle
+de l'interface : jetons de `theme.css`, textes d'`access.css`, et chaque
+couple texte / fond d'`admin.css` (fond de la règle, sinon fonds de la
+console, barre latérale pour `.pd-side`, couleurs écrites en dur
+comprises). La copie de `theme.css` de connect (`src/connect/assets/`),
+antérieure à D-THM-001 et non vérifiée par empreinte, n'a pas été touchée.
+
+=== D-UI-079 — Classe pd-js posée dès l'en-tête (partiduo-ui-bulma)
+
+*Constat.* La classe `pd-js`, qui replie les rubriques du menu
+(D-UI-078) et ferme le menu sur téléphone, était posée par `shell.js`,
+chargé en `defer` : au chargement, le menu entier paraissait déplié un
+instant, et sur téléphone le menu s'affichait avant de se fermer.
+
+*Choix.* Un premier script de l'en-tête, `ui/js/early.js`, chargé *sans*
+`defer` avant les feuilles de style, pose `pd-js` sur `<html>` avant le
+premier affichage, et reprend le repli du menu entier gardé sur le poste
+(`partiduo.menu.collapsed`, tablette) en classe `pd-menu-collapsed` de
+`<html>`, que la feuille de style traite comme `is-menu-collapsed` ;
+`shell.js` reporte ensuite ce repli sur la coquille et retire la classe de
+`<html>`, et repose `pd-js` si `early.js` manquait. Fichier du site et non
+script en ligne : la politique de sécurité du contenu n'a rien à ouvrir.
+Les pages de l'interface n'en posent pas aujourd'hui (seules les pages
+publiques d'extension en ont une, sans script) ; une politique future
+`script-src 'self'` l'admettra sans `'unsafe-inline'`, sans nonce ni
+empreinte. Sans JavaScript, rien ne change.
+
+*Limite.* Une rubrique que l'utilisateur a dépliée lui-même (stockage
+`partiduo.menu.sections`) ne s'ouvre qu'avec `shell.js` : les rubriques
+sont lues dans le DOM, absent de l'en-tête. L'écart est une rubrique qui
+s'ouvre, non le menu entier qui se replie.
+
+*Vérification.* `spec/ui/shell_spec.cr` (premier script de l'en-tête, sans
+`defer`, avant les feuilles, aucun script en ligne),
+`spec/ui/menu_sections_spec.cr` (`early.js` par JavaScriptCore : `pd-js`,
+repli gardé, stockage refusé, reprise par `shell.js`),
+`spec/ui/assets_spec.cr`.
+
+=== D-FOY-011 — Types et catégories des contacts d'un foyer (partiduo-ui-bulma)
+
+*Constat.* Dans un dossier foyer, l'écran des contacts proposait encore le
+filtre « Toutes les natures », la nature « Client » ou « Fournisseur », et
+les catégories créées au provisionnement (« Clients », « Fournisseurs »,
+« Salariés »…) ; l'écran des catégories disait « Catégories de fiches » et
+listait les catégories d'articles, absents d'un foyer.
+
+*Choix.* Dans un dossier `household` seulement (`FolderKind`) :
+
+* « Type de contact », « Tous les types » (`LABEL_KEYS`) ;
+* natures dites « Payeur », « Prestataire », « Employé à domicile »,
+  « Banque », « Contact », « Autre » (`card_kind_key`) ;
+* catégories du provisionnement nommées « Payeurs », « Prestataires et
+  commerçants », « Employés à domicile », « Banques », « Contacts »,
+  « Administrations » tant qu'elles portent le nom donné à la création dans
+  l'une des langues (`category_name`) : un nom choisi par l'utilisateur est
+  gardé ; listes, filtres, choix de la catégorie, fiche, relevé de compte,
+  import ;
+* écran « Catégories de contacts » sans les catégories d'articles ni la
+  nature « Article ou service » parmi les choix.
+
+Libellés `ui.household.*` en fr, en, nl. Les dossiers d'entreprise, de
+micro-entreprise et de profession libérale ne changent pas. Specs :
+`spec/ui/household_spec.cr`.
