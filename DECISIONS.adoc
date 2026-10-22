@@ -13959,7 +13959,8 @@ l'emporte sur `location /`, simple préfixe.
 l'extension est inactive, à lancer une fois après la mise à jour
 (D-FRM-019). Proposée à partiduo-form sous forme de *migration de données*,
 que le script rc.d passe déjà au démarrage de chaque instance : aucune étape
-de déploiement à ajouter. À défaut, à lancer à la main sur chaque instance.
+de déploiement à ajouter. À défaut, à lancer à la main sur chaque instance. _Réalisé le 22 octobre 2026 : migration `form` 0002 (D-FRM-021 de
+`partiduo-form` 0.1.7)._
 
 *Vérification.* `spec/deploy/scripts_spec.cr` (sans base). `nginx -t` n'a
 pas pu tourner sur le poste (bac à sable) : à faire au premier déploiement.
@@ -16205,11 +16206,12 @@ D-FRM-017).
 `spec/accounting/amendments_second_wave_spec.cr` ; interface :
 `spec/ui/amendments_spec.cr` de `partiduo-ui-bulma`.
 
-*Contournements retirés.* `partiduo-bankimport` (`Relink.repoint` →
-`add_to_statement`), `partiduo-perso` (relevé gardé, D-PER-022 mis à
-jour), `partiduo-reports` (options `date` et `paid` admises sur la balance
-des tiers), `partiduo-migrate` (contrôle `check` sans Comptabilité),
-`partiduo-form` (`ui/bulma/ext/` retiré).
+*Contournements retirés.* `partiduo-bankimport` 0.1.7 (`Relink.repoint`
+→ `add_to_statement`, D-BKI-016), `partiduo-perso` 0.1.9 (relevé gardé,
+D-PER-024), `partiduo-reports` 0.1.7 (options `date` et `paid` admises sur
+la balance des tiers, D-REP-028), `partiduo-migrate` 0.1.5 (contrôle
+`check` sans Comptabilité, D-MIG-024), `partiduo-form` 0.1.7
+(`ui/bulma/ext/` retiré, D-FRM-022).
 
 === D-FOY-009 — Écran « Foyer » et vocabulaire d'un dossier foyer (partiduo-ui-bulma)
 
