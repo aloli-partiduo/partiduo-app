@@ -191,8 +191,8 @@ pt:
       columns:
         description: "Designação"
         quantity: "Qtd."
-        unit: "Unidade"
-        unit_price: "P. unit. s/ IVA"
+        unit: "Un."
+        unit_price: "Preço unit."
         discount: "Desconto"
         vat: "IVA"
         total: "Total s/ IVA"
