@@ -176,6 +176,8 @@ pt:
         deducted: "Devoluções de mercadorias deduzidas: guias de devolução %{numbers}"
         credited: "Nota de crédito das devoluções de mercadorias: guias de devolução %{numbers}"
     pdf:
+      # Libellé suivi de sa valeur (espace avant les deux-points en français seulement).
+      label_value: "%{label}: %{value}"
       draft: "Rascunho"
       number: "N.º"
       issue_date: "Data"

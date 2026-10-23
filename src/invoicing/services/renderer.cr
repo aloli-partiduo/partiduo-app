@@ -65,6 +65,12 @@ module Partiduo
         I18n.t(key, params)
       end
 
+      # « Libellé : valeur » selon la typographie de la langue du document
+      # (espace avant les deux-points en français seulement).
+      private def label_value(label : String, value : String) : String
+        t("invoicing.pdf.label_value", {"label" => label, "value" => value})
+      end
+
       private def money(value : BigDecimal) : String
         Output.format_amount(value, locale, @view.currency_code)
       end
@@ -164,7 +170,7 @@ module Partiduo
         dates.each do |(key, date)|
           next unless date
           right_y -= 12
-          text_right("#{t(key)} : #{Output.format_date(date, locale)}", RIGHT, right_y, 8.5)
+          text_right(label_value(t(key), Output.format_date(date, locale)), RIGHT, right_y, 8.5)
         end
         if origin = @view.origin_mention
           right_y -= 12
@@ -205,7 +211,7 @@ module Partiduo
         end
         unless customer.code.empty?
           y -= 11
-          text("#{t("invoicing.pdf.customer_code")} : #{customer.code}", box_x, y, 8.0, color: "#555555")
+          text(label_value(t("invoicing.pdf.customer_code"), customer.code.to_s), box_x, y, 8.0, color: "#555555")
         end
 
         left_y = @y
@@ -224,7 +230,7 @@ module Partiduo
          "invoicing.pdf.order_reference" => @view.order_reference}.each do |key, value|
           next if value.empty?
           left_y -= 11
-          text("#{t(key)} : #{value}", MARGIN, left_y, 8.5)
+          text(label_value(t(key), value.to_s), MARGIN, left_y, 8.5)
         end
         @y = Math.min(y, left_y) - 20
       end

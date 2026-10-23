@@ -176,6 +176,8 @@ en:
         deducted: "Returned goods deducted: return notes %{numbers}"
         credited: "Credit note for returned goods: return notes %{numbers}"
     pdf:
+      # Libellé suivi de sa valeur (espace avant les deux-points en français seulement).
+      label_value: "%{label}: %{value}"
       draft: "Draft"
       number: "No."
       issue_date: "Date"

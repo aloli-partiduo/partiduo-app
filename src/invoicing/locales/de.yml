@@ -176,6 +176,8 @@ de:
         deducted: "Abgezogene Warenrücksendungen: Rücksendescheine %{numbers}"
         credited: "Gutschrift für Warenrücksendungen: Rücksendescheine %{numbers}"
     pdf:
+      # Libellé suivi de sa valeur (espace avant les deux-points en français seulement).
+      label_value: "%{label}: %{value}"
       draft: "Entwurf"
       number: "Nr."
       issue_date: "Datum"

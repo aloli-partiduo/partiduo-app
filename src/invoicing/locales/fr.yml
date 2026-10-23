@@ -176,6 +176,8 @@ fr:
         deducted: "Retours de marchandises déduits : bons de retour %{numbers}"
         credited: "Avoir des retours de marchandises : bons de retour %{numbers}"
     pdf:
+      # Libellé suivi de sa valeur (espace avant les deux-points en français seulement).
+      label_value: "%{label} : %{value}"
       draft: "Brouillon"
       number: "N°"
       issue_date: "Date"

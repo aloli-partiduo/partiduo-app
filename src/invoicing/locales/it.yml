@@ -176,6 +176,8 @@ it:
         deducted: "Resi di merce detratti: documenti di reso %{numbers}"
         credited: "Nota di credito per resi di merce: documenti di reso %{numbers}"
     pdf:
+      # Libellé suivi de sa valeur (espace avant les deux-points en français seulement).
+      label_value: "%{label}: %{value}"
       draft: "Bozza"
       number: "N."
       issue_date: "Data"
