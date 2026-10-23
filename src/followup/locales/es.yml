@@ -1,0 +1,80 @@
+es:
+  followup:
+    module:
+      name: "Seguimiento"
+    permissions:
+      action:
+        read: "Consultar las acciones de seguimiento"
+        write: "Crear y modificar las acciones de seguimiento"
+      settings:
+        write: "Configurar los tipos de acción y las etiquetas"
+    menu:
+      fup_actions: "Acciones"
+      fup_reminders: "Recordatorios"
+      fup_types: "Tipos de acción"
+      fup_tags: "Etiquetas"
+    states:
+      todo: "Pendiente"
+      follow: "En seguimiento"
+      closed: "Cerrada"
+      abandoned: "Abandonada"
+    priorities:
+      p1: "Alta"
+      p2: "Normal"
+      p3: "Baja"
+    columns:
+      reference: "Referencia"
+      date: "Fecha"
+      hour: "Hora"
+      type: "Tipo"
+      title: "Título"
+      card: "Destinatario"
+      state: "Estado"
+      priority: "Prioridad"
+      remind_on: "Recordatorio"
+      tags: "Etiquetas"
+    default_types:
+      di: "Documento interno"
+      bcl: "Pedido de cliente"
+      bfo: "Pedido a proveedor"
+      fac: "Factura"
+      rap: "Carta de recordatorio"
+      co: "Correo postal"
+      prp: "Propuesta"
+      el: "Correo electrónico"
+      ds: "Varios"
+      nfr: "Nota de gastos"
+      rfo: "Recepción de pedido a proveedor"
+      rcl: "Recepción de pedido de cliente"
+      rmg: "Recepción en almacén"
+    errors:
+      action_type:
+        code_required: "El prefijo es obligatorio."
+        code_too_long: "El prefijo tiene como máximo %{max} caracteres."
+        code_invalid: "El prefijo solo contiene letras y cifras."
+        code_taken: "El prefijo %{code} ya está en uso."
+        label_required: "La descripción es obligatoria."
+        label_too_long: "La descripción tiene como máximo %{max} caracteres."
+        next_number_invalid: "El próximo número debe ser al menos 1."
+        in_use: "Este tipo de acción está en uso: no se puede eliminar."
+      tag:
+        label_required: "La descripción de la etiqueta es obligatoria."
+        label_too_long: "La descripción de la etiqueta tiene como máximo %{max} caracteres."
+        label_taken: "La etiqueta %{label} ya existe."
+        color_invalid: "El color es un número del 1 al 10."
+      action:
+        type_unknown: "Tipo de acción desconocido (%{id})."
+        title_too_long: "El título tiene como máximo %{max} caracteres."
+        hour_invalid: "Hora no válida (HH:MM)."
+        priority_invalid: "Prioridad no válida."
+        state_invalid: "Estado no válido."
+        profile_unknown: "Perfil desconocido: la acción no puede reservarse a él."
+        card_unknown: "Ficha desconocida (%{id})."
+        tag_unknown: "Etiqueta desconocida (%{id})."
+      comment:
+        text_required: "El comentario está vacío."
+        text_too_long: "El comentario tiene como máximo %{max} caracteres."
+      link:
+        invalid: "Referencia de operación no válida (por ejemplo entry:42)."
+      relation:
+        self: "Una acción no puede vincularse a sí misma."

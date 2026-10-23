@@ -1,0 +1,476 @@
+de:
+  invoicing:
+    module:
+      name: "Fakturierung"
+    permissions:
+      invoice:
+        read: "Angebote und Rechnungen ansehen"
+        write: "Entwürfe anlegen und bearbeiten"
+        issue: "Rechnungen freigeben"
+        send: "Belege per E-Mail senden"
+      credit_note:
+        issue: "Gutschriften freigeben"
+      payment:
+        record: "Zahlungen erfassen"
+      reminder:
+        send: "Zahlungserinnerungen senden"
+      template:
+        manage: "Belegvorlagen verwalten"
+      settings:
+        manage: "Fakturierungseinstellungen verwalten"
+      export:
+        read: "An den Steuerberater übermitteln"
+      credit_limit:
+        override: "Kreditlimit eines Kunden überschreiten"
+    menu:
+      inv_documents: "Angebote und Rechnungen"
+      inv_new_invoice: "Neue Rechnung"
+      inv_payments: "Zahlungen"
+      inv_reminders: "Zahlungserinnerungen"
+      inv_export: "Übermittlung an den Steuerberater"
+      inv_to_invoice: "Abzurechnende Belege"
+      inv_templates: "Belegvorlagen"
+      inv_settings: "Fakturierungseinstellungen"
+    kinds:
+      quote: "Angebot"
+      order: "Bestellung"
+      delivery_note: "Lieferschein"
+      invoice: "Rechnung"
+      deposit_invoice: "Anzahlungsrechnung"
+      credit_note: "Gutschrift"
+      return_note: "Rücksendeschein"
+    statuses:
+      draft: "Entwurf"
+      sent: "Gesendet"
+      accepted: "Angenommen"
+      refused: "Abgelehnt"
+      expired: "Abgelaufen"
+      confirmed: "Bestätigt"
+      cancelled: "Durch Gutschrift storniert"
+      issued: "Ausgestellt"
+      partially_paid: "Teilweise bezahlt"
+      paid: "Bezahlt"
+      overdue: "Überfällig"
+      invoiced: "Abgerechnet"
+      returned: "Zurückgenommen"
+    channels:
+      none: "Nicht gewählt"
+      platform: "Zugelassene Plattform"
+      email: "E-Mail"
+      paper: "Papier"
+      public_portal: "Chorus Pro"
+    channel_reasons:
+      domestic_business: "Geschäftskunde mit Sitz im Land des Mandanten: elektronische Rechnung über die zugelassene Plattform"
+      foreign_business: "Ausländischer Geschäftskunde: außerhalb der Plattform, E-Reporting der internationalen Verkäufe"
+      private_customer: "Privatkunde: außerhalb der Plattform, B2C-E-Reporting"
+      public_customer: "Öffentliche Verwaltung: Rechnung über Chorus Pro, nicht über eine zugelassene Plattform"
+      public_customer_manual: "Öffentliche Verwaltung: Die Erweiterung Chorus Pro ist nicht aktiv, die Rechnung ist selbst im Portal Chorus Pro einzureichen"
+    links:
+      from_quote: "Aus Angebot %{number}"
+      from_order: "Aus Bestellung %{number}"
+      from_delivery_note: "Aus Lieferschein %{number}"
+      from_invoice: "Aus Rechnung %{number}"
+      from_deposit_invoice: "Aus Anzahlungsrechnung %{number}"
+      from_credit_note: "Aus Gutschrift %{number}"
+      from_return_note: "Aus Rücksendeschein %{number}"
+    delivery_notes:
+      group_title: "Lieferschein %{number} vom %{date}"
+    billing_rhythms:
+      per_delivery: "Bei jeder Lieferung"
+      monthly: "Monatliche Sammelrechnung"
+    monthly_modes:
+      propose: "Vorbereiten und vorschlagen"
+      auto_send: "Automatisch ausstellen und senden"
+    dispatch:
+      emailed: "Rechnung per E-Mail an %{to} gesendet"
+      email_missing: "Rechnung ausgestellt: Der Kunde hat keine E-Mail-Adresse, senden Sie sie selbst"
+      email_failed: "Rechnung ausgestellt, aber der E-Mail-Versand ist fehlgeschlagen"
+      send_denied: "Rechnung ausgestellt: Der E-Mail-Versand erfordert die Berechtigung zum Senden"
+      platform: "Rechnung ausgestellt: Übermittlung über die zugelassene Plattform"
+      to_print: "Rechnung ausgestellt: drucken und übergeben, dann als gesendet markieren"
+      public_portal: "Rechnung ausgestellt: im öffentlichen Portal einreichen, dann als gesendet markieren"
+      already_sent: "Rechnung bereits gesendet"
+    deposit:
+      line: "Anzahlung von %{percent} % auf %{number}"
+    mentions:
+      seller:
+        legal_form_capital: "%{legal_form} mit einem Kapital von %{capital} %{currency}"
+        legal_form: "%{legal_form}"
+        rcs:
+          fr: "%{rcs}"
+          be: "%{rcs}"
+        siren: "SIREN: %{siren}"
+        enterprise_number: "Unternehmensnummer: %{number}"
+        vat_number: "USt-IdNr.: %{vat_number}"
+      customer:
+        siren: "SIREN des Kunden: %{siren}"
+        vat_number: "USt-IdNr. des Kunden: %{vat_number}"
+      dates:
+        issue: "Ausstellungsdatum: %{date}"
+        delivery: "Datum der Lieferung oder Leistungserbringung: %{date}"
+        due: "Fälligkeitsdatum: %{date}"
+        delivery_period: "Lieferungen vom %{from} bis %{to}"
+        return: "Datum der Warenrücksendung: %{date}"
+      quote:
+        validity: "Angebot gültig bis %{date}"
+      delivery_address: "Lieferadresse: %{address}"
+      operation_category:
+        goods: "Art des Umsatzes: Lieferung von Gegenständen"
+        services: "Art des Umsatzes: Dienstleistung"
+        mixed: "Art des Umsatzes: Lieferung von Gegenständen und Dienstleistung"
+      vat_on_debits: "Option zur Entrichtung der Steuer nach vereinbarten Entgelten"
+      special:
+        franchise:
+          fr: "Keine Umsatzsteuer, art. 293 B du CGI"
+          be: "Sonderregelung der Steuerbefreiung für Kleinunternehmen, keine Umsatzsteuer"
+        reverse_charge:
+          fr: "Reverse-Charge: Steuerschuldnerschaft des Leistungsempfängers (art. 283-2 du CGI)"
+          be: "Reverse-Charge: Steuer vom Vertragspartner geschuldet (art. 51, § 2, du Code de la TVA)"
+        intra_community:
+          fr: "Steuerbefreiung, article 262 ter I du CGI (innergemeinschaftliche Lieferung)"
+          be: "Steuerbefreite innergemeinschaftliche Lieferung (art. 39bis du Code de la TVA)"
+        export:
+          fr: "Steuerbefreiung, article 262 I du CGI (Ausfuhr)"
+          be: "Steuerbefreite Ausfuhr (art. 39 du Code de la TVA)"
+        exempt:
+          fr: "Umsatzsteuerbefreiter Umsatz. %{reason}"
+          be: "Umsatzsteuerbefreiter Umsatz. %{reason}"
+        not_subject:
+          fr: "Nicht der Umsatzsteuer unterliegender Umsatz. %{reason}"
+          be: "Nicht der Umsatzsteuer unterliegender Umsatz. %{reason}"
+        zero_rated:
+          fr: "Umsatzsteuer zum Nullsatz. %{reason}"
+          be: "Umsatzsteuer zum Nullsatz. %{reason}"
+      credit_note:
+        reference: "Gutschrift zur Rechnung %{number} vom %{date}"
+      deposit:
+        invoice: "Anzahlungsrechnung"
+        deducted: "Anzahlung %{number} abgezogen: %{amount} %{currency}"
+      delivery_notes:
+        summary:
+          fr: "Sammelrechnung über Lieferungen (art. 289-I-3 du CGI): Lieferscheine %{numbers}"
+          be: "Sammelrechnung über Lieferungen: Lieferscheine %{numbers}"
+        offset: "Mit Rücksendungen verrechnete Lieferungen: Lieferscheine %{numbers}"
+      payment:
+        terms:
+          net: "Zahlungsbedingungen: %{days} Tage netto ab Rechnungsdatum"
+          end_of_month: "Zahlungsbedingungen: %{days} Tage zum Monatsende"
+          on_receipt: "Zahlungsbedingungen: bei Erhalt der Rechnung"
+        structured_reference: "Strukturierte Mitteilung: %{reference}"
+        bank: "Zahlung per Überweisung: IBAN %{iban} — BIC %{bic}"
+        early_discount: "Skonto bei vorzeitiger Zahlung: %{rate} % bei Zahlung innerhalb von %{days} Tagen"
+        no_early_discount: "Kein Skonto bei vorzeitiger Zahlung"
+        late_penalties: "Verzugszinsen: %{rate} % pro Jahr"
+        late_penalties_legal:
+          fr: "Bei Zahlungsverzug Verzugszinsen in Höhe des Zinssatzes, den die Europäische Zentralbank auf ihr jüngstes Hauptrefinanzierungsgeschäft anwendet, zuzüglich 10 Prozentpunkten (art. L441-10 du Code de commerce)"
+          be: "Bei Zahlungsverzug Verzugszinsen zu dem Satz, der im belgischen Gesetz vom 2. August 2002 zur Bekämpfung des Zahlungsverzugs im Geschäftsverkehr vorgesehen ist"
+        indemnity: "Pauschale Entschädigung für Beitreibungskosten bei Zahlungsverzug: %{amount} %{currency}"
+      return_note:
+        reason:
+          damaged: "Rücksendegrund: Ware beschädigt"
+          defective: "Rücksendegrund: Ware fehlerhaft"
+          wrong_item: "Rücksendegrund: Falschlieferung"
+          excess: "Rücksendegrund: Mehrmenge oder unverkauft"
+          other: "Rücksendegrund: siehe Notizen"
+      return_notes:
+        deducted: "Abgezogene Warenrücksendungen: Rücksendescheine %{numbers}"
+        credited: "Gutschrift für Warenrücksendungen: Rücksendescheine %{numbers}"
+    pdf:
+      draft: "Entwurf"
+      number: "Nr."
+      issue_date: "Datum"
+      due_date: "Fällig am"
+      validity_date: "Gültig bis"
+      customer: "KUNDE"
+      customer_code: "Kundennr."
+      delivery_address: "LIEFERADRESSE"
+      buyer_reference: "Ihre Referenz"
+      order_reference: "Bestellung"
+      columns:
+        description: "Bezeichnung"
+        quantity: "Menge"
+        unit: "Einheit"
+        unit_price: "EP netto"
+        discount: "Rabatt"
+        vat: "USt."
+        total: "Netto"
+      subtotal: "Zwischensumme"
+      lines_total: "Summe der Positionen netto"
+      global_discount: "Gesamtrabatt"
+      discount: "Rabatt"
+      total_net: "Summe netto"
+      total_vat: "USt."
+      total_gross: "Summe brutto"
+      prepaid: "Abgezogene Anzahlungen"
+      payable: "Zahlbetrag"
+      vat_summary:
+        rate: "SATZ"
+        base: "NETTO"
+        vat: "USt."
+      mentions: "PFLICHTANGABEN"
+      page: "Seite %{page}/%{pages}"
+    reminders:
+      subject:
+        level1: "Erinnerung: Rechnung %{number} fällig"
+        level2: "Zweite Erinnerung: Rechnung %{number} unbezahlt"
+        level3: "Mahnung: Rechnung %{number}"
+      body:
+        level1: "Guten Tag,\n\nsofern uns kein Fehler unterlaufen ist, ist die am %{due_date} fällige Rechnung %{number} mit einem Betrag von %{balance} noch unbezahlt. Wir bitten Sie freundlich, sie zu begleichen.\n\nMit freundlichen Grüßen\n%{seller}"
+        level2: "Guten Tag,\n\ntrotz unserer ersten Erinnerung ist die am %{due_date} fällige Rechnung %{number} mit einem Betrag von %{balance} noch unbezahlt (%{days} Tage Verzug). Bitte begleichen Sie sie umgehend.\n\nMit freundlichen Grüßen\n%{seller}"
+        level3: "Sehr geehrte Damen und Herren,\n\ndie am %{due_date} fällige Rechnung %{number} ist trotz unserer Erinnerungen mit einem Betrag von %{balance} noch unbezahlt. Wir fordern Sie hiermit förmlich auf, sie zu begleichen, insgesamt %{total}.\n\n%{seller}"
+      penalties: "Verzugszinsen: %{interest}; pauschale Entschädigung für Beitreibungskosten: %{indemnity}; insgesamt geschuldet: %{total}."
+      rejected:
+        subject: "Zahlung zurückgewiesen: Rechnung %{number}"
+        body: "Guten Tag,\n\nIhre Zahlung vom %{paid_on} über %{amount} für die Rechnung %{number} wurde uns von der Bank unbezahlt zurückgegeben (%{reason}). Die Rechnung ist weiterhin in Höhe von %{balance} fällig. Wir bitten Sie freundlich, sie erneut zu begleichen.\n\nMit freundlichen Grüßen\n%{seller}"
+    pdf_copy:
+      banner: "Kopie — das Original ist die über die zugelassene Plattform übermittelte elektronische Rechnung"
+      file_suffix: "kopie"
+      subject: "Kopie der Rechnung %{number} — %{seller}"
+      body: "Guten Tag,\n\nanbei erhalten Sie zur Information eine PDF-Kopie der Rechnung %{number}. Das Original ist die über die zugelassene Plattform übermittelte elektronische Rechnung: Bitte bezahlen Sie sie nur einmal.\n\nMit freundlichen Grüßen\n%{seller}"
+    mail:
+      subject: "%{kind} %{number} — %{seller}"
+      body: "Guten Tag,\n\nanbei erhalten Sie unseren Beleg %{number} über einen Betrag von %{amount}.\n\nMit freundlichen Grüßen\n%{seller}"
+    exports:
+      accounts:
+        customer: "Kunden"
+        sales: "Verkauf"
+        vat: "Umsatzsteuer"
+        bank: "Bank"
+      payment: "Zahlung"
+      deposit_deducted: "Abgezogene Anzahlung"
+      sales_journal: "Verkaufsjournal"
+      csv_name: "verkaufsjournal-zahlungseingaenge"
+      archive_name: "rechnungen"
+      payment_rejected: "Rücklastschrift der Zahlung"
+    errors:
+      settings:
+        days: "Geben Sie eine Anzahl von Tagen zwischen 0 und %{max} an"
+        rate: "Geben Sie einen Satz zwischen 0 und 100 an (höchstens vier Dezimalstellen)"
+        operation_category: "Unbekannte Umsatzart"
+        iban: "Ungültige IBAN"
+        bic: "Ungültige BIC"
+        email: "Ungültige E-Mail-Adresse"
+        reminder_days: "Die Fristen der drei Zahlungserinnerungen müssen aufsteigend sein, zwischen 1 und 365 Tagen"
+        penalty_level: "Erinnerungsstufe zwischen 0 und 3"
+        journal_code: "Journalcode: Großbuchstaben und Ziffern, höchstens acht"
+        account: "Kontonummer: Ziffern und Großbuchstaben, höchstens zwanzig"
+        pdf_copy_period: "Das Ende des Zeitraums für PDF-Kopien liegt vor seinem Beginn"
+        monthly_billing_mode: "Unbekannter Modus der monatlichen Abrechnung"
+      document:
+        kind:
+          immutable: "Die Art eines Belegs ändert sich nicht"
+          invalid: "Unbekannte Belegart"
+        customer:
+          not_found: "Kunde nicht gefunden"
+          not_customer: "Dieser Stammsatz ist kein Kunde"
+          disabled: "Dieser Kunde ist deaktiviert"
+        currency:
+          unknown: "Unbekannte Währung: %{value}"
+          decimals: "Die Währung %{value} muss zwei Dezimalstellen haben"
+        operation_category:
+          invalid: "Unbekannte Umsatzart"
+        locale:
+          invalid: "Nicht unterstützte Sprache"
+        layout:
+          not_found: "Layoutvorlage nicht gefunden"
+        payment_terms:
+          invalid: "Unbekannte Zahlungsbedingungen"
+        payment_terms_days:
+          range: "Geben Sie eine Frist zwischen 0 und %{max} Tagen an"
+          on_receipt: "Eine Zahlung bei Erhalt hat keine Frist"
+        due_date:
+          before_issue: "Die Fälligkeit liegt vor dem Ausstellungsdatum"
+        validity_date:
+          quote_only: "Nur ein Angebot hat ein Gültigkeitsdatum"
+        reference:
+          too_long: "Höchstens %{max} Zeichen"
+        credited:
+          credit_note_only: "Nur eine Gutschrift verweist auf eine korrigierte Rechnung"
+          required: "Eine Gutschrift verweist auf die Rechnung, die sie korrigiert"
+          invalid: "Die korrigierte Rechnung muss eine ausgestellte Rechnung sein"
+          other_customer: "Die korrigierte Rechnung gehört zu einem anderen Kunden"
+          deposit_deducted: "Diese Anzahlung ist von einer ausgestellten Rechnung abgezogen: Korrigieren Sie die Schlussrechnung durch eine Gutschrift"
+        deposits:
+          invoice_only: "Nur eine Rechnung zieht Anzahlungen ab"
+          duplicate: "Anzahlung doppelt angegeben"
+          invalid: "Diese Anzahlung ist keine ausgestellte Anzahlungsrechnung"
+          other_customer: "Diese Anzahlung gehört zu einem anderen Kunden"
+          cancelled: "Diese Anzahlung wurde durch Gutschrift storniert"
+          already_deducted: "Diese Anzahlung ist bereits von einer anderen Rechnung abgezogen"
+          credited: "Auf diese Anzahlung entfällt eine Gutschrift: Sie wird nicht mehr abgezogen"
+          exceed_total: "Die abgezogenen Anzahlungen übersteigen die Rechnungssumme"
+        lines:
+          too_many: "Höchstens %{max} Zeilen"
+        issue_channel:
+          invalid: "Unbekannter Ausstellungskanal: %{value}"
+          fiscal_only: "Nur eine Rechnung, eine Anzahlungsrechnung oder eine Gutschrift hat einen Ausstellungskanal"
+        global_discount:
+          exceeds: "Der Gesamtrabatt übersteigt die Summe der Positionen"
+        issued: "Beleg ausgestellt: Er kann weder geändert noch gelöscht werden; korrigieren Sie ihn durch eine Gutschrift"
+        in_use: "Auf diesen Entwurf verweist ein anderer Beleg"
+        delivery_notes:
+          invoice_only: "Nur eine Rechnung oder eine Sammelgutschrift übernimmt Lieferscheine"
+          invalid: "Dieser Beleg ist kein ausgestellter Lieferschein"
+          other_customer: "Der Lieferschein %{number} gehört zu einem anderen Kunden"
+          other_currency: "Der Lieferschein %{number} ist in einer anderen Währung"
+          already_billed: "Der Lieferschein %{number} ist bereits abgerechnet"
+          in_draft: "Der Lieferschein %{number} ist bereits in einem Rechnungsentwurf enthalten"
+        return_reason:
+          return_note_only: "Nur ein Rücksendeschein hat einen Rücksendegrund"
+          invalid: "Unbekannter Rücksendegrund"
+        return_note:
+          origin_invalid: "Der Ursprungsbeleg der Rücksendung muss ein ausgestellter Lieferschein oder eine ausgestellte Rechnung sein"
+        return_notes:
+          invoice_or_credit_only: "Nur eine Rechnung oder eine Gutschrift übernimmt Rücksendescheine"
+          invalid: "Dieser Beleg ist kein ausgestellter Rücksendeschein"
+          other_customer: "Der Rücksendeschein %{number} gehört zu einem anderen Kunden"
+          other_currency: "Der Rücksendeschein %{number} ist in einer anderen Währung"
+          already_settled: "Der Rücksendeschein %{number} ist bereits übernommen"
+          in_draft: "Der Rücksendeschein %{number} ist bereits in einem Entwurf enthalten"
+      discount:
+        kind: "Unbekannte Rabattart"
+        negative: "Der Rabatt darf nicht negativ sein"
+        percent: "Prozentsatz zwischen 0 und 100 (höchstens vier Dezimalstellen)"
+        amount_scale: "Betrag auf den Cent genau (höchstens zwei Dezimalstellen)"
+      line:
+        kind: "Unbekannte Zeilenart"
+        description:
+          blank: "Geben Sie eine Bezeichnung ein"
+          too_long: "Höchstens %{max} Zeichen"
+        item:
+          invalid: "Dieser Stammsatz ist kein Artikel"
+          disabled: "Dieser Artikel ist deaktiviert"
+          required: "Wählen Sie einen Artikel"
+          free_line: "Eine freie Zeile verweist auf keinen Artikel"
+        quantity:
+          zero: "Die Menge darf nicht null sein"
+          scale: "Höchstens vier Dezimalstellen"
+        unit_code: "Unbekannte Einheit (UN/ECE-Codes)"
+        unit_price:
+          required: "Geben Sie einen Einzelpreis an"
+          negative: "Der Einzelpreis darf nicht negativ sein"
+          scale: "Höchstens vier Dezimalstellen"
+        vat_rate:
+          not_found: "USt.-Satz nicht gefunden"
+          disabled: "Dieser USt.-Satz ist deaktiviert"
+          required: "Wählen Sie einen USt.-Satz"
+        discount:
+          exceeds: "Der Rabatt übersteigt den Betrag der Zeile"
+      delivery_notes:
+        empty: "Wählen Sie mindestens einen Lieferschein"
+        duplicate: "Lieferschein doppelt ausgewählt"
+        several_customers: "Die ausgewählten Lieferscheine gehören zu mehreren Kunden"
+        several_currencies: "Die ausgewählten Lieferscheine sind in mehreren Währungen"
+      customer_billing:
+        rhythm: "Unbekannter Abrechnungsrhythmus"
+        credit_limit: "Kreditlimit netto: positiver Betrag, auf den Cent genau"
+      credit_limit:
+        exceeded: "Kreditlimit netto von %{customer} überschritten: aktuelles Obligo %{exposure} %{currency}, Beleg %{amount} %{currency}, Limit %{limit} %{currency}, Überschreitung %{excess} %{currency}"
+        override_denied: "Kreditlimit netto von %{customer} um %{excess} %{currency} überschritten: Die Ausnahme erfordert die Berechtigung, das Kreditlimit zu überschreiten"
+        reason_too_long: "Grund der Ausnahme: höchstens %{max} Zeichen"
+      dispatch:
+        kind: "Nur eine Rechnung, eine Anzahlungsrechnung oder eine Monatsend-Gutschrift wird mit einem Klick ausgestellt und gesendet"
+      issue:
+        already_issued: "Dieser Beleg ist bereits ausgestellt"
+        no_line: "Fügen Sie mindestens eine Zeile mit Betrag hinzu"
+        total_not_positive: "Die Bruttosumme muss positiv sein"
+        company_incomplete: "Vervollständigen Sie die Unternehmensangaben vor dem Ausstellen"
+        before_last: "Datum vor dem letzten Beleg der Serie (%{date})"
+        credit_exceeds: "Die Gutschrift übersteigt den Restbetrag der Rechnung (%{remaining})"
+        credit_before_invoice: "Eine Gutschrift liegt nicht vor der Rechnung, die sie korrigiert"
+        future: "Das Ausstellungsdatum darf das heutige Datum (%{date}) nicht überschreiten: Die vergebene Nummer ist endgültig"
+        customer_siren_required: "Der Kunde %{customer} ist ein in Frankreich ansässiger Geschäftskunde: Geben Sie vor dem Ausstellen seine SIREN in seinem Stammsatz an"
+        return_reason_required: "Geben Sie vor dem Ausstellen den Rücksendegrund an"
+      pdf_copy:
+        not_platform: "Nur eine über die zugelassene Plattform ausgestellte Rechnung hat eine PDF-Kopie"
+        render_failed: "PDF-Kopie nicht erstellt (PDF/A-3 nicht konform): %{detail}"
+        internal: "Interner Fehler beim Senden der PDF-Kopie: %{detail}"
+      channel:
+        not_fiscal: "Nur eine Rechnung, eine Anzahlungsrechnung oder eine Gutschrift hat einen Ausstellungskanal"
+        already_sent: "Beleg bereits gesendet: Sein Ausstellungskanal kann nicht mehr geändert werden"
+        draft: "Stellen Sie den Beleg zuerst aus"
+      transform:
+        source_draft: "Stellen Sie zuerst den Ursprungsbeleg aus"
+        not_allowed: "Umwandlung von %{from} in %{to} nicht möglich"
+        source_status: "Der Ursprungsbeleg ist %{status}"
+        deposit_percent: "Anzahlungsprozentsatz zwischen 0 und 100 (höchstens zwei Dezimalstellen)"
+      quote:
+        not_sent: "Nur ein gesendetes Angebot erhält eine Entscheidung"
+        decision: "Unbekannte Entscheidung"
+      payment:
+        accounting_active: "Die Buchhaltung ist aktiv: Erfassen Sie den Zahlungseingang in der Bank und gleichen Sie ihn dann aus"
+        document:
+          invalid: "Nur eine ausgestellte Rechnung erhält eine Zahlung"
+          cancelled: "Diese Rechnung ist durch Gutschrift storniert"
+        amount:
+          not_positive: "Der Betrag muss positiv sein"
+          scale: "Betrag auf den Cent genau"
+          exceeds: "Der Betrag übersteigt den Saldo der Rechnung (%{balance})"
+        method: "Unbekannte Zahlungsart"
+        reference:
+          too_long: "Höchstens %{max} Zeichen"
+      reminder:
+        not_proposed: "Diese Zahlungserinnerung ist nicht mehr zu bearbeiten"
+        in_progress: "Diese Zahlungserinnerung wird gerade gesendet"
+      export:
+        currency_rate: "Kein Kurs für %{code} am %{date}: Der Beleg %{number} kann für den FEC nicht umgerechnet werden"
+      mail:
+        draft: "Ein Entwurf kann nicht gesendet werden"
+        no_recipient: "Geben Sie einen Empfänger an"
+        invalid_address: "Ungültige E-Mail-Adresse"
+        no_sender: "Geben Sie die Absenderadresse in den Einstellungen an"
+        not_configured: "Der E-Mail-Versand ist nicht eingerichtet"
+        delivery_failed: "Versand fehlgeschlagen: %{error}"
+      layout:
+        name:
+          blank: "Geben Sie einen Namen ein"
+          too_long: "Höchstens %{max} Zeichen"
+          taken: "Dieser Name ist bereits vergeben"
+        color: "Farbe im Format #rrggbb"
+        text:
+          too_long: "Höchstens %{max} Zeichen"
+        logo:
+          type: "Das Logo muss ein PNG- oder JPEG-Bild sein"
+          not_found: "Logo nicht gefunden"
+        in_use: "Diese Vorlage wird von Belegen verwendet"
+      return_note:
+        quantity_negative: "Ein Rücksendeschein erfasst positive Mengen"
+        exceeds_origin: "„%{description}“: Rücksendung über der Menge von %{origin} (%{delivered}, bereits zurückgesendet: %{returned})"
+      return_notes:
+        no_invoice_to_credit: "Keine Rechnung dieses Kunden kann für diese Rücksendungen gutgeschrieben werden: Wählen Sie die gutzuschreibende Rechnung"
+      payment_rejection:
+        already_rejected: "Diese Zahlung ist bereits zurückgewiesen"
+        document:
+          invalid: "Nur die Zahlung einer ausgestellten Rechnung kann zurückgewiesen werden"
+        date:
+          before_payment: "Die Rückweisung liegt nicht vor der Zahlung (%{date})"
+          future: "Das Datum der Rückweisung darf das heutige Datum nicht überschreiten"
+        reason:
+          invalid: "Unbekannter Rückweisungsgrund"
+        reason_text:
+          required: "Geben Sie den Grund genauer an"
+          too_long: "Höchstens %{max} Zeichen"
+        fees:
+          negative: "Die Gebühren dürfen nicht negativ sein"
+          scale: "Betrag auf den Cent genau"
+          required: "Geben Sie die weiterzuberechnenden Gebühren an"
+        fees_vat_rate:
+          required: "Wählen Sie den USt.-Satz der Gebührenrechnung"
+          invalid: "USt.-Satz nicht gefunden oder deaktiviert"
+    return_notes:
+      group_title: "Rücksendeschein %{number} vom %{date}"
+    return_reasons:
+      damaged: "Ware beschädigt"
+      defective: "Ware fehlerhaft"
+      wrong_item: "Falschlieferung"
+      excess: "Mehrmenge oder unverkauft"
+      other: "Sonstiger Grund"
+    rejection_reasons:
+      insufficient_funds: "Keine ausreichende Deckung"
+      account_closed: "Konto aufgelöst"
+      stopped: "Widerspruch oder Widerruf"
+      disputed: "Einspruch des Schuldners"
+      invalid_details: "Fehlerhafte Bankverbindung"
+      other: "Sonstiger Grund"
+    payment_rejections:
+      fees_line: "Bankgebühren für die Rücklastschrift der Zahlung vom %{date} (Rechnung %{number}, %{reason})"

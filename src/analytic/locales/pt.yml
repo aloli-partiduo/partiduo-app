@@ -1,0 +1,95 @@
+pt:
+  analytic:
+    module:
+      name: "Contabilidade analítica"
+    permissions:
+      plan:
+        read: "Consultar os planos analíticos"
+        write: "Editar os planos analíticos"
+      operation:
+        write: "Repartir os lançamentos e lançar as operações diversas analíticas"
+      report:
+        read: "Consultar os relatórios analíticos"
+    menu:
+      ana_plans: "Planos e centros"
+      ana_keys: "Chaves de repartição"
+      ana_misc: "Operações diversas analíticas"
+      ana_reports: "Relatórios analíticos"
+      ana_settings: "Definições da contabilidade analítica"
+    reports:
+      total: "Total"
+      side:
+        debit: "Débito"
+        credit: "Crédito"
+      columns:
+        post: "Centro"
+        description: "Descrição"
+        group: "Grupo"
+        debit: "Débito"
+        credit: "Crédito"
+        balance: "Saldo"
+        side: "Sentido"
+        other_post: "Centro (segundo plano)"
+        other_description: "Descrição (segundo plano)"
+        date: "Data"
+        ledger: "Diário"
+        internal_code: "Código interno"
+        receipt: "Documento"
+        account: "Conta"
+        card: "Ficha"
+        label: "Descrição"
+        running: "Saldo acumulado"
+    errors:
+      plan:
+        name_required: "O nome do plano é obrigatório."
+        name_too_long: "O nome do plano tem no máximo %{max} caracteres."
+        name_taken: "O plano %{name} já existe."
+        limit: "Foi atingido o número máximo de planos analíticos (%{max})."
+        unknown: "Plano analítico desconhecido."
+        closed_period: "Não é possível eliminar: um centro deste plano é utilizado num período encerrado."
+      group:
+        code_required: "O código do grupo é obrigatório."
+        code_too_long: "O código do grupo tem no máximo %{max} caracteres."
+        code_taken: "O grupo %{code} já existe neste plano."
+        unknown: "Grupo analítico desconhecido."
+      post:
+        code_required: "O nome do centro não pode estar vazio."
+        code_too_long: "O nome do centro tem no máximo %{max} caracteres."
+        code_taken: "O nome %{code} deve ser único num plano analítico."
+        group_plan: "O grupo deve pertencer ao plano do centro."
+        unknown: "Centro analítico desconhecido (%{id})."
+        closed_period: "Não é possível eliminar: o centro é utilizado num período encerrado."
+      settings:
+        filter_invalid: "Apenas algarismos separados por vírgulas."
+      key:
+        name_required: "O nome não pode estar vazio."
+        unknown: "Chave de repartição desconhecida."
+        incomplete: "A chave %{name} está incompleta (total diferente de 100% ou linha sem centro): corrija-a antes de a aplicar."
+        name_too_long: "O nome tem no máximo %{max} caracteres."
+        rows_required: "Nenhuma repartição."
+        percent_invalid: "A percentagem deve estar entre 0 (excluído) e 100."
+        percent_scale: "A percentagem tem no máximo quatro casas decimais."
+        post_required: "Escolha pelo menos um centro na linha."
+        total: "O total não é 100, total calculado = %{total}."
+        ledger_unknown: "Diário desconhecido (%{id})."
+      distribution:
+        amount_invalid: "O montante deve ser positivo."
+        cancelled_entry: "Lançamento anulado ou estorno: a sua repartição segue a do lançamento de origem e já não pode ser alterada."
+        amount_scale: "O montante tem no máximo %{max} casas decimais."
+        post_required: "Escolha pelo menos um centro na linha."
+        plan_twice: "Um único centro por plano numa mesma linha."
+        post_inactive: "O centro %{code} está inativo."
+        no_plan: "Nenhum plano analítico está definido."
+        closed_period: "O período está encerrado: a imputação analítica já não pode ser alterada."
+        line_unknown: "Esta linha não pertence ao lançamento."
+        line_twice: "A linha foi repartida duas vezes."
+        account_not_analytic: "A conta %{account} não está sujeita à contabilidade analítica."
+        required: "A imputação analítica é obrigatória para esta linha."
+        exceeds: "Plano %{plan}: o total repartido (%{total}) excede o montante da linha (%{amount})."
+        incomplete: "Plano %{plan}: o total repartido (%{total}) deve ser igual ao montante da linha (%{amount})."
+      misc:
+        description_required: "Comentário vazio."
+        no_period: "Nenhum período abrange esta data."
+        rows_required: "Introduza pelo menos uma linha."
+        card_unknown: "Ficha desconhecida: %{code}."
+        unbalanced: "Operação não equilibrada no plano %{plan} (diferença %{difference})."

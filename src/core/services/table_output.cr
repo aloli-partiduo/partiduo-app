@@ -58,21 +58,13 @@ module Partiduo
         text = plain(value)
         negative = text.starts_with?('-')
         integer, _, fraction = text.lchop('-').partition('.')
-        thousands, decimal = case locale
-                             when "en" then {",", "."}
-                             when "nl" then {".", ","}
-                             else           {" ", ","}
-                             end
+        thousands, decimal = Partiduo::LocaleFormats.separators(locale)
         grouped = integer.reverse.scan(/\d{1,3}/).map(&.[0]).join(thousands).reverse
         "#{negative ? "-" : ""}#{grouped}#{decimal}#{fraction}"
       end
 
       def self.format_date(value : Time, locale : String = I18n.locale) : String
-        case locale
-        when "en" then value.to_s("%Y-%m-%d")
-        when "nl" then value.to_s("%d-%m-%Y")
-        else           value.to_s("%d/%m/%Y")
-        end
+        Partiduo::LocaleFormats.date(value, locale)
       end
 
       # Cellule de texte d'un CSV : une valeur qui commence par `=`, `+`,

@@ -1,0 +1,256 @@
+pt:
+  cards:
+    module:
+      name: "Fichas"
+    permissions:
+      card:
+        read: "Consultar as fichas"
+        write: "Criar e editar as fichas"
+        import: "Importar fichas (CSV)"
+      category:
+        manage: "Gerir as categorias de fichas"
+    menu:
+      cards_list: "Terceiros e artigos"
+      cards_categories: "Categorias de fichas"
+    kinds:
+      customer: "Cliente"
+      supplier: "Fornecedor"
+      item: "Artigo ou serviço"
+      bank: "Banco"
+      employee: "Trabalhador"
+      contact: "Contacto"
+      other: "Outro"
+    natures:
+      individual: "Particular"
+      business: "Profissional"
+      public: "Administração pública"
+    supplier_natures:
+      individual: "Pessoa singular"
+      business: "Pessoa coletiva"
+    value_types:
+      text: "Texto"
+      number: "Número"
+      date: "Data"
+      boolean: "Sim / não"
+      card: "Ficha"
+    address_kinds:
+      main: "Morada"
+      delivery: "Morada de entrega"
+    units:
+      c62: "unidade"
+      h87: "peça"
+      ea: "cada"
+      xpp: "volume individual"
+      set: "conjunto"
+      pr: "par"
+      dzn: "dúzia"
+      xbx: "caixa"
+      xpk: "pacote"
+      ls: "valor fixo"
+      e48: "unidade de serviço"
+      sec: "segundo"
+      min: "minuto"
+      hur: "hora"
+      day: "dia"
+      wee: "semana"
+      mon: "mês"
+      ann: "ano"
+      kgm: "quilograma"
+      grm: "grama"
+      mgm: "miligrama"
+      tne: "tonelada"
+      mtr: "metro"
+      cmt: "centímetro"
+      mmt: "milímetro"
+      kmt: "quilómetro"
+      mtk: "metro quadrado"
+      mtq: "metro cúbico"
+      ltr: "litro"
+      mlt: "mililitro"
+      clt: "centilitro"
+      kwh: "quilowatt-hora"
+      mwh: "megawatt-hora"
+      kwt: "quilowatt"
+      p1: "por cento"
+    initial:
+      categories:
+        customer: "Clientes"
+        supplier: "Fornecedores"
+        bank: "Bancos"
+        sale: "Vendas: artigos e serviços"
+        purchase: "Compras de mercadorias"
+        expense: "Serviços e bens diversos"
+        employee: "Trabalhadores"
+        contact: "Contactos"
+        tax_authority: "Administrações"
+      attributes:
+        first_name: "Nome próprio"
+        company: "Empresa"
+    import:
+      export_name: "fichas"
+      fields:
+        name: "Nome"
+        code: "Quick code"
+        description: "Descrição"
+        enabled: "Ativa"
+        vat_number: "Número de IVA"
+        siren: "SIREN"
+        siret: "SIRET"
+        routing_id: "Código de encaminhamento"
+        iban: "IBAN"
+        bic: "BIC"
+        email: "E-mail"
+        phone: "Telefone"
+        contact_name: "Contacto"
+        address_line1: "Morada"
+        address_line2: "Complemento de morada"
+        address_postcode: "Código postal"
+        address_city: "Localidade"
+        address_country_code: "País"
+        unit_code: "Unidade"
+        sale_price: "Preço de venda"
+        purchase_price: "Preço de compra"
+        vat_rate: "Taxa de IVA"
+        customer_nature: "Natureza do cliente"
+        supplier_nature: "Natureza do fornecedor"
+        last_name: "Apelido"
+        first_names: "Nomes próprios"
+        birth_date: "Data de nascimento"
+        account: "Conta contabilística"
+    errors:
+      import:
+        code_exists: "A ficha %{code} já existe: marque «Atualizar as fichas existentes» para a alterar."
+        other_category: "A ficha %{code} já existe noutra categoria."
+        account_on_update: "A ficha %{code} já existe: a respetiva conta contabilística altera-se na ficha, não pela importação."
+        account_forbidden: "Não tem permissão para escolher a conta contabilística de uma ficha."
+        card_unknown: "Nenhuma ficha tem o quick code «%{code}»."
+        vat_rate_unknown: "Nenhuma taxa de IVA tem o código «%{code}»."
+      card:
+        base:
+          in_use: "Esta ficha está a ser utilizada e não pode ser eliminada; desative-a."
+        account:
+          no_accounting: "Só é possível pedir uma conta para a ficha se a Contabilidade estiver ativa."
+        category_id:
+          no_customer_category: "Nenhuma categoria de fichas de clientes: crie uma em «Terceiros e artigos»."
+          not_found: "Esta categoria de ficha não existe."
+          kind_mismatch: "Um artigo não pode passar a terceiro, nem um terceiro a artigo."
+        name:
+          blank: "O nome é obrigatório."
+          too_long: "Este campo não pode exceder %{max} caracteres."
+        description:
+          too_long: "Este campo não pode exceder %{max} caracteres."
+        email:
+          too_long: "Este campo não pode exceder %{max} caracteres."
+          invalid: "O endereço de e-mail não é válido."
+        phone:
+          too_long: "Este campo não pode exceder %{max} caracteres."
+        contact_name:
+          too_long: "Este campo não pode exceder %{max} caracteres."
+        code:
+          too_long: "O quick code não pode exceder %{max} caracteres."
+          taken: "O quick code %{value} já está a ser utilizado."
+        unit_code:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          invalid: "A unidade «%{value}» não é uma unidade UN/ECE reconhecida."
+        sale_price:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          negative: "O preço não pode ser negativo."
+          too_precise: "O preço não pode ter mais de %{decimals} casas decimais."
+          too_large: "O preço é demasiado elevado."
+        purchase_price:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          negative: "O preço não pode ser negativo."
+          too_precise: "O preço não pode ter mais de %{decimals} casas decimais."
+          too_large: "O preço é demasiado elevado."
+        vat_rate_id:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          not_found: "Esta taxa de IVA não existe."
+          disabled: "A taxa de IVA %{code} está desativada."
+        supplier_nature:
+          not_applicable: "A natureza do fornecedor só se aplica às fichas de fornecedor."
+          invalid: "A natureza «%{value}» não é reconhecida (pessoa singular, pessoa coletiva)."
+        last_name:
+          not_applicable: "O apelido só se introduz para um fornecedor pessoa singular."
+          blank: "O apelido da pessoa singular é obrigatório."
+          too_long: "O apelido não pode exceder %{max} caracteres."
+        first_names:
+          not_applicable: "Os nomes próprios só se introduzem para um fornecedor pessoa singular."
+          blank: "Os nomes próprios da pessoa singular são obrigatórios."
+          too_long: "Os nomes próprios não podem exceder %{max} caracteres."
+        birth_date:
+          not_applicable: "A data de nascimento só se introduz para um fornecedor pessoa singular."
+          invalid: "A data de nascimento não é plausível (posterior a 1900, não futura)."
+        customer_nature:
+          not_applicable: "A natureza só se aplica às fichas de cliente."
+          invalid: "A natureza «%{value}» não é reconhecida (particular, profissional, administração pública)."
+        siren:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          invalid: "O SIREN «%{value}» não é válido (9 algarismos, dígito de controlo)."
+        siret:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          invalid: "O SIRET «%{value}» não é válido (14 algarismos, dígito de controlo)."
+          siren_mismatch: "O SIRET deve começar pelo SIREN %{siren}."
+        routing_id:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          siren_required: "Um código de encaminhamento pressupõe um SIREN."
+          invalid: "O código de encaminhamento «%{value}» não é válido (letras, algarismos, ponto, hífen, sublinhado)."
+        vat_number:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          invalid: "O número de IVA «%{value}» não é válido."
+          siren_mismatch: "O número de IVA não corresponde ao SIREN %{siren}."
+        iban:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          invalid: "O IBAN «%{value}» não é válido."
+        bic:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          invalid: "O BIC «%{value}» não é válido."
+        delivery_addresses:
+          not_applicable: "Este campo não se aplica a esta categoria de ficha."
+          too_many: "Uma ficha tem no máximo %{max} moradas de entrega."
+        address:
+          too_long: "Este campo não pode exceder %{max} caracteres."
+          country_invalid: "O código de país «%{value}» não é válido (duas letras, ISO 3166-1)."
+        extra:
+          unknown: "O atributo «%{key}» não existe nesta categoria."
+          required: "%{label} é obrigatório."
+          too_long: "%{label} não pode exceder %{max} caracteres."
+          too_precise: "%{label} não pode ter mais de %{decimals} casas decimais."
+          card_not_found: "%{label}: a ficha %{id} não existe."
+          invalid_text: "%{label} deve ser um texto."
+          invalid_number: "%{label} deve ser um número decimal."
+          invalid_date: "%{label} deve ser uma data (AAAA-MM-DD)."
+          invalid_boolean: "%{label} deve ser sim ou não."
+          invalid_card: "%{label} deve designar uma ficha."
+      category:
+        base:
+          has_cards: "Esta categoria contém fichas e não pode ser eliminada."
+          in_use: "Esta categoria está a ser utilizada e não pode ser eliminada."
+        code:
+          immutable: "O código de uma categoria não pode ser alterado."
+          invalid: "O código «%{value}» não é válido (maiúsculas, algarismos, sublinhado)."
+          taken: "O código %{value} já está a ser utilizado."
+        name:
+          blank: "O nome da categoria não pode estar vazio."
+          too_long: "Este campo não pode exceder %{max} caracteres."
+          taken: "A categoria «%{value}» já existe."
+        kind:
+          invalid: "É obrigatório um modelo de categoria («%{value}» é desconhecido)."
+          in_use: "A natureza de uma categoria que contém fichas não pode ser alterada."
+        attributes:
+          too_many: "Uma categoria tem no máximo %{max} atributos."
+        attribute:
+          key:
+            invalid: "A chave «%{value}» não é válida (minúsculas, algarismos, sublinhado)."
+            duplicate: "A chave «%{value}» já é utilizada por outro atributo."
+          label:
+            blank: "A descrição é obrigatória."
+            too_long: "Este campo não pode exceder %{max} caracteres."
+          value_type:
+            invalid: "O tipo «%{value}» é desconhecido."
+            in_use: "Há fichas que preenchem este atributo: o seu tipo já não pode ser alterado."
+          max_length:
+            out_of_range: "O comprimento máximo deve estar entre 1 e %{max}."
+          decimals:
+            out_of_range: "O número de casas decimais deve estar entre 0 e %{max}."
+          required:
+            missing_values: "Há fichas que não preenchem este atributo: não pode passar a obrigatório."

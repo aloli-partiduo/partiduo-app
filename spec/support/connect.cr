@@ -50,13 +50,16 @@ module ConnectSpec
   end
 
   def self.id_token(nonce : String, subject : String = "sub-connect", email : String = "alice@example.com",
-                    acr : String = "2", sid : String = "sid-1") : String
-    sign({
+                    acr : String = "2", sid : String = "sid-1", locale : String? = nil) : String
+    claims = {
       "iss" => JSON::Any.new(URL), "aud" => JSON::Any.new(CLIENT_ID), "sub" => JSON::Any.new(subject),
       "nonce" => JSON::Any.new(nonce), "exp" => JSON::Any.new((Time.utc + 5.minutes).to_unix),
       "iat" => JSON::Any.new(Time.utc.to_unix), "email" => JSON::Any.new(email), "acr" => JSON::Any.new(acr),
       "sid" => JSON::Any.new(sid), "amr" => JSON::Any.new([JSON::Any.new("pwd"), JSON::Any.new("otp")]),
-    })
+    }
+    # Langue du compte connect (claim `locale`), absente s'il n'en a pas.
+    locale.try { |value| claims["locale"] = JSON::Any.new(value) }
+    sign(claims)
   end
 
   def self.logout_token(subject : String = "sub-connect", sid : String = "sid-1", audience : String = CLIENT_ID) : String

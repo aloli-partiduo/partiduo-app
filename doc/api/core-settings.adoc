@@ -37,6 +37,13 @@ contrat (`created_at`, `sent_at`…) sont en UTC ; l'interface les présente
 dans ce fuseau, sans quoi un import fait le 13 octobre à 23 h à Paris
 s'afficherait au 12.
 
+|`Api::Core.default_locale : String` (0.19.0)
+|aucun
+|Langue configurée du dossier (`default_locale`), `fr` avant le
+provisionnement ou pour une langue non livrée. L'interface en sert les pages
+d'un visiteur non connecté dont le navigateur ne demande aucune langue
+livrée (D-UI-080).
+
 |`Api::Core.check_settings(actor, SettingsInput) : Result(Nil)`
 |`core.settings.manage`
 |Contrôle instantané, même règle que la modification.
@@ -87,7 +94,7 @@ contrôlée, SIREN cohérent ; BE : modulo 97
 |`country_code` |`MY_PAYS` |ISO 3166-1 alpha-2 ; `fr` : FR ou MC ; `be` : BE
 |`phone`, `email` |`MY_TEL` |format de l'adresse
 |`tax_regime` |`MY_COUNTRY` |`fr` ou `be` ; *immuable* après création
-|`default_locale` |— |`fr`, `en`, `nl` (`Partiduo::LOCALES`)
+|`default_locale` |— |`fr`, `en`, `nl`, `de`, `es`, `it`, `pt` (`Partiduo::LOCALES`, 0.19.0)
 |`domain` |— |nom d'hôte de l'instance (`<dossier>.<domaine>`)
 |`auth_methods` |— |sous-ensemble non vide de `AUTH_METHODS`
 |`auth_minimum_level` |— |1 à 3, atteignable par une méthode autorisée

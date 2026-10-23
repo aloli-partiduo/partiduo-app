@@ -1,0 +1,12 @@
+de:
+  modules:
+    module:
+      name: "Module"
+    errors:
+      activation:
+        socle: "%{module} gehört zur Basis: Es ist immer aktiv."
+        missing_dependency: "%{module} erfordert %{dependency}, das nicht aktiv ist."
+        required_by: "%{dependent} erfordert %{module}: Deaktivieren Sie zuerst %{dependent}."
+        incompatible: "%{module} ist mit dieser Instanz nicht kompatibel: %{detail}"
+        incompatible_with: "%{module} ist nicht kompatibel mit %{other}, das in diesem Mandanten aktiv ist: Deaktivieren Sie zuerst %{other}."
+        excluded_kind: "%{module} kann in einem Mandanten dieses Typs (%{kind}) nicht aktiv sein."

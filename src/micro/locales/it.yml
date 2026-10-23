@@ -1,0 +1,156 @@
+it:
+  micro:
+    module:
+      name: "Microimpresa (micro-entreprise)"
+    permissions:
+      register:
+        read: "Consultare i registri, l'assistenza URSSAF e le soglie"
+        write: "Registrare, modificare, eliminare e stornare entrate e acquisti, annotare le dichiarazioni"
+      settings:
+        write: "Configurare la microimpresa (nature, aliquote, soglie, passaggi di regime)"
+    menu:
+      micro_receipts: "Entrate"
+      micro_purchases: "Acquisti"
+      micro_urssaf: "URSSAF"
+      micro_tax_return: "Dichiarazione dei redditi (2042-C-PRO)"
+      micro_thresholds: "Soglie"
+      micro_settings: "Microimpresa"
+    categories:
+      sale_bic: "Vendite di merci (BIC)"
+      service_bic: "Prestazioni di servizi (BIC)"
+      bnc: "Prestazioni di servizi (BNC)"
+      goods: "Merci rivendute"
+      other: "Altri acquisti"
+    scopes:
+      goods: "Vendite e attività mista"
+      services: "Prestazioni di servizi"
+    methods:
+      transfer: "Bonifico"
+      card: "Carta di pagamento"
+      cheque: "Assegno"
+      cash: "Contanti"
+      direct_debit: "Addebito diretto"
+      other: "Altro"
+    periodicities:
+      monthly: "Mensile"
+      quarterly: "Trimestrale"
+    declaration_statuses:
+      upcoming: "Prossima"
+      open: "Periodo in corso"
+      due: "Da dichiarare"
+      late: "In ritardo"
+      declared: "Dichiarata"
+    threshold_statuses:
+      ok: "Sotto la soglia"
+      approaching: "Soglia vicina"
+      exceeded: "Soglia superata"
+      tolerance_exceeded: "Soglia maggiorata superata"
+      not_applicable: "Passaggio effettuato"
+      unknown: "Soglia non configurata"
+    default_natures:
+      sale: "Vendite di merci"
+      service: "Prestazioni di servizi commerciali o artigianali"
+      fee: "Prestazioni di servizi professionali"
+      goods: "Acquisti di merci"
+      supplies: "Altri acquisti"
+    reversal_label: "Annullamento di %{number}"
+    export:
+      filename:
+        receipt: "registro-incassi"
+        purchase: "registro-acquisti"
+    columns:
+      number: "N."
+      date: "Data"
+      party: "Cliente o fornitore"
+      label: "Natura dell'operazione"
+      nature: "Categoria"
+      method: "Pagamento"
+      reference: "Documento"
+      amount: "Importo"
+      vat_amount: "Di cui IVA"
+    reports:
+      receipt: "Registro degli incassi"
+      purchase: "Registro degli acquisti"
+      period: "Dal %{from} al %{to}"
+      total: "Totale"
+      total_nature: "Totale %{nature}"
+      page: "Pagina %{page} di %{count}"
+    todo:
+      declaration_due: "Dichiarare il fatturato dal %{from} al %{to} all'URSSAF entro il %{due_on}"
+      declaration_late: "Dichiarazione URSSAF dal %{from} al %{to} in ritardo (scadenza il %{due_on})"
+    alerts:
+      vat:
+        approaching: "Fatturato al %{ratio}% della soglia di franchigia IVA (%{limit} €)"
+        exceeded: "Soglia di franchigia IVA superata (%{limit} €): IVA dovuta dal 1° gennaio successivo"
+        tolerance_exceeded: "Soglia maggiorata di franchigia IVA superata: IVA dovuta dal giorno del superamento"
+      micro:
+        approaching: "Fatturato al %{ratio}% della soglia del regime micro (%{limit} €)"
+        exceeded: "Soglia del regime micro superata (%{limit} €): passaggio al regime reale da prevedere"
+    errors:
+      line:
+        nature:
+          unknown: "Natura sconosciuta"
+          disabled: "Questa natura non è più utilizzata"
+        amount:
+          not_positive: "L'importo deve essere positivo"
+          scale: "L'importo si esprime al centesimo"
+        vat_amount:
+          invalid: "IVA non valida (positiva, al centesimo)"
+          exceeds: "L'IVA non può raggiungere l'importo incassato o pagato"
+        method:
+          invalid: "Modalità di pagamento sconosciuta"
+        card:
+          unknown: "Scheda sconosciuta"
+        attachment:
+          unknown: "Allegato sconosciuto"
+        date:
+          future: "Data futura: registrare solo un'operazione effettuata"
+          closed_period: "Il periodo di questa data è chiuso: correggere con uno storno in un periodo aperto"
+          declared_period: "Il periodo URSSAF di questa data è già dichiarato: correggere con uno storno in un periodo non dichiarato"
+        reversal:
+          is_reversal: "Uno storno non si storna"
+          already: "Questa riga è già stornata"
+          before_line: "Lo storno non può precedere la riga"
+        change:
+          from_invoicing: "Riga proveniente dalla Fatturazione: correggerla nella Fatturazione, oppure stornarla"
+          is_reversal: "Uno storno non si modifica: eliminarlo, poi stornare di nuovo"
+          reversed: "Riga stornata: eliminare prima il suo storno"
+          closed_period: "Periodo chiuso: la riga è intangibile, stornarla in un periodo aperto"
+          declared_period: "Periodo già dichiarato all'URSSAF: la riga è intangibile, stornarla in un periodo non dichiarato"
+        too_long: "Al massimo %{max} caratteri"
+      parameter:
+        code:
+          unknown: "Parametro sconosciuto"
+        text:
+          required: "Indicare la casella"
+        value:
+          invalid: "Valore non valido (positivo, al massimo sei decimali)"
+      settings:
+        periodicity:
+          invalid: "Periodicità sconosciuta"
+      nature:
+        in_use: "Natura già utilizzata: cambiano solo la descrizione e l'attivazione"
+        code:
+          invalid: "Codice in maiuscole, cifre e _, al massimo 24 caratteri"
+          taken: "Codice già utilizzato"
+        label:
+          blank: "Indicare una descrizione"
+        kind:
+          invalid: "Verso sconosciuto"
+        category:
+          invalid: "Categoria incompatibile con il verso"
+      item:
+        not_item: "Questa scheda non è un articolo"
+      declaration:
+        period:
+          invalid: "Non è l'inizio di un periodo di dichiarazione"
+        before_end: "La dichiarazione segue la fine del periodo"
+        future: "La dichiarazione non può avere una data futura"
+        already: "Periodo già dichiarato"
+      switch:
+        vat:
+          rate_invalid: "Scegliere un'aliquota IVA attiva, non nulla, fuori franchigia"
+          already: "Il passaggio all'IVA è già stato effettuato"
+          item_refused: "Articolo %{code} non modificato (%{error})"
+        real:
+          already: "Il passaggio al regime reale è già stato effettuato"

@@ -110,6 +110,12 @@ describe "Partiduo::Api::Core — configuration société" do
       view.auth_methods.should eq(["passkey"])
     end
 
+    it "donne sans acteur la langue configurée du dossier, fr avant le provisionnement (D-UI-080)" do
+      Partiduo::Api::Core.default_locale.should eq("fr")
+      provision_instance(settings_input(default_locale: "de"))
+      Partiduo::Api::Core.default_locale.should eq("de")
+    end
+
     it "exige la permission core.settings.manage" do
       provision_instance
       expect_raises(Partiduo::Api::Forbidden) { Partiduo::Api::Core.update_settings(actor_with, settings_input) }
@@ -164,7 +170,7 @@ describe "Partiduo::Api::Core — configuration société" do
         settings_input(share_capital: BigDecimal.new("-1"))               => {"share_capital", "negative"},
         settings_input(share_capital: BigDecimal.new("1.005"))            => {"share_capital", "too_precise"},
         settings_input(email: "compta@")                                  => {"email", "invalid"},
-        settings_input(default_locale: "de")                              => {"default_locale", "invalid"},
+        settings_input(default_locale: "pl")                              => {"default_locale", "invalid"},
         settings_input(domain: "")                                        => {"domain", "blank"},
         settings_input(domain: "sans_point")                              => {"domain", "invalid"},
         settings_input(auth_methods: [] of String)                        => {"auth_methods", "blank"},

@@ -68,6 +68,10 @@ nl:
         fr: "Frans"
         en: "Engels"
         nl: "Nederlands"
+        de: "Duits"
+        es: "Spaans"
+        it: "Italiaans"
+        pt: "Portugees"
       auth_methods:
         password: "Wachtwoord (TOTP als tweede factor)"
         passkey: "Passkey"

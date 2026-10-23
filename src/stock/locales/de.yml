@@ -1,0 +1,76 @@
+de:
+  stock:
+    module:
+      name: "Lager"
+    permissions:
+      movement:
+        read: "Lagerbestände ansehen"
+        write: "Manuelle Bewegungen und Inventuren erfassen"
+      settings:
+        write: "Lager und geführte Artikel einrichten"
+    menu:
+      stock_changes: "Lagerbewegungen"
+      stock_inventory: "Inventur"
+      stock_state: "Lagerbestand"
+      stock_history: "Lagerhistorie"
+      stock_valuation: "Lagerbewertung"
+      stock_repositories: "Lager"
+      stock_items: "Lagergeführte Artikel"
+    directions:
+      in: "Zugang"
+      out: "Abgang"
+    change_kinds:
+      change: "Manuelle Bewegung"
+      inventory: "Inventur"
+    columns:
+      date: "Datum"
+      repository: "Lager"
+      stock_code: "Lagercode"
+      card: "Stammsatz"
+      card_name: "Artikel"
+      direction: "Richtung"
+      quantity: "Menge"
+      unit_cost: "Stückkosten"
+      source: "Herkunft"
+      comment: "Kommentar"
+      opening: "Anfangsbestand"
+      quantity_in: "Zugänge"
+      quantity_out: "Abgänge"
+      closing: "Endbestand"
+      value: "Wert"
+      total: "Summe"
+    errors:
+      rights:
+        denied: "Sie sind nicht berechtigt, in dieses Lager zu schreiben."
+        profile_unknown: "Unbekanntes Profil."
+        access_invalid: "Unbekanntes Recht (Lesen oder Schreiben)."
+        repository_unknown: "Unbekanntes Lager (%{id})."
+      repository:
+        name_required: "Der Name des Lagers ist ein Pflichtfeld."
+        name_too_long: "Der Name des Lagers hat höchstens %{max} Zeichen."
+        name_taken: "Das Lager %{name} existiert bereits."
+        country_invalid: "Das Land ist ein zweistelliger Code."
+        too_long: "Dieses Feld hat höchstens %{max} Zeichen."
+        in_use: "Dieses Lager hat Bewegungen: Löschen nicht möglich."
+      settings:
+        repository_unknown: "Unbekanntes Lager (%{id})."
+      item:
+        card_unknown: "Unbekannter Stammsatz (%{id})."
+        not_an_item: "Der Stammsatz %{code} ist kein Artikel."
+        too_long: "Der Lagercode hat höchstens %{max} Zeichen."
+        invalid: "Der Lagercode enthält keine Leerzeichen."
+      change:
+        repository_unknown: "Unbekanntes Lager (%{id})."
+        closed_period: "Das Datum %{date} fällt in eine abgeschlossene Periode."
+        too_long: "Der Kommentar hat höchstens %{max} Zeichen."
+        lines_required: "Erfassen Sie mindestens einen Artikel."
+        quantity_zero: "Die Menge darf nicht null sein."
+        quantity_scale: "Die Menge hat höchstens %{max} Dezimalstellen."
+        not_tracked: "Dieser Artikel wird nicht im Lager geführt (%{id})."
+        cost_on_exit: "Ein Abgang hat keine Stückkosten."
+        cost_negative: "Die Stückkosten dürfen nicht negativ sein."
+        cost_scale: "Die Stückkosten haben höchstens %{max} Dezimalstellen."
+      inventory:
+        lines_required: "Erfassen Sie mindestens einen gezählten Artikel."
+        code_twice: "Der Lagercode %{code} ist doppelt gezählt."
+        counted_negative: "Die gezählte Menge darf nicht negativ sein."

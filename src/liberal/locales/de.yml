@@ -1,0 +1,276 @@
+de:
+  liberal:
+    module:
+      name: "Freier Beruf (2035)"
+    permissions:
+      register:
+        read: "Journal, Anlagegüter und 2035 ansehen"
+        write: "In einem offenen Geschäftsjahr erfassen, ändern und löschen, Einnahmen, Ausgaben und Anlagegüter gegenbuchen, Hinzurechnungen und Abzüge vermerken"
+      settings:
+        write: "Freien Beruf einrichten (Arten, Zeilen der 2035)"
+    menu:
+      liberal_journal: "Journal"
+      liberal_assets: "Anlagegüter"
+      liberal_tax_return: "Erklärung 2035"
+      liberal_settings: "Freier Beruf"
+    kinds:
+      receipt: "Einnahme"
+      expense: "Ausgabe"
+    headings:
+      receipts: "Vereinnahmte Einnahmen"
+      financial_income: "Finanzerträge"
+      other_gains: "Sonstige Gewinne"
+      contribution: "Private Einlage (außerhalb der 2035)"
+      loan_received: "Erhaltenes Darlehen (außerhalb der 2035)"
+      disbursements: "Für Rechnung der Kunden verauslagte Beträge"
+      fees_retroceded: "Weitergegebene Honorare"
+      purchases: "Einkäufe"
+      salaries: "Nettolöhne und Sachbezüge"
+      staff_social_charges: "Sozialabgaben auf Löhne"
+      vat_paid: "Gezahlte Umsatzsteuer"
+      cet: "Contribution économique territoriale (Gewerbeabgabe)"
+      other_taxes: "Sonstige Steuern"
+      deductible_csg: "Abziehbare CSG"
+      rent: "Mieten und Mietnebenkosten"
+      equipment_rental: "Miete von Geräten und Mobiliar"
+      maintenance: "Instandhaltung und Reparaturen"
+      temporary_staff: "Leiharbeitskräfte"
+      small_tools: "Kleinwerkzeug"
+      utilities: "Heizung, Wasser, Gas, Strom"
+      fees: "Honorare, die keine Weitergaben sind"
+      insurance: "Versicherungsprämien"
+      vehicle: "Fahrzeugkosten"
+      travel: "Sonstige Reisekosten"
+      personal_social_mandatory: "Persönliche Pflichtsozialabgaben"
+      personal_social_optional: "Persönliche freiwillige Sozialabgaben"
+      reception: "Bewirtungs-, Repräsentations- und Kongresskosten"
+      office: "Büromaterial, Fachliteratur, Post und Telefon"
+      legal_costs: "Beurkundungs- und Prozesskosten"
+      professional_dues: "Gewerkschafts- und Berufsverbandsbeiträge"
+      other_management: "Sonstige Verwaltungskosten"
+      financial_costs: "Finanzierungskosten"
+      other_losses: "Sonstige Verluste"
+      withdrawal: "Privatentnahme (außerhalb der 2035)"
+      loan_repayment: "Tilgung eines Darlehens (außerhalb der 2035)"
+    items:
+      net_receipts: "Nettobetrag der Einnahmen"
+      total_receipts: "Summe der Einnahmen"
+      works_total: "Summe Arbeiten, Lieferungen und Fremdleistungen"
+      transport_total: "Summe Transport und Reisen"
+      personal_social_total: "Persönliche Sozialabgaben"
+      management_total: "Summe sonstige Verwaltungskosten"
+      total_expenses: "Summe der Ausgaben"
+      excess: "Überschuss"
+      short_term_gains: "Kurzfristige Veräußerungsgewinne"
+      reintegrations: "Sonstige Hinzurechnungen"
+      scm_profit: "Gewinn einer SCM oder SCP"
+      total_additions: "Summe der hinzuzurechnenden Zeilen"
+      shortfall: "Fehlbetrag"
+      establishment_costs: "Gründungskosten"
+      depreciation: "Abschreibungen"
+      provision: "Rückstellungen"
+      short_term_losses: "Kurzfristige Veräußerungsverluste"
+      deductions: "Sonstige Abzüge"
+      scm_loss: "Verlust einer SCM oder SCP"
+      total_subtractions: "Summe der abzuziehenden Zeilen"
+      profit: "Gewinn"
+      loss: "Verlust"
+      assets_cost: "Anlagegüter: Anschaffungswert"
+      assets_prior_depreciation: "Frühere Abschreibungen"
+      assets_year_depreciation: "Abschreibungen des Jahres"
+      disposals_price: "Veräußerungspreis der Anlagegüter"
+      long_term_gains: "Langfristige Veräußerungsgewinne"
+      long_term_losses: "Langfristige Veräußerungsverluste"
+    asset_categories:
+      intangible: "Immaterielles Anlagegut"
+      goodwill: "Kundenstamm, Präsentationsrecht"
+      land: "Grundstück"
+      building: "Gebäude"
+      fittings: "Einbauten und Anlagen"
+      equipment: "Berufliche Ausstattung"
+      vehicle: "Fahrzeug"
+      office: "Büro- und EDV-Ausstattung"
+      furniture: "Mobiliar"
+      other: "Sonstiges Anlagegut"
+    adjustment_kinds:
+      reintegration: "Sonstige Hinzurechnungen"
+      deduction: "Sonstige Abzüge"
+      scm_profit: "Gewinn einer SCM oder SCP"
+      scm_loss: "Verlust einer SCM oder SCP"
+      establishment_costs: "Gründungskosten"
+      provision: "Rückstellung"
+    methods:
+      transfer: "Überweisung"
+      card: "Bankkarte"
+      cheque: "Scheck"
+      cash: "Bargeld"
+      direct_debit: "Lastschrift"
+      other: "Sonstiges"
+    severities:
+      error: "Blockierend"
+      warning: "Zu prüfen"
+    controls:
+      siren_missing: "Die SIREN des Unternehmens fehlt oder ist fehlerhaft: Die 2035 kann nicht übermittelt werden"
+      profession_missing: "Ausgeübter Beruf nicht angegeben"
+      mapping_missing: "„%{item}“ hat keine Zeile in der Tabelle des Formularjahrgangs %{year}"
+      box_missing: "„%{item}“ hat kein Feld in der Tabelle des Formularjahrgangs %{year}: Es würde nicht übermittelt"
+      box_manual: "„%{item}“ (%{year}) hat kein übermitteltes Feld: manuell in Tabelle %{line} der 2035 zu übertragen"
+      heading_negative: "Die Rubrik „%{heading}“ ist negativ"
+      box_duplicate: "Die Posten %{items} werden in dasselbe Feld %{box} des Formulars %{form} übertragen: Nur einer würde übermittelt"
+      vehicle_depreciation_ceiling: "Fahrzeug %{number}: Seine Bemessungsgrundlage übersteigt %{ceiling} €, die niedrigste Abschreibungsobergrenze für Personenkraftwagen (9 900 bis 30 000 € je nach CO2-Ausstoß). Rechnen Sie den übersteigenden Teil über eine Korrektur hinzu"
+      asset_over_depreciated: "Anlagegut %{number} über seine Bemessungsgrundlage hinaus abgeschrieben"
+      no_receipts: "Keine Zeile im Journal für das Jahr"
+      no_fiscal_year: "Kein Geschäftsjahr des Mandanten umfasst %{year}"
+      year_open: "Das Geschäftsjahr %{year} ist nicht abgeschlossen: Die 2035 kann sich noch ändern; schließen Sie es vor der Übermittlung ab"
+      frozen_changed: "Die 2035 für %{year} hat sich seit dem Festschreiben des Geschäftsjahres geändert (Identifikation geändert?): vor jeder Einreichung prüfen"
+      asset_register_ignored: "Die Anlagegüter der 2035 stammen aus %{source}: Die %{lines} Zeilen des Anlagenverzeichnisses des Moduls werden nicht übernommen"
+    reversal_label: "Stornierung von %{number}"
+    export:
+      filename:
+        journal: "journal"
+        tax_return: "2035-kontrolle-%{year}"
+    columns:
+      number: "Nr."
+      date: "Datum"
+      kind: "Richtung"
+      party: "Kunde oder Lieferant"
+      label: "Bezeichnung"
+      heading: "Rubrik"
+      method: "Zahlung"
+      reference: "Beleg"
+      amount: "Betrag"
+      nondeductible: "Nicht abziehbar"
+      form: "Formular"
+      line: "Zeile"
+      box: "Feld"
+      item: "Posten"
+      category: "Kategorie"
+      acquired_on: "Anschaffung"
+      service_on: "Inbetriebnahme"
+      rate: "Satz %"
+      prior: "Frühere Abschr."
+      year_amount: "Abschreibung"
+      net_value: "Restwert"
+      price: "Veräußerungspreis"
+      gain: "Gewinn oder Verlust"
+      short_term: "Kurzfristig"
+      long_term: "Langfristig"
+      severity: "Stufe"
+      control: "Prüfung"
+    reports:
+      journal: "Journal der Einnahmen und Ausgaben"
+      tax_return: "Erklärung 2035 der Einkünfte %{year} — Kontrollausdruck"
+      period: "Vom %{from} bis %{to}"
+      total: "Summe"
+      total_receipts: "Summe der Einnahmen"
+      total_expenses: "Summe der Ausgaben"
+      balance: "Saldo"
+      identity: "%{name} — SIREN %{siren}"
+      profession: "Beruf: %{profession}"
+      fingerprint: "Fingerabdruck: %{fingerprint}"
+      form: "Formular %{form}"
+      assets: "Anlagegüter und Abschreibungen"
+      disposals: "Veräußerungsgewinne und -verluste"
+      adjustments: "Hinzurechnungen und Abzüge"
+      controls: "Plausibilitätsprüfungen"
+      no_control: "Keine Auffälligkeit"
+      page: "Seite %{page} von %{count}"
+    errors:
+      year:
+        invalid: "Ungültiges Jahr"
+        close:
+          future: "Das Geschäftsjahr %{year} hat noch nicht begonnen: Es kann nicht abgeschlossen werden"
+          already: "Das Geschäftsjahr %{year} ist bereits abgeschlossen"
+          locked: "Die 2035 für %{year} ist übermittelt: Das Geschäftsjahr ist gesperrt"
+        reopen:
+          locked: "Die 2035 für %{year} ist übermittelt: Das Geschäftsjahr ist gesperrt und kann nicht wieder geöffnet werden; durch eine Gegenbuchung in einem offenen Geschäftsjahr korrigieren"
+          core_closed: "Das Geschäftsjahr %{year} ist mit dem Geschäftsjahr des Mandanten abgeschlossen (Perioden abgeschlossen): Es kann hier nicht wieder geöffnet werden"
+          open: "Das Geschäftsjahr %{year} ist offen: Nichts wieder zu öffnen"
+      line:
+        nature:
+          unknown: "Unbekannte Art"
+          disabled: "Diese Art wird nicht mehr verwendet"
+        amount:
+          not_positive: "Der Betrag muss positiv sein"
+          scale: "Der Betrag wird auf den Cent genau angegeben"
+        nondeductible:
+          receipt: "Eine Einnahme hat keinen nicht abziehbaren Anteil"
+          invalid: "Ungültiger nicht abziehbarer Anteil (positiv, auf den Cent genau)"
+          exceeds: "Der nicht abziehbare Anteil darf den Betrag nicht übersteigen"
+          excluded: "Eine Rubrik außerhalb der 2035 hat keinen nicht abziehbaren Anteil"
+        method:
+          invalid: "Unbekannte Zahlungsart"
+        card:
+          unknown: "Unbekannter Stammsatz"
+        attachment:
+          unknown: "Unbekannter Anhang"
+        date:
+          future: "Datum in der Zukunft: nur einen ausgeführten Vorgang erfassen"
+          closed_period: "Die Periode dieses Datums ist abgeschlossen: durch eine Gegenbuchung in einer offenen Periode korrigieren"
+          transmitted: "Die 2035 für %{year} ist übermittelt, das Geschäftsjahr ist festgeschrieben: durch eine Gegenbuchung in einem offenen Geschäftsjahr korrigieren"
+          year_closed: "Das Geschäftsjahr %{year} ist abgeschlossen: es wieder öffnen, um eine Zeile zu erfassen, oder die Zeile in einem offenen Geschäftsjahr datieren"
+        reversal:
+          is_reversal: "Eine Gegenbuchung kann nicht gegengebucht werden"
+          already: "Diese Zeile ist bereits gegengebucht"
+          before_line: "Die Gegenbuchung darf nicht vor der Zeile liegen"
+        change:
+          from_invoicing: "Einnahme aus einer bezahlten Rechnung: in der Fakturierung korrigieren oder gegenbuchen"
+          is_reversal: "Eine Gegenbuchung kann nicht geändert werden: sie löschen und dann die richtige Zeile erfassen"
+          reversed: "Zeile gegengebucht: zuerst ihre Gegenbuchung löschen"
+          closed_period: "Geschäftsjahr oder Periode abgeschlossen: Die Zeile ist unveränderlich, durch eine Gegenbuchung korrigieren"
+          transmitted: "Die 2035 für %{year} ist übermittelt: Die Zeile ist unveränderlich, durch eine Gegenbuchung korrigieren"
+          year_closed: "Das Geschäftsjahr %{year} ist abgeschlossen: es wieder öffnen, um die Zeile zu ändern, oder durch eine Gegenbuchung korrigieren"
+        too_long: "Höchstens %{max} Zeichen"
+      nature:
+        in_use: "Art bereits verwendet: Nur Bezeichnung und Aktivierung können geändert werden"
+        code:
+          invalid: "Code aus Großbuchstaben, Ziffern und _, höchstens 32 Zeichen"
+          taken: "Code bereits vergeben"
+        label:
+          blank: "Eine Bezeichnung angeben"
+        kind:
+          invalid: "Unbekannte Richtung"
+        heading:
+          invalid: "Rubrik passt nicht zur Richtung"
+      asset:
+        label:
+          blank: "Eine Bezeichnung angeben"
+        category:
+          invalid: "Unbekannte Anlagenkategorie"
+        service_before_acquisition: "Die Inbetriebnahme darf nicht vor der Anschaffung liegen"
+        duration:
+          invalid: "Abschreibungsdauer von 0 bis 50 Jahren"
+          not_depreciable: "Diese Kategorie wird nicht abgeschrieben: Dauer 0"
+        reversal:
+          disposed: "Anlagegut veräußert: Es kann nicht mehr gegengebucht werden"
+          other_year: "Ein Anlagegut kann nur im Jahr seiner Anschaffung gegengebucht werden; danach veräußern"
+        change:
+          disposed: "Anlagegut veräußert: zuerst die Veräußerung löschen"
+          later_year_frozen: "Ein späteres festgeschriebenes Jahr berücksichtigt dieses Anlagegut in seiner 2035: Es kann nicht mehr geändert werden"
+      disposal:
+        none: "Dieses Anlagegut ist nicht veräußert"
+        asset:
+          unknown: "Anlagegut unbekannt oder storniert"
+          already: "Anlagegut bereits veräußert"
+        before_acquisition: "Die Veräußerung darf nicht vor der Anschaffung liegen"
+        price:
+          invalid: "Ungültiger Preis (positiv oder null, auf den Cent genau)"
+      adjustment:
+        year:
+          invalid: "Ungültiges Jahr"
+          closed: "Dieses Jahr ist abgeschlossen, gesperrt oder enthält eine abgeschlossene Periode"
+        kind:
+          invalid: "Unbekannte Sorte"
+        label:
+          blank: "Eine Bezeichnung angeben"
+      form_line:
+        year:
+          closed: "Formularjahrgang festgeschrieben: Ein abgeschlossenes Jahr verwendet ihn; fügen Sie dem folgenden Jahrgang eine Zeile hinzu"
+        box:
+          taken: "Feld in diesem Formular bereits durch „%{item}“ belegt"
+        item:
+          unknown: "Unbekannter Posten"
+        form:
+          unknown: "Unbekanntes Formular (2035, 2035-A, 2035-B)"
+        millesime:
+          invalid: "Ungültiger Formularjahrgang"

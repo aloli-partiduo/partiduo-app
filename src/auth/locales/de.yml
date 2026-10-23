@@ -1,0 +1,133 @@
+de:
+  auth:
+    module:
+      name: "Authentifizierung"
+    permissions:
+      users:
+        manage: "Benutzer und ihre Zugänge verwalten"
+      profiles:
+        manage: "Profile und ihre Rechte verwalten"
+      audit:
+        view: "Audit-Protokoll ansehen"
+      providers:
+        manage: "Identitätsanbieter einrichten"
+    profiles:
+      admin: "Administrator"
+      accountant: "Steuerberater"
+      accountant_guest: "Steuerberater als Gast (Lesen)"
+      accountant_guest_description: "Nur-Lese-Zugang des externen Steuerberaters: Abfrage, Auswertungen und Übermittlung der Rechnungen, ohne jede Erfassung."
+    roles:
+      member: "Benutzer des Unternehmens"
+      accountant: "Steuerberater"
+    levels:
+      enrollment: "Registrierung"
+      password: "Passwort"
+      two_factor: "Passwort und Authenticator-App"
+      passkey: "Passkey"
+    methods:
+      password: "Passwort"
+      totp: "Authenticator-App"
+      recovery_code: "Wiederherstellungscode"
+      passkey: "Passkey"
+      federated: "Identitätsanbieter"
+      invitation: "Einladung"
+    missing:
+      totp: "Aktivieren Sie eine Authenticator-App, um Stufe 2 zu erreichen."
+      passkey: "Registrieren Sie einen Passkey, um Stufe 3 zu erreichen."
+      recovery_codes: "Erzeugen Sie Wiederherstellungscodes: Sie helfen Ihnen, wenn Sie Ihr Gerät verlieren."
+    provider_kinds:
+      saml: "SAML 2.0"
+      oidc: "OpenID Connect"
+    provider_settings:
+      idp_entity_id: "Kennung (Entity ID) des Anbieters"
+      idp_sso_service_url: "Single-Sign-On-Adresse (SSO) des Anbieters"
+      idp_cert: "Signaturzertifikat des Anbieters (PEM)"
+      sp_entity_id: "Kennung (Entity ID) dieses Mandanten"
+      assertion_consumer_service_url: "Rücksprungadresse (ACS) dieses Mandanten"
+      name_identifier_format: "NameID-Format (optional)"
+      issuer: "Aussteller (Issuer)"
+      authorization_endpoint: "Autorisierungsendpunkt"
+      token_endpoint: "Token-Endpunkt"
+      jwks_uri: "Adresse der öffentlichen Schlüssel (JWKS)"
+      client_id: "Client-Kennung"
+      client_secret: "Client-Geheimnis"
+      redirect_uri: "Rücksprungadresse dieses Mandanten"
+      scopes: "Scopes (optional, standardmäßig „openid email“)"
+      subject_claim: "Claim der Kennung (optional, standardmäßig „sub“)"
+    errors:
+      elevation_required: "Dieser Vorgang erfordert eine zusätzliche Überprüfung Ihrer Identität."
+      password:
+        empty: "Geben Sie ein Passwort ein."
+        too_short: "Das Passwort muss mindestens %{minimum} Zeichen haben."
+        too_long: "Das Passwort darf höchstens %{maximum} Zeichen haben."
+        too_many_bytes: "Das Passwort ist zu lang: höchstens %{max_bytes} Bytes (Buchstaben mit Akzent oder Umlaut zählen doppelt)."
+        missing_uppercase: "Das Passwort muss einen Großbuchstaben enthalten."
+        missing_lowercase: "Das Passwort muss einen Kleinbuchstaben enthalten."
+        missing_digit: "Das Passwort muss eine Ziffer enthalten."
+        missing_special: "Das Passwort muss ein Sonderzeichen enthalten."
+        too_few_words: "Die Passphrase enthält nicht genug Wörter."
+        forbidden: "Dieses Passwort ist zu verbreitet; wählen Sie ein anderes."
+        personal: "Das Passwort darf weder Ihren Namen noch Ihre Adresse enthalten."
+        current_invalid: "Das aktuelle Passwort ist falsch."
+      login:
+        method_disabled: "Diese Anmeldemethode ist für diesen Mandanten nicht zugelassen."
+        invalid_credentials: "Adresse oder Passwort falsch."
+        access_denied: "Ihr Zugang zu diesem Mandanten ist gesperrt."
+        passkey_required: "Melden Sie sich mit Ihrem Passkey an."
+        use_connect: "Melden Sie sich mit Ihrem Partiduo-Konto an."
+        expired: "Die Anfrage ist abgelaufen; melden Sie sich erneut an."
+        invalid_code: "Falscher Code."
+        locked: "Konto nach zu vielen Fehlversuchen gesperrt. Fordern Sie einen Entsperrlink an oder wenden Sie sich an den Administrator."
+        throttled:
+          one: "Zu viele Versuche: Versuchen Sie es in %{count} Sekunde erneut."
+          other: "Zu viele Versuche: Versuchen Sie es in %{count} Sekunden erneut."
+      passkey:
+        challenge: "Die Anfrage ist abgelaufen; beginnen Sie erneut."
+        invalid: "Der Passkey konnte nicht überprüft werden."
+        already_registered: "Dieser Passkey ist bereits registriert."
+        unknown: "Passkey für diesen Mandanten unbekannt."
+        cloned: "Dieser Passkey scheint kopiert worden zu sein: Er wird abgelehnt."
+        origin: "Adresse der Website für diesen Passkey nicht erkannt."
+      federated:
+        invalid: "Die Antwort des Identitätsanbieters ist ungültig."
+        signature: "Die Signatur des Identitätsanbieters ist ungültig."
+        unsupported: "Dieser Typ von Identitätsanbieter wird nicht unterstützt."
+        unknown_identity: "Diese Identität hat keinen Zugang zu diesem Mandanten."
+        denied: "Der Identitätsanbieter hat die Anmeldung abgelehnt."
+        invitation_email: "Dieses Partiduo-Konto hat nicht die eingeladene Adresse: Melden Sie sich mit dem Konto der Adresse an, die die Einladung erhalten hat."
+        already_linked: "Mit diesem Benutzer ist bereits ein Partiduo-Konto verknüpft."
+        unreachable: "Der Identitätsanbieter antwortet nicht; versuchen Sie es später erneut."
+        subject_required: "Geben Sie die Kennung der Person beim Anbieter ein."
+        subject_taken: "Diese Identität ist bereits einem Benutzer zugeordnet."
+      token:
+        invalid: "Dieser Link ist nicht mehr gültig."
+      user:
+        self: "Sie können Ihren eigenen Zugang nicht widerrufen."
+        email_required: "Geben Sie die E-Mail-Adresse ein."
+        email_invalid: "Ungültige E-Mail-Adresse."
+        email_taken: "Diese Adresse wird bereits verwendet."
+        role_invalid: "Unbekannte Rolle."
+        nominative: "Ein Steuerberaterkonto ist personengebunden: Vorname und Nachname sind Pflichtfelder."
+        too_long: "Höchstens 100 Zeichen."
+        locale_invalid: "Sprache nicht verfügbar."
+        profile_unknown: "Unbekanntes Profil."
+        access_ends_on_past: "Das Enddatum des Zugangs liegt bereits in der Vergangenheit."
+      preferences:
+        interface_invalid: "Unbekannte Oberfläche."
+      ledger:
+        access_invalid: "Unbekanntes Recht (W, R oder X)."
+      profile:
+        in_use: "Dieses Profil ist Benutzern zugewiesen."
+        name_required: "Geben Sie den Namen des Profils ein."
+        name_taken: "Ein Profil trägt bereits diesen Namen."
+        permission_unknown: "Unbekannte Berechtigung: %{permission}."
+      provider:
+        required: "Pflichtfeld."
+        certificate: "Zertifikat nicht lesbar (PEM-Format erwartet)."
+        unknown: "Unbekannter Identitätsanbieter."
+        code_invalid: "Ungültiger Code (Kleinbuchstaben, Ziffern, - und _)."
+        level_invalid: "Ungültige Stufe (1 bis 3)."
+        kind_unsupported: "Anbietertyp nicht unterstützt."
+        kind_immutable: "Der Typ eines bestehenden Anbieters ändert sich nicht."
+        url: "HTTPS-Adresse erwartet (HTTP nur für localhost)."
+        openid_scope: "Die Scopes müssen „openid“ enthalten."

@@ -58,7 +58,10 @@ module Partiduo
         end
       end
 
-      # Session courante, vue de l'interface.
+      # Session courante, vue de l'interface. `locale` : langue de connect
+      # pour une session ouverte par lui (`locale_from_connect`, vide si son
+      # compte n'en a pas : le navigateur décide), sinon celle de
+      # l'utilisateur du dossier (D-UI-082).
       record SessionView,
         user_id : Int64,
         email : String,
@@ -71,7 +74,8 @@ module Partiduo
         elevation_required : Bool,
         suggest_passkey : Bool,
         expires_at : Time,
-        strong_auth_at : Time? = nil
+        strong_auth_at : Time? = nil,
+        locale_from_connect : Bool = false
 
       record PasskeyView,
         id : Int64,

@@ -1,0 +1,76 @@
+it:
+  stock:
+    module:
+      name: "Magazzino"
+    permissions:
+      movement:
+        read: "Consultare il magazzino"
+        write: "Registrare i movimenti manuali e gli inventari"
+      settings:
+        write: "Configurare i depositi e gli articoli gestiti a magazzino"
+    menu:
+      stock_changes: "Movimenti di magazzino"
+      stock_inventory: "Inventario"
+      stock_state: "Situazione del magazzino"
+      stock_history: "Storico del magazzino"
+      stock_valuation: "Valorizzazione del magazzino"
+      stock_repositories: "Depositi"
+      stock_items: "Articoli gestiti a magazzino"
+    directions:
+      in: "Carico"
+      out: "Scarico"
+    change_kinds:
+      change: "Movimento manuale"
+      inventory: "Inventario"
+    columns:
+      date: "Data"
+      repository: "Deposito"
+      stock_code: "Codice magazzino"
+      card: "Scheda"
+      card_name: "Articolo"
+      direction: "Verso"
+      quantity: "Quantità"
+      unit_cost: "Costo unitario"
+      source: "Origine"
+      comment: "Commento"
+      opening: "Giacenza iniziale"
+      quantity_in: "Carichi"
+      quantity_out: "Scarichi"
+      closing: "Giacenza finale"
+      value: "Valore"
+      total: "Totale"
+    errors:
+      rights:
+        denied: "Non ha il permesso di scrivere in questo deposito."
+        profile_unknown: "Profilo sconosciuto."
+        access_invalid: "Permesso sconosciuto (lettura o scrittura)."
+        repository_unknown: "Deposito sconosciuto (%{id})."
+      repository:
+        name_required: "Il nome del deposito è obbligatorio."
+        name_too_long: "Il nome del deposito ha al massimo %{max} caratteri."
+        name_taken: "Il deposito %{name} esiste già."
+        country_invalid: "Il paese è un codice di due lettere."
+        too_long: "Questo campo ha al massimo %{max} caratteri."
+        in_use: "Questo deposito ha dei movimenti: impossibile eliminarlo."
+      settings:
+        repository_unknown: "Deposito sconosciuto (%{id})."
+      item:
+        card_unknown: "Scheda sconosciuta (%{id})."
+        not_an_item: "La scheda %{code} non è un articolo."
+        too_long: "Il codice magazzino ha al massimo %{max} caratteri."
+        invalid: "Il codice magazzino non contiene spazi."
+      change:
+        repository_unknown: "Deposito sconosciuto (%{id})."
+        closed_period: "La data %{date} cade in un periodo chiuso."
+        too_long: "Il commento ha al massimo %{max} caratteri."
+        lines_required: "Inserisca almeno un articolo."
+        quantity_zero: "La quantità non può essere zero."
+        quantity_scale: "La quantità ha al massimo %{max} decimali."
+        not_tracked: "Questo articolo non è gestito a magazzino (%{id})."
+        cost_on_exit: "Uno scarico non ha costo unitario."
+        cost_negative: "Il costo unitario non può essere negativo."
+        cost_scale: "Il costo unitario ha al massimo %{max} decimali."
+      inventory:
+        lines_required: "Inserisca almeno un articolo contato."
+        code_twice: "Il codice magazzino %{code} è contato due volte."
+        counted_negative: "La quantità contata non può essere negativa."

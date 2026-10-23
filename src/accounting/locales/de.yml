@@ -1,0 +1,743 @@
+de:
+  accounting:
+    micro:
+      accounts:
+        sale_bic: "Warenverkäufe"
+        service_bic: "Dienstleistungen"
+        bnc: "Dienstleistungen"
+        goods: "Wareneinkauf"
+        other: "Nicht gelagerte Einkäufe von Material und Bedarf"
+        vat: "Umsatzsteuer"
+        vat_deductible: "Abziehbare Vorsteuer auf sonstige Waren und Leistungen"
+    liberal:
+      disposal_account_label: "Erlöse aus Anlagenabgängen"
+    module:
+      name: "Buchhaltung"
+    permissions:
+      entry:
+        read: "Buchungen ansehen"
+        post: "Buchungen erfassen"
+        cancel: "Buchungen stornieren"
+      account:
+        read: "Kontenrahmen ansehen"
+        write: "Kontenrahmen bearbeiten"
+        import: "Kontenrahmen importieren (CSV)"
+      ledger:
+        read: "Journale ansehen"
+        write: "Journale anlegen und bearbeiten"
+      matching:
+        write: "Konten ausgleichen"
+      report:
+        read: "Auswertungen ansehen"
+        write: "Eigene Berichte anlegen und bearbeiten"
+      vat:
+        declare: "Umsatzsteuererklärungen erstellen"
+      period:
+        close: "Perioden und Geschäftsjahre abschließen"
+    menu:
+      acc_entry_purchase: "Einkauf"
+      acc_entry_sale: "Verkauf"
+      acc_entry_financial: "Finanzen"
+      acc_entry_misc: "Sonstige Buchungen"
+      acc_entry_received: "Außerhalb der Plattform erhaltene Rechnungen"
+      acc_invoicing_history: "Zu buchen (Fakturierung)"
+      acc_accounts: "Konten und Geschäftspartner"
+      acc_entries: "Buchungen"
+      acc_matching: "Ausgleich"
+      acc_reconciliation: "Kontenabgleich"
+      acc_chart: "Kontenrahmen"
+      acc_ledgers: "Journale"
+      acc_trial_balance: "Summen- und Saldenliste"
+      acc_general_ledger: "Hauptbuch"
+      acc_fec: "FEC"
+      acc_auxiliary_balance: "Saldenliste Geschäftspartner"
+      acc_aged_balance: "Altersstrukturliste"
+      acc_journals: "Journale"
+      acc_balance_sheet: "Bilanz"
+      acc_income_statement: "Gewinn- und Verlustrechnung"
+      acc_reports: "Eigene Berichte"
+      acc_forecasts: "Budgetprognosen"
+      acc_vat_return: "Umsatzsteuererklärung"
+      acc_vat_returns: "Gespeicherte USt.-Erklärungen"
+      acc_vat_settings: "USt.-Einstellungen"
+      acc_closing: "Abschluss"
+    forecast_natures:
+      income: "Einnahme"
+      expense: "Ausgabe"
+    account_kinds:
+      asset: "Aktiva"
+      liability: "Passiva"
+      asset_contra: "Aktiva, Gegenkonto"
+      liability_contra: "Passiva, Gegenkonto"
+      income: "Ertrag"
+      income_contra: "Ertrag, Gegenkonto"
+      expense: "Aufwand"
+      expense_contra: "Aufwand, Gegenkonto"
+      context: "Kontext"
+    sides:
+      debit: "Soll"
+      credit: "Haben"
+    ledger_kinds:
+      purchase: "Einkauf"
+      sale: "Verkauf"
+      financial: "Finanzen"
+      misc: "Sonstige Buchungen"
+    ledger_access:
+      none: "Kein Zugriff"
+      read: "Lesen"
+      write: "Schreiben"
+    default_accounts:
+      customer: "Kunden"
+      supplier: "Lieferanten"
+      bank: "Bank"
+      cash: "Kasse"
+      sales: "Verkauf"
+      internal_transfer: "Interne Überweisungen"
+      current_account: "Girokonto"
+      vat: "Zu zahlende Umsatzsteuer"
+      non_deductible: "Nicht abziehbare Ausgaben"
+      non_deductible_vat: "Nicht abziehbare Vorsteuer"
+      vat_deductible_tax: "Über die Steuer abziehbare Vorsteuer"
+      private_expense: "Ausgaben zulasten des Geschäftsführers"
+      bank_fees: "Bankgebühren"
+    initial_data:
+      bank_card: "Bank"
+      household:
+        accounts:
+          equity_and_debts: "Vermögen und Schulden"
+          opening_net_worth: "Anfangsvermögen"
+          loans: "Darlehen und Schulden"
+          mortgage_loans: "Immobilienkredite"
+          other_debts: "Sonstige Darlehen und Schulden"
+          property: "Güter und Geldanlagen"
+          goods: "Güter"
+          real_estate: "Immobilien"
+          movable_goods: "Bewegliche Güter"
+          main_residence: "Hauptwohnsitz"
+          other_real_estate: "Sonstige Immobilien"
+          vehicles: "Fahrzeuge"
+          other_goods: "Sonstige Güter"
+          investments: "Geldanlagen"
+          life_insurance: "Lebensversicherung"
+          pea: "Aktiensparplan (PEA)"
+          securities_account: "Wertpapierdepot"
+          other_investments: "Sonstige Geldanlagen"
+          third_parties: "Geschäftspartner"
+          other_receivables_payables: "Forderungen und Verbindlichkeiten"
+          cash: "Liquide Mittel"
+          banks: "Banken"
+          current_accounts: "Girokonten"
+          current_account: "Girokonto"
+          savings_accounts: "Sparbücher und Sparkonten"
+          cash_in_hand: "Bargeld"
+          internal_transfers: "Umbuchungen zwischen Konten"
+          expenses: "Ausgaben"
+          other_expenses: "Sonstige Ausgaben"
+          donations: "Spenden"
+          home_employment: "Haushaltsnahe Beschäftigung"
+          savings: "Ersparnisse"
+          bank_fees: "Bankgebühren"
+          miscellaneous: "Verschiedenes"
+          housing: "Wohnen"
+          rent_or_mortgage: "Miete oder Kreditrate"
+          housing_charges: "Nebenkosten"
+          energy: "Energie"
+          water: "Wasser"
+          home_insurance: "Hausratversicherung"
+          works: "Renovierung"
+          food: "Lebensmittel"
+          transport: "Verkehr"
+          fuel: "Kraftstoff"
+          maintenance: "Wartung"
+          vehicle_insurance: "Versicherung"
+          public_transport: "Öffentliche Verkehrsmittel"
+          health: "Gesundheit"
+          children_education: "Kinder und Schule"
+          leisure_holidays: "Freizeit und Urlaub"
+          clothing: "Kleidung"
+          communication: "Kommunikation"
+          taxes: "Steuern und Abgaben"
+          income_tax: "Einkommensteuer"
+          property_tax: "Grundsteuer"
+          income: "Einkünfte"
+          revenues: "Einkünfte"
+          salaries: "Gehälter"
+          pensions: "Pensionen und Renten"
+          rental_income: "Mieteinkünfte"
+          financial_income: "Kapitaleinkünfte"
+          allowances: "Sozialleistungen"
+          other_income: "Sonstige Einkünfte"
+      ledgers:
+        purchase:
+          name: "Einkauf"
+          description: "Einkäufe, erhaltene Rechnungen und Gutschriften, Spesenabrechnungen"
+        sale:
+          name: "Verkauf"
+          description: "Verkäufe und ausgestellte Gutschriften"
+        financial:
+          name: "Finanzen"
+          description: "Zahlungsbewegungen: Bankkonten, Kasse, Karten"
+        misc:
+          name: "Sonstige Buchungen"
+          description: "Abschreibungen, Umsatzsteuer und sonstige Vorgänge"
+    closing:
+      closing_label: "Abschlussbuchung des Geschäftsjahres %{year}"
+      opening_label: "Saldovortrag des Geschäftsjahres %{year}"
+    reconciliation:
+      statement_label: "Kontoauszug %{reference}"
+    received_invoice:
+      origins:
+        off_platform: "Außerhalb der Plattform erhalten"
+        platform: "Über die zugelassene Plattform erhalten"
+    import:
+      export_name: "kontenrahmen"
+      fields:
+        number: "Nummer"
+        label: "Bezeichnung"
+        parent: "Übergeordnetes Konto"
+        kind: "Typ"
+        direct_use: "Direkt bebuchbar"
+    receipts:
+      archive_name: "belege"
+    errors:
+      import:
+        number_exists: "Das Konto %{number} existiert bereits: Aktivieren Sie „Bestehende Konten aktualisieren“, um es zu ändern."
+        kind: "Unbekannter Kontotyp: „%{value}“."
+      receipts:
+        none: "Keine Buchung der Periode hat einen Anhang."
+      received_invoice:
+        number:
+          blank: "Geben Sie die Rechnungsnummer des Lieferanten ein"
+          too_long: "Höchstens %{max} Zeichen"
+        platform_reference:
+          too_long: "Höchstens %{max} Zeichen"
+        attachment:
+          required: "Fügen Sie die Rechnung bei (PDF oder Bild)"
+        supplier:
+          unknown: "Kein Lieferantenstammsatz für „%{value}“: Wählen Sie einen Geschäftspartner mit Stammsatz"
+        duplicate: "Rechnung %{number} ist für diesen Lieferanten und diesen Betrag bereits erfasst (Beleg %{receipt}, Rechnung vom %{date})"
+      closing:
+        already_posted: "Diese Jahresabschlussbuchung ist bereits gebucht; stornieren Sie sie, um sie neu zu erstellen."
+        nothing: "Kein Saldo vorzutragen: Es gibt nichts zu buchen."
+        ledger_kind: "Das Journal %{code} ist kein Journal für sonstige Buchungen."
+        fiscal_year_closed: "Das Geschäftsjahr ist abgeschlossen: Öffnen Sie es wieder, bevor Sie diese Buchung erfassen."
+        no_previous: "Kein Geschäftsjahr endet am Tag vor dem ersten Tag dieses Geschäftsjahres."
+      reconciliation:
+        ledger_kind: "Das Journal %{code} ist kein Finanzjournal."
+        reference:
+          blank: "Geben Sie die Nummer des Kontoauszugs ein."
+          too_long: "Die Nummer des Kontoauszugs hat höchstens %{max} Zeichen."
+          taken: "Der Kontoauszug %{reference} ist in diesem Journal bereits abgeglichen."
+        entries:
+          blank: "Wählen Sie mindestens einen Umsatz aus."
+          invalid: "Der Umsatz %{id} gehört nicht zu diesem Journal oder ist bereits abgeglichen."
+        mismatch: "Laut Kontoauszug müssten %{expected} abgeglichen werden, die Auswahl ergibt jedoch %{selected} (Differenz %{difference})."
+      vat_return:
+        form:
+          invalid: "Das Formular „%{value}“ existiert nicht."
+          regime: "Dieses Formular gehört nicht zum Steuerregime des Mandanten (%{regime})."
+        periodicity:
+          invalid: "Die Periodizität „%{value}“ ist für dieses Formular nicht zulässig."
+        exigibility:
+          invalid: "Die Steuerentstehung „%{value}“ existiert nicht."
+        year:
+          invalid: "Das Jahr %{value} ist ungültig."
+        number:
+          invalid: "Die Periode %{value} ist ungültig."
+        threshold:
+          negative: "Der Schwellenwert darf nicht negativ sein."
+        dates:
+          order: "Das Enddatum liegt vor dem Anfangsdatum."
+          not_allowed: "Freie Zeiträume sind nur für eine CA12 (abweichendes Geschäftsjahr) zulässig: Die eingereichte Datei übernimmt Monat, Quartal oder Jahr."
+        draft_exists: "Ein Entwurf dieser Erklärung existiert bereits (Nr. %{id})."
+        overlap: "Eine abgeschlossene Erklärung deckt bereits den Zeitraum vom %{from} bis %{to} ab."
+        closed: "Diese Erklärung ist abgeschlossen und kann nicht mehr geändert werden."
+        stale: "Die Buchungen haben sich seit der Berechnung geändert: Berechnen Sie die Erklärung neu, bevor Sie sie abschließen."
+        not_closed: "Die Erklärung muss abgeschlossen sein, bevor sie verrechnet wird."
+        not_settled_form: "Diese Aufstellung wird nicht verrechnet."
+        already_settled: "Die Verrechnungsbuchung dieser Erklärung ist bereits gebucht."
+        nothing_to_settle: "Kein Umsatzsteuerbetrag zu verrechnen."
+        settle_stale: "Die Buchungen der Periode haben sich seit dem Abschluss geändert: Die Verrechnungsbuchung würde die erklärten Beträge nicht mehr übernehmen; buchen Sie sie manuell."
+        declarant_vat_number: "Die USt-IdNr. des Unternehmens („%{value}“) ist keine gültige belgische Nummer: Vervollständigen Sie die Unternehmenseinstellungen."
+        client_vat_number: "Die USt-IdNr. „%{value}“ des Kunden %{name} ist ungültig."
+        box:
+          not_editable: "Das Feld %{code} kann nicht korrigiert werden."
+          too_many_decimals: "Der Betrag darf höchstens zwei Dezimalstellen haben."
+          whole_euros: "Eine französische Erklärung erfolgt in ganzen Euro."
+          negative: "Ein belgisches Feld darf nicht negativ sein."
+        format:
+          xml: "Die Intervat-XML-Datei gibt es nur für belgische Erklärungen."
+        settlement:
+          account_missing: "Geben Sie das Verrechnungskonto an."
+          ledger_missing: "Geben Sie ein Journal für sonstige Buchungen für die Verrechnung an."
+          adjusted: "Feld(er) %{codes} korrigiert oder manuell erfasst: Die Verrechnungsbuchung kann sie nicht übernehmen. Schließen Sie ohne Verrechnung ab und buchen Sie manuell."
+          mismatch: "Die Regeln der Erklärung decken nicht die gesamte Umsatzsteuer der Buchungen ab: Die Verrechnungsbuchung würde nicht den erklärten Beträgen entsprechen; buchen Sie sie manuell."
+      vat_rule:
+        regime:
+          invalid: "Das Steuerregime „%{value}“ existiert nicht."
+        box:
+          invalid: "Das Feld „%{value}“ wird nicht über Regeln berechnet."
+        source:
+          invalid: "Die Quelle „%{value}“ existiert nicht."
+        sign:
+          invalid: "Das Vorzeichen „%{value}“ existiert nicht."
+        operation:
+          invalid: "Die Operation „%{value}“ existiert nicht."
+        ledger_kind:
+          invalid: "Der Journaltyp „%{value}“ existiert nicht."
+          balance: "Ein Saldo wird in einem Journal für sonstige Buchungen oder einem Finanzjournal gelesen."
+          document: "Nettobetrag und Umsatzsteuer werden in einem Einkaufs- oder Verkaufsjournal gelesen."
+        ledger_code:
+          not_found: "Das Journal %{code} existiert nicht."
+          kind: "Das Journal %{code} hat nicht den angegebenen Typ."
+        vat_rate_code:
+          not_found: "Der USt.-Satz %{code} existiert nicht."
+          balance: "Ein Kontensaldo hat keinen USt.-Satz."
+        accounts:
+          invalid: "Das Kontopräfix „%{value}“ ist ungültig."
+      vat_settings:
+        representative_id:
+          required: "Geben Sie die Kennung des Bevollmächtigten an."
+        country:
+          invalid: "Geben Sie einen zweistelligen Ländercode an."
+      entry:
+        account_missing: "Geben Sie ein Konto an."
+        amount_not_positive: "Der Betrag muss größer als null sein."
+        too_many_decimals: "Der Betrag hat höchstens %{max} Dezimalstellen."
+        too_few_lines: "Eine Buchung hat mindestens %{min} Zeilen."
+        unbalanced: "Die Buchung ist nicht ausgeglichen: Differenz von %{difference}."
+        amount_zero: "Der Betrag darf nicht null sein."
+        no_items: "Erfassen Sie mindestens eine Zeile."
+        counterpart_missing: "Geben Sie einen Stammsatz oder ein Gegenkonto an."
+        ledger:
+          disabled: "Dieses Journal ist deaktiviert."
+          not_document: "Das Journal %{code} ist weder ein Einkaufs- noch ein Verkaufsjournal."
+          not_purchase: "Das Journal %{code} ist kein Einkaufsjournal."
+          not_sale: "Das Journal %{code} ist kein Verkaufsjournal."
+          not_financial: "Das Journal %{code} ist kein Finanzjournal."
+        date:
+          no_period: "Keine Periode enthält das Datum %{date}: Legen Sie das Geschäftsjahr an."
+          period_closed: "Die Periode des %{date} ist abgeschlossen."
+        receipt:
+          too_long: "Der Beleg hat höchstens %{max} Zeichen."
+          taken: "Der Beleg %{receipt} existiert in diesem Journal bereits."
+        source:
+          too_long: "Die Referenz hat höchstens %{max} Zeichen."
+        attachment:
+          not_found: "Dieser Anhang existiert nicht."
+        currency_rate:
+          missing: "Kein Kurs für die Währung %{code} zu diesem Datum bekannt: Geben Sie ihn an."
+        account:
+          not_found: "Das Konto %{number} existiert nicht."
+          not_direct_use: "Das Konto %{number} ist nicht direkt bebuchbar."
+        card:
+          not_found: "Kein Stammsatz hat den Code %{code}."
+          disabled: "Der Stammsatz %{code} wird nicht mehr verwendet."
+          no_account: "Der Stammsatz %{code} ist keinem Konto zugeordnet."
+        third_party:
+          required: "Geben Sie den Geschäftspartner an."
+        vat_rate:
+          not_found: "Der USt.-Satz %{code} existiert nicht."
+          disabled: "Der USt.-Satz %{code} ist deaktiviert."
+          required: "Geben Sie den USt.-Satz des erfassten Umsatzsteuerbetrags an."
+          no_account: "Der USt.-Satz %{code} hat kein Konto für dieses Journal."
+        vat_role:
+          invalid: "Unbekannte USt.-Rolle „%{value}“: Bemessungsgrundlage oder USt."
+          without_rate: "Geben Sie den USt.-Satz der Zeile an, deren Rolle angegeben ist."
+        external_reference:
+          too_long: "Die Referenz des Ausstellers hat höchstens %{max} Zeichen."
+        cancel:
+          is_reversal: "Ein Storno kann nicht storniert werden."
+          already_cancelled: "Diese Buchung ist bereits storniert."
+      billing:
+        no_sale_ledger: "Kein aktives Verkaufsjournal: Legen Sie eines an, um die Rechnungen zu buchen."
+        no_financial_ledger: "Kein aktives Finanzjournal: Legen Sie eines an, um die Zahlungen zu buchen."
+        no_sales_account: "Kein Erlöskonto: Ordnen Sie den Artikel einem Konto zu oder geben Sie dem Verkaufsjournal ein Standardkonto."
+        customer_not_found: "Der Kundenstammsatz %{id} existiert nicht."
+        vat_rate_not_found: "Der USt.-Satz %{id} existiert nicht."
+        date_missing: "Das Belegdatum fehlt."
+        deposit_not_posted: "Die Anzahlungsrechnung %{source} ist noch nicht gebucht."
+        failed: "Die Buchung von %{source} konnte nicht erfasst werden."
+        dry_run: "Testlauf: Es wird nichts gespeichert."
+        already_dismissed: "Dieses Ereignis ist bereits verworfen."
+        already_posted: "Dieses Ereignis ist bereits gebucht."
+        not_dismissed: "Dieses Ereignis ist nicht verworfen."
+        reason_too_long: "Höchstens %{max} Zeichen."
+        rejection:
+          payment_not_found: "Der zurückgewiesene Zahlungseingang wurde nicht gefunden: Buchen Sie ihn manuell zurück und verwerfen Sie dann den Vorgang."
+          no_fees_account: "Kein Konto für Bankgebühren: Wählen Sie es in den Standardkonten aus."
+      liberal:
+        no_financial_ledger: "Kein aktives Finanzjournal: Legen Sie eines an, um das Journal des freien Berufs zu buchen."
+        no_account: "Kein Konto für %{key}: Richten Sie es für den freien Beruf ein."
+        key_invalid: "Ungültige Art, Rubrik oder Kategorie (Buchstaben, Ziffern und _, höchstens 40 Zeichen)."
+        not_direct_use: "Das Konto %{number} ist bei der Erfassung nicht verwendbar."
+      micro:
+        no_financial_ledger: "Kein aktives Finanzjournal: Legen Sie eines an, um die Register des Kleinstunternehmens zu buchen."
+        no_account: "Kein Konto für die Kategorie %{category}: Richten Sie es für das Kleinstunternehmen ein."
+        key_invalid: "Ungültige Art oder Kategorie (Buchstaben, Ziffern und _, höchstens 26 Zeichen)."
+        not_direct_use: "Das Konto %{number} ist bei der Erfassung nicht verwendbar."
+      matching:
+        too_few_lines: "Wählen Sie mindestens zwei auszugleichende Zeilen."
+        line_not_found: "Die Zeile %{id} existiert nicht."
+        different_accounts: "Die auszugleichenden Zeilen gehören zu demselben Konto."
+        one_side: "Gleichen Sie Zeilen im Soll und im Haben aus."
+      account:
+        number:
+          blank: "Geben Sie die Kontonummer ein."
+          too_long: "Die Nummer hat höchstens %{max} Zeichen."
+          invalid: "Die Nummer enthält nur Buchstaben und Ziffern."
+          taken: "Das Konto %{number} existiert bereits."
+          in_use: "Dieses Konto ist bebucht: Seine Nummer kann nicht mehr geändert werden."
+        label:
+          blank: "Geben Sie die Kontobezeichnung ein."
+          too_long: "Die Bezeichnung hat höchstens %{max} Zeichen."
+        parent:
+          not_found: "Das übergeordnete Konto %{number} existiert nicht."
+          self: "Ein Konto kann nicht sein eigenes übergeordnetes Konto sein."
+          cycle: "Das übergeordnete Konto darf nicht von diesem Konto abhängen."
+          required: "Kein übergeordnetes Konto entspricht dieser Nummer: Geben Sie es an."
+        has_children: "Dieses Konto hat Unterkonten: Löschen nicht möglich."
+        in_use: "Dieses Konto wird verwendet: Löschen nicht möglich."
+      ledger:
+        in_use: "Dieses Journal enthält Buchungen: Löschen nicht möglich."
+        kind:
+          in_use: "Dieses Journal enthält Buchungen: Sein Typ kann nicht mehr geändert werden."
+        name:
+          blank: "Geben Sie den Namen des Journals ein."
+          too_long: "Der Name hat höchstens %{max} Zeichen."
+          taken: "Ein Journal trägt bereits diesen Namen."
+        code:
+          invalid: "Der Code hat höchstens %{max} Buchstaben oder Ziffern."
+          taken: "Der Code %{code} wird bereits verwendet."
+        default_account:
+          not_found: "Das Konto %{number} existiert nicht."
+          not_direct_use: "Das Konto %{number} ist nicht direkt bebuchbar."
+        bank_card:
+          required: "Ein Finanzjournal verweist auf den Stammsatz seiner Bank oder Kasse."
+          not_found: "Kein Stammsatz hat den Code %{code}."
+          not_bank: "Der Stammsatz %{code} ist kein Bankstammsatz."
+          no_account: "Der Stammsatz %{code} ist keinem Konto zugeordnet."
+          not_direct_use: "Das Konto %{number} des Stammsatzes %{code} ist nicht direkt bebuchbar."
+        receipt_prefix:
+          too_long: "Das Präfix hat höchstens %{max} Zeichen."
+        receipt_padding:
+          invalid: "Die Länge der Nummer liegt zwischen 0 und %{max}."
+        next_receipt_number:
+          invalid: "Die nächste Belegnummer ist mindestens 1."
+        currency_code:
+          invalid: "Geben Sie einen Währungscode nach ISO 4217 an (drei Buchstaben)."
+          unknown: "Die Währung %{code} ist nicht angelegt."
+          in_use: "Dieses Journal enthält Buchungen: Seine Währung kann nicht mehr geändert werden."
+      default_account:
+        code:
+          invalid: "Unbekannte Verwendung des Standardkontos."
+        account:
+          not_found: "Das Konto %{number} existiert nicht."
+      vat_rate_account:
+        vat_rate_id:
+          not_found: "Dieser USt.-Satz existiert nicht."
+        account:
+          not_found: "Das Konto %{number} existiert nicht."
+          not_direct_use: "Das Konto %{number} ist nicht direkt bebuchbar."
+          required: "Ein Reverse-Charge-Satz hat ein Vorsteuerkonto und ein Umsatzsteuerkonto."
+      card_account:
+        card_id:
+          not_found: "Dieser Stammsatz existiert nicht."
+        account:
+          not_direct_use: "Das Konto %{number} ist nicht direkt bebuchbar."
+          required: "Geben Sie ein Konto an: Die Kategorie des Stammsatzes liefert keines."
+      card_category:
+        category_id:
+          not_found: "Diese Kategorie existiert nicht."
+        base_account:
+          not_found: "Das Konto %{number} existiert nicht."
+          required: "Geben Sie das Basiskonto an, um ein Konto je Stammsatz anzulegen."
+      initial_data:
+        regime:
+          invalid: "Unbekanntes Steuerregime."
+        chart:
+          invalid: "Unbekannter Basiskontenrahmen."
+        not_empty: "Kontenrahmen oder Journale sind bereits geladen."
+      formula:
+        empty: "Geben Sie eine Formel ein."
+        syntax: "Formel nicht lesbar (Position %{position})."
+        function: "Unbekannte Funktion: %{name}."
+        arguments: "Falsche Anzahl von Argumenten für %{name}."
+        account: "Falscher Kontoverweis: %{value}."
+        card: "Falscher Stammsatzverweis: %{value}."
+        analytic: "Die Kostenrechnung ist in Formeln noch nicht verfügbar."
+        variable: "Unbekannte Variable: %{name}."
+        cycle: "Die Rubrik %{name} hängt von sich selbst ab."
+        from: "Falsche FROM-Klausel: %{value} (erwartet FROM=MM.JJJJ)."
+        depth: "Formel zu tief verschachtelt (höchstens %{max} Ebenen)."
+        round: "Die Anzahl der Dezimalstellen von round ist eine ganze Zahl von 0 bis %{max}."
+        too_long: "Die Formel hat höchstens %{max} Zeichen."
+      report:
+        name:
+          blank: "Geben Sie den Namen des Berichts ein."
+          too_long: "Der Name hat höchstens %{max} Zeichen."
+          taken: "Ein Bericht trägt bereits diesen Namen."
+        lines:
+          blank: "Ein Bericht hat mindestens eine Zeile."
+          too_many: "Ein Bericht hat höchstens %{max} Zeilen."
+        label:
+          blank: "Geben Sie die Bezeichnung der Zeile ein."
+          too_long: "Die Bezeichnung hat höchstens %{max} Zeichen."
+        formula:
+          too_long: "Die Formel hat höchstens %{max} Zeichen."
+      forecast:
+        name:
+          blank: "Geben Sie den Namen der Prognose ein."
+          too_long: "Der Name hat höchstens %{max} Zeichen."
+        owner:
+          unknown: "Keine aktive Erweiterung heißt %{owner}: Sie kann die Prognose nicht führen."
+        owned: "Diese Prognose wird von %{owner} geführt: Ändern Sie sie über diese Erweiterung."
+        period:
+          unknown: "Unbekannte Periode (%{id})."
+          order: "Die letzte Periode liegt vor der ersten."
+          outside: "Diese Periode gehört nicht zur Prognose (%{id})."
+          twice: "Diese Periode hat bereits einen Betrag."
+        label:
+          blank: "Geben Sie die Bezeichnung ein."
+          too_long: "Die Bezeichnung hat höchstens %{max} Zeichen."
+        formula:
+          blank: "Geben Sie die Formel für den Istwert ein."
+          too_long: "Die Formel hat höchstens %{max} Zeichen."
+        amount:
+          scale: "Der Betrag hat höchstens %{max} Dezimalstellen."
+        nature:
+          invalid: "Wählen Sie Einnahme oder Ausgabe."
+      fec:
+        fiscal_year: "Der FEC umfasst ein einziges Geschäftsjahr: Die Daten müssen zum selben Geschäftsjahr gehören."
+        ledgers: "Der FEC umfasst alle Journale: Sie haben nicht auf jedes davon Zugriff."
+    reports:
+      period: "Vom %{from} bis %{to}"
+      as_of: "Zum %{date}"
+      previous_period: "Vorjahr: %{period}"
+      partial: "Unvollständig: Einige Journale sind für Sie nicht sichtbar."
+      page: "Seite %{page} von %{count}"
+      total: "Gesamtsumme"
+      class_total: "Summe Klasse %{class}"
+      card_total: "Summe %{card}"
+      section_total: "Summe %{key}"
+      month_total: "Summe des Monats %{month}"
+      opening: "Anfangssaldo"
+      difference: "Differenz"
+      unmapped: "Nicht übernommenes Konto: %{number} %{label}"
+      summary:
+        balance_sheet: "Klassen 1 bis 5"
+        expenses: "Klasse 6 (Aufwendungen)"
+        income: "Klasse 7 (Erträge)"
+        result: "Ergebnis (Erträge − Aufwendungen)"
+      titles:
+        trial_balance: "Summen- und Saldenliste"
+        auxiliary_balance: "Saldenliste Geschäftspartner"
+        aged_balance: "Altersstrukturliste"
+        general_ledger: "Hauptbuch"
+        auxiliary_ledger: "Kontokorrent"
+        journals: "Journale"
+        balance_sheet_fr: "Bilanz (verkürztes Schema)"
+        income_statement_fr: "Gewinn- und Verlustrechnung (verkürztes Schema)"
+        balance_sheet_be: "Bilanz (verkürztes Schema)"
+        income_statement_be: "Ergebnisrechnung (verkürztes Schema)"
+      columns:
+        account: "Konto"
+        label: "Buchungstext"
+        opening_debit: "EB Soll"
+        opening_credit: "EB Haben"
+        debit: "Soll"
+        credit: "Haben"
+        balance_debit: "Saldo Soll"
+        balance_credit: "Saldo Haben"
+        balance: "Saldo"
+        card: "Stammsatz"
+        name: "Name"
+        date: "Datum"
+        receipt: "Beleg"
+        due_date: "Fällig am"
+        days: "Tage"
+        not_due: "Nicht fällig"
+        days_1_30: "1 bis 30 Tage"
+        days_31_60: "31 bis 60 Tage"
+        over_60: "Über 60 Tage"
+        remaining: "Offen"
+        ledger: "Journal"
+        matching: "Ausgl.-Kz."
+        internal_code: "Interner Code"
+        rubric: "Rubrik"
+        gross: "Brutto"
+        less: "Abschr. u. Wertber."
+        net: "Netto"
+        previous: "Vorjahr"
+        formula: "Formel"
+        amount: "Betrag"
+    statements:
+      fr:
+        balance_sheet:
+          assets: "AKTIVA"
+          fixed_assets: "Anlagevermögen"
+          intangible: "Immaterielle Vermögensgegenstände"
+          tangible: "Sachanlagen"
+          financial: "Finanzanlagen"
+          total_fixed: "Summe Anlagevermögen (I)"
+          current_assets: "Umlaufvermögen"
+          stocks: "Vorräte und unfertige Leistungen (außer Waren)"
+          goods: "Waren"
+          advances_paid: "Geleistete Anzahlungen auf Bestellungen"
+          trade_receivables: "Forderungen aus Lieferungen und Leistungen"
+          other_receivables: "Sonstige Forderungen"
+          securities: "Wertpapiere des Umlaufvermögens"
+          cash: "Liquide Mittel"
+          prepaid_expenses: "Aktive Rechnungsabgrenzungsposten"
+          total_current: "Summe Umlaufvermögen (II)"
+          total_assets: "SUMME AKTIVA"
+          liabilities: "PASSIVA"
+          equity: "Eigenkapital"
+          capital: "Gezeichnetes Kapital"
+          revaluation: "Neubewertungsrücklage"
+          legal_reserve: "Gesetzliche Rücklage"
+          regulated_reserves: "Satzungsmäßige und gesetzlich geregelte Rücklagen"
+          other_reserves: "Andere Rücklagen"
+          retained_earnings: "Gewinn-/Verlustvortrag"
+          result: "Jahresergebnis"
+          investment_grants: "Investitionszuschüsse"
+          regulated_provisions: "Steuerrechtliche Sonderposten"
+          total_equity: "Summe Eigenkapital (I)"
+          provisions: "Rückstellungen (II)"
+          debts: "Verbindlichkeiten"
+          borrowings: "Darlehen und ähnliche Verbindlichkeiten"
+          advances_received: "Erhaltene Anzahlungen auf Bestellungen"
+          trade_payables: "Verbindlichkeiten aus Lieferungen und Leistungen"
+          other_debts: "Sonstige Verbindlichkeiten"
+          deferred_income: "Passive Rechnungsabgrenzungsposten"
+          total_debts: "Summe Verbindlichkeiten (III)"
+          total_liabilities: "SUMME PASSIVA"
+        income_statement:
+          operating_income: "Betriebliche Erträge"
+          sales_goods: "Warenverkäufe"
+          production_sold: "Verkaufte Produktion (Waren und Leistungen)"
+          production_stocked: "Bestandsveränderung der Erzeugnisse"
+          production_capitalized: "Andere aktivierte Eigenleistungen"
+          operating_grants: "Betriebszuschüsse"
+          other_operating_income: "Auflösungen, Aufwandsübertragungen und sonstige Erträge"
+          total_operating_income: "Summe der betrieblichen Erträge"
+          operating_charges: "Betriebliche Aufwendungen"
+          purchases_goods: "Wareneinkauf"
+          stock_change_goods: "Bestandsveränderung (Waren)"
+          purchases_materials: "Einkauf von Roh-, Hilfs- und Betriebsstoffen"
+          stock_change_materials: "Bestandsveränderung (Roh-, Hilfs- und Betriebsstoffe)"
+          external_charges: "Sonstige Einkäufe und externe Aufwendungen"
+          taxes: "Steuern, Abgaben und ähnliche Zahlungen"
+          wages: "Löhne und Gehälter"
+          social_charges: "Soziale Abgaben"
+          depreciation: "Abschreibungen und Zuführungen zu Rückstellungen"
+          other_operating_charges: "Sonstige Aufwendungen"
+          total_operating_charges: "Summe der betrieblichen Aufwendungen"
+          operating_result: "Betriebsergebnis"
+          financial_income: "Finanzerträge"
+          financial_charges: "Finanzaufwendungen"
+          financial_result: "Finanzergebnis"
+          current_result: "Ergebnis der gewöhnlichen Geschäftstätigkeit vor Steuern"
+          exceptional_income: "Außerordentliche Erträge"
+          exceptional_charges: "Außerordentliche Aufwendungen"
+          exceptional_result: "Außerordentliches Ergebnis"
+          profit_sharing: "Gewinnbeteiligung der Arbeitnehmer"
+          income_tax: "Steuern vom Einkommen und vom Ertrag"
+          total_income: "Summe der Erträge"
+          total_charges: "Summe der Aufwendungen"
+          net_result: "Gewinn oder Verlust"
+      be:
+        balance_sheet:
+          assets: "AKTIVA"
+          fixed_assets: "Anlagevermögen"
+          formation_expenses: "Gründungskosten"
+          intangible: "Immaterielle Anlagewerte"
+          tangible: "Sachanlagen"
+          financial: "Finanzanlagen"
+          total_fixed: "Summe des Anlagevermögens"
+          current_assets: "Umlaufvermögen"
+          long_term_receivables: "Forderungen mit einer Restlaufzeit von mehr als einem Jahr"
+          stocks: "Vorräte und in Ausführung befindliche Bestellungen"
+          short_term_receivables: "Forderungen mit einer Restlaufzeit bis zu einem Jahr"
+          investments: "Geldanlagen"
+          cash: "Flüssige Mittel"
+          accruals_assets: "Rechnungsabgrenzungsposten"
+          total_current: "Summe des Umlaufvermögens"
+          total_assets: "SUMME DER AKTIVA"
+          liabilities: "PASSIVA"
+          equity: "Eigenkapital"
+          contribution: "Einlage"
+          revaluation: "Neubewertungsmehrwerte"
+          reserves: "Rücklagen"
+          retained_earnings: "Gewinnvortrag (Verlustvortrag)"
+          result_pending: "Zu verwendendes Ergebnis des Geschäftsjahres"
+          capital_grants: "Kapitalzuschüsse"
+          total_equity: "Summe des Eigenkapitals"
+          provisions: "Rückstellungen und latente Steuern"
+          debts: "Verbindlichkeiten"
+          long_term_debts: "Verbindlichkeiten mit einer Restlaufzeit von mehr als einem Jahr"
+          current_portion: "Innerhalb eines Jahres fällige Verbindlichkeiten mit einer ursprünglichen Laufzeit von mehr als einem Jahr"
+          financial_debts: "Finanzverbindlichkeiten"
+          trade_debts: "Verbindlichkeiten aus Lieferungen und Leistungen"
+          advances_received: "Erhaltene Anzahlungen auf Bestellungen"
+          tax_social_debts: "Verbindlichkeiten aufgrund von Steuern, Arbeitsentgelten und Soziallasten"
+          other_debts: "Sonstige Verbindlichkeiten"
+          accruals_liabilities: "Rechnungsabgrenzungsposten"
+          total_debts: "Summe der Verbindlichkeiten"
+          total_liabilities: "SUMME DER PASSIVA"
+        income_statement:
+          revenue: "Umsatz"
+          other_operating_income: "Sonstige betriebliche Erträge"
+          purchases: "Roh-, Hilfs- und Betriebsstoffe, Waren, Dienstleistungen und verschiedene Güter"
+          gross_margin: "Bruttobetriebsmarge"
+          wages: "Arbeitsentgelte, Soziallasten und Pensionen"
+          depreciation: "Abschreibungen"
+          write_downs: "Wertminderungen"
+          provisions: "Rückstellungen für Risiken und Aufwendungen"
+          other_operating_charges: "Sonstige betriebliche Aufwendungen"
+          operating_result: "Betriebsgewinn (Betriebsverlust)"
+          financial_income: "Finanzerträge"
+          financial_charges: "Finanzaufwendungen"
+          non_recurring_income: "Nicht wiederkehrende Erträge"
+          non_recurring_charges: "Nicht wiederkehrende Aufwendungen"
+          result_before_tax: "Gewinn (Verlust) des Geschäftsjahres vor Steuern"
+          deferred_taxes: "Entnahmen aus (Zuführungen zu) latenten Steuern"
+          income_taxes: "Steuern auf das Ergebnis"
+          result_of_year: "Gewinn (Verlust) des Geschäftsjahres"
+          untaxed_reserves: "Entnahmen aus (Zuführungen zu) steuerfreien Rücklagen"
+          net_result: "Zu verwendender Gewinn (Verlust) des Geschäftsjahres"
+    vat_returns:
+      settlement_label: "USt.-Verrechnung — %{form} vom %{from} bis %{to}"
+      total: "Summe"
+      annex_title: "Anlage 3310-A — zu einem besonderen Satz steuerpflichtige Umsätze (Zeile 14)"
+      annex_base: "Nettobemessungsgrundlage — %{rate}"
+      annex_tax: "Geschuldete Steuer — %{rate}"
+      columns:
+        box: "Feld"
+        label: "Bezeichnung"
+        amount: "Betrag"
+        vat_number: "USt-IdNr."
+        name: "Name"
+        code: "Code"
+        vat: "USt."
+    billing:
+      rejection_label: "Rücklastschrift der Zahlung"
+      rejection_fees_label: "Rücklastschriftgebühren"
+    fec_reader:
+      issues:
+        encoding_unknown: "Unbekannte Kodierung: %{name}."
+        invalid_utf8: "Die Datei ist kein gültiges UTF-8: Wählen Sie eine andere Kodierung."
+        unreadable_encoding: "Die Datei lässt sich nicht als %{name} lesen."
+        c1_characters: "Steuerzeichen beim Lesen als %{encoding}: Die Datei ist vielleicht in Windows-1252."
+        empty_file: "Die Datei ist leer."
+        separator: "Trennzeichen nicht erkannt: Tabulator, senkrechter Strich oder Semikolon."
+        separator_strict: "Trennzeichen nicht erkannt: Tabulator oder senkrechter Strich (article A47 A-1)."
+        missing_column: "Feld %{column} fehlt in der Kopfzeile."
+        field_count: "%{count} Felder statt %{expected} (Trennzeichen in einem Buchungstext?)."
+        unbalanced: "Buchung %{entry} nicht ausgeglichen: Soll %{debit}, Haben %{credit}."
+        no_entry: "Die Datei enthält keine Buchung."
+        empty_field: "Feld %{column} leer."
+        unreadable_date: "Datum nicht lesbar: „%{value}“ (JJJJMMTT erwartet)."
+        unreadable_amount: "Betrag nicht lesbar: „%{value}“."
+        unreadable_direction: "Richtung nicht lesbar: „%{value}“ (D oder C erwartet)."
+        date_mismatch: "Buchung %{entry}: Datum %{date} weicht vom Datum der ersten Zeile ab (%{expected})."

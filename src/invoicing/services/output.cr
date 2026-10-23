@@ -80,11 +80,9 @@ module Partiduo
         text = FacturxXml.format_decimal(value, 2)
         negative = text.starts_with?('-')
         integer, _, fraction = text.lchop('-').partition('.')
-        thousands, decimal = case locale
-                             when "en" then {",", "."}
-                             when "nl" then {".", ","}
-                             else           {" ", ","}
-                             end
+        thousands, decimal = Partiduo::LocaleFormats.separators(locale)
+        # Espace insécable dans un PDF : un montant ne se coupe jamais.
+        thousands = thousands.gsub(' ', '\u00A0')
         grouped = integer.reverse.scan(/\d{1,3}/).map(&.[0]).join(thousands).reverse
         number = "#{negative ? "-" : ""}#{grouped}#{decimal}#{fraction}"
         return number unless currency
@@ -95,7 +93,7 @@ module Partiduo
       def self.format_quantity(value : BigDecimal, locale : String) : String
         text = Calculator.plain(value)
         text = text.rchop(".0") if text.ends_with?(".0")
-        locale == "en" ? text : text.tr(".", ",")
+        text.tr(".", Partiduo::LocaleFormats.separators(locale)[1])
       end
 
       def self.format_percent(value : BigDecimal, locale : String) : String
@@ -104,11 +102,7 @@ module Partiduo
 
       def self.format_date(value : Time?, locale : String) : String
         return "" unless value
-        case locale
-        when "en" then value.to_s("%Y-%m-%d")
-        when "nl" then value.to_s("%d-%m-%Y")
-        else           value.to_s("%d/%m/%Y")
-        end
+        Partiduo::LocaleFormats.date(value, locale)
       end
 
       # Texte d'une mention dans la langue courante, dates et montants

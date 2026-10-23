@@ -302,7 +302,7 @@ describe "manage instance : forme des réponses" do
     english.error["reason"].should eq("usage.option")
     english.error["message"].should eq("Unrecognized option or missing value: --reason.")
 
-    unknown = run_cli("frob", "--locale", "de")
+    unknown = run_cli("frob", "--locale", "pl")
     unknown.error["message"].as_s.should start_with("Action inconnue : frob")
   end
 

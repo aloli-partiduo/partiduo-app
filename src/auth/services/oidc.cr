@@ -210,6 +210,10 @@ module Partiduo
         if auth_time = claims["auth_time"]?.try(&.as_i64?)
           attributes["auth_time"] = [auth_time.to_s]
         end
+        # Langue préférée du compte (claim standard `locale`, D-UI-082).
+        if locale = claims["locale"]?.try(&.as_s?).presence
+          attributes["locale"] = [locale]
+        end
         attributes
       end
 

@@ -1,0 +1,360 @@
+pt:
+  core:
+    module:
+      name: "Base"
+    permissions:
+      settings:
+        manage: "Gerir os parâmetros do dossier"
+      users:
+        manage: "Gerir os utilizadores e os perfis"
+      modules:
+        manage: "Ativar e desativar os módulos"
+      fiscal_year:
+        write: "Criar e eliminar os exercícios e períodos"
+      period:
+        close: "Encerrar os períodos e exercícios"
+        reopen: "Reabrir um período encerrado"
+      currency:
+        write: "Gerir as moedas e as respetivas cotações"
+      attachment:
+        read: "Consultar os anexos"
+        write: "Carregar e eliminar anexos"
+    menu:
+      dashboard: "Painel"
+      billing: "Faturação"
+      follow_up: "Acompanhamento"
+      entry: "Registo"
+      consult: "Consulta"
+      reference: "Dados de referência"
+      reports: "Relatórios"
+      vat: "IVA"
+      analytic: "Contabilidade analítica"
+      settings: "Definições"
+      extension: "Extensões"
+      core_company: "Empresa"
+      core_fiscal_years: "Exercícios e períodos"
+      core_users: "Utilizadores e perfis"
+      core_modules: "Módulos"
+      core_currencies: "Moedas"
+    settings:
+      name: "Empresa"
+      fields:
+        company_name: "Denominação social"
+        legal_form: "Forma jurídica"
+        share_capital: "Capital social"
+        rcs: "Registo (RCS, RPM)"
+        siren: "SIREN"
+        vat_number: "Número de IVA"
+        street: "Rua"
+        street_number: "Número"
+        postcode: "Código postal"
+        city: "Localidade"
+        country_code: "País"
+        phone: "Telefone"
+        email: "Endereço de e-mail"
+        tax_regime: "Regime fiscal"
+        default_locale: "Idioma predefinido"
+        domain: "Endereço do dossier"
+        auth_methods: "Métodos de autenticação permitidos"
+        auth_minimum_level: "Nível mínimo de autenticação"
+        session_duration_minutes: "Duração da sessão (minutos)"
+        creditor_identifier: "Identificador de credor SEPA (ICS)"
+        approval_mode: "Validação das operações sensíveis"
+        approval_reauth_minutes: "Prazo da autenticação forte para aprovar (minutos)"
+      tax_regimes:
+        fr: "França"
+        be: "Bélgica"
+      locales:
+        fr: "Francês"
+        en: "Inglês"
+        nl: "Neerlandês"
+        de: "Alemão"
+        es: "Espanhol"
+        it: "Italiano"
+        pt: "Português"
+      auth_methods:
+        password: "Palavra-passe (TOTP como segundo fator)"
+        passkey: "Chave de acesso (passkey)"
+        federated: "Identidade federada (SSO)"
+      auth_levels:
+        level_1: "Nível 1 — só palavra-passe"
+        level_2: "Nível 2 — palavra-passe e TOTP"
+        level_3: "Nível 3 — chave de acesso (passkey)"
+      session_duration:
+        one: "%{count} minuto"
+        other: "%{count} minutos"
+      approval_modes:
+        single: "Uma pessoa (quem submete pode aprovar, após uma autenticação forte)"
+        dual: "Duas pessoas (outra pessoa aprova)"
+    currencies:
+      eur: "Euro"
+    exports:
+      page: "Página %{page} de %{count}"
+    imports:
+      actions:
+        create: "Criação"
+        update: "Atualização"
+        refused: "Recusada"
+    errors:
+      import:
+        separator: "Separador não reconhecido: ponto e vírgula, vírgula, tabulação ou barra vertical."
+        quote: "Delimitador de texto não reconhecido: aspas ou apóstrofo."
+        encoding_unknown: "Codificação não reconhecida: UTF-8 ou Windows-1252."
+        skip_rows: "O número de linhas a ignorar deve estar entre 0 e 1000."
+        too_large: "O ficheiro excede %{max} MB."
+        too_many_rows: "O ficheiro excede %{max} linhas."
+        encoding: "O ficheiro não está em UTF-8: escolha a codificação Windows-1252."
+        malformed: "Ficheiro CSV ilegível perto do registo %{line} (delimitador de texto não fechado?)."
+        empty: "O ficheiro não contém nenhuma linha."
+        column_unknown: "Coluna %{column}: campo desconhecido (%{key})."
+        column_duplicate: "O campo «%{field}» está associado a várias colunas."
+        column_missing: "Nenhuma coluna está associada ao campo obrigatório «%{field}»."
+        decimal: "«%{value}» não é um número."
+        date: "«%{value}» não é uma data (AAAA-MM-DD ou DD/MM/AAAA)."
+        boolean: "«%{value}» não é sim nem não."
+        has_refused:
+          one: "%{count} linha foi recusada: corrija o ficheiro, ou confirme a importação apenas das linhas aceites."
+          other: "%{count} linhas foram recusadas: corrija o ficheiro, ou confirme a importação apenas das linhas aceites."
+        nothing: "Nenhuma linha a importar."
+      table:
+        title:
+          blank: "A tabela exportada deve ter um título."
+        columns:
+          count: "A tabela exportada deve ter entre 1 e %{max} colunas."
+          column: "Coluna da tabela exportada não reconhecida."
+        rows:
+          count: "A tabela exportada não pode exceder %{max} linhas."
+          row: "Linha da tabela exportada não reconhecida."
+      settings:
+        company_name:
+          blank: "A denominação social é obrigatória."
+          too_long: "A denominação social não pode exceder %{max} caracteres."
+        legal_form:
+          too_long: "A forma jurídica não pode exceder %{max} caracteres."
+        share_capital:
+          negative: "O capital social não pode ser negativo."
+          too_precise: "O capital social não pode ter mais de %{decimals} casas decimais."
+          too_large: "O capital social é demasiado elevado."
+        rcs:
+          too_long: "O registo não pode exceder %{max} caracteres."
+        siren:
+          invalid: "O SIREN «%{value}» não é válido (9 algarismos, dígito de controlo)."
+          not_applicable: "O SIREN só se aplica ao regime francês."
+        vat_number:
+          invalid: "O número de IVA «%{value}» não é válido."
+          country_mismatch: "O número de IVA deve começar por %{prefix}, o prefixo do país da empresa."
+          siren_mismatch: "O número de IVA não corresponde ao SIREN %{siren}."
+        street:
+          too_long: "A rua não pode exceder %{max} caracteres."
+        street_number:
+          too_long: "O número não pode exceder %{max} caracteres."
+        postcode:
+          too_long: "O código postal não pode exceder %{max} caracteres."
+        city:
+          too_long: "A localidade não pode exceder %{max} caracteres."
+        country_code:
+          invalid: "O código de país «%{value}» não é válido (duas letras, ISO 3166-1)."
+          regime_mismatch: "O país %{country} não é compatível com o regime fiscal %{regime}."
+        phone:
+          too_long: "O telefone não pode exceder %{max} caracteres."
+        email:
+          invalid: "O endereço de e-mail não é válido."
+          too_long: "O endereço de e-mail não pode exceder %{max} caracteres."
+        tax_regime:
+          blank: "O regime fiscal é obrigatório."
+          invalid: "O regime fiscal «%{value}» é desconhecido (fr ou be)."
+          immutable: "O regime fiscal já não pode ser alterado após a criação do dossier."
+        default_locale:
+          invalid: "O idioma «%{value}» não está disponível."
+        domain:
+          blank: "O endereço do dossier é obrigatório."
+          invalid: "O endereço do dossier «%{value}» não é um nome de anfitrião válido."
+          too_long: "O endereço do dossier não pode exceder %{max} caracteres."
+        auth_methods:
+          blank: "Deve ser permitido pelo menos um método de autenticação."
+          unknown: "Método de autenticação desconhecido: %{methods}."
+        auth_minimum_level:
+          out_of_range: "O nível de autenticação deve estar entre %{min} e %{max}."
+          unreachable: "Nenhum método permitido possibilita atingir o nível %{level}."
+        session_duration_minutes:
+          out_of_range: "A duração da sessão deve estar entre %{min} e %{max} minutos."
+        creditor_identifier:
+          invalid: "O identificador de credor SEPA «%{value}» não é válido (país, dígito de controlo, código de atividade, identificador nacional)."
+        approval_mode:
+          invalid: "Modo de validação desconhecido: %{value} (uma ou duas pessoas)."
+        approval_reauth_minutes:
+          out_of_range: "O prazo da autenticação forte deve estar entre %{min} e %{max} minutos."
+      mail:
+        to:
+          blank: "Indique pelo menos um destinatário."
+          invalid: "Endereço de e-mail inválido: %{address}."
+          too_many: "Uma mensagem tem no máximo %{max} destinatários."
+        subject:
+          blank: "Indique o assunto da mensagem."
+          too_long: "O assunto tem no máximo %{max} caracteres."
+        body:
+          too_long: "A mensagem tem no máximo %{max} caracteres."
+        attachments:
+          too_large: "Os anexos de uma mensagem não excedem %{max} MB no total."
+          filename: "Um anexo não tem nome."
+        no_sender: "Nenhum endereço de envio: preencha o endereço de e-mail da empresa."
+        not_configured: "O envio de e-mails não está configurado nesta instância."
+      approval:
+        person_required: "Uma aprovação é o gesto de uma pessoa com sessão iniciada."
+        not_pending: "Este pedido já não está pendente: já foi decidido."
+        same_person: "Validação a duas pessoas: uma pessoa diferente da que submeteu o pedido deve aprová-lo."
+        reauthentication_required: "Confirme a identidade (aplicação de autenticação ou chave de acesso): aprovar exige uma autenticação forte com menos de %{minutes} minutos."
+        forbidden: "Não tem permissão para decidir sobre este pedido."
+        pending_exists: "Já existe um pedido a aguardar aprovação para este objeto."
+        not_approved: "Esta operação não foi aprovada."
+        already_consumed: "Esta aprovação já foi utilizada."
+        subject_mismatch: "Esta aprovação diz respeito a outro objeto."
+        digest_mismatch: "O conteúdo mudou desde o pedido: submeta-o novamente."
+        kind:
+          invalid: "Natureza do pedido inválida: %{value}."
+        subject:
+          blank: "Indique o objeto do pedido."
+          too_long: "O objeto do pedido tem no máximo %{max} caracteres."
+        summary:
+          blank: "Indique o resumo do pedido."
+        digest:
+          blank: "A impressão digital do conteúdo submetido está em falta ou é demasiado longa."
+      provision:
+        already_provisioned: "Este dossier já foi criado."
+        admin_email:
+          invalid: "O endereço do administrador não é válido."
+        modules:
+          unknown: "Módulo desconhecido: %{code}."
+          wrong_kind: "%{code} não é um módulo (ver --with para as extensões)."
+          inactive: "O módulo %{code} não está ativo na configuração da instância."
+        extensions:
+          unknown: "Extensão desconhecida: %{code}."
+          wrong_kind: "%{code} não é uma extensão (ver --modules)."
+          inactive: "A extensão %{code} não está ativa na configuração da instância."
+        kind:
+          unknown: "Tipo de dossier desconhecido: %{kind} (tipos possíveis: %{kinds})."
+          inactive: "O tipo de dossier %{kind} requer %{code}, que não está ativo."
+          required: "Um dossier do tipo %{kind} requer o módulo %{code}."
+          excluded: "O módulo %{code} não é admitido num dossier do tipo %{kind}."
+      fiscal_year:
+        year:
+          out_of_range: "O exercício deve estar entre %{min} e %{max}."
+          taken: "O exercício %{year} já existe."
+        start_year:
+          out_of_range: "O ano de início deve estar entre %{min} e %{max}."
+        start_month:
+          invalid: "O mês de início não existe."
+        months:
+          out_of_range: "O número de meses deve estar entre %{min} e %{max}."
+        label:
+          too_long: "A descrição não pode exceder %{max} caracteres."
+          taken: "A descrição «%{label}» já designa outro exercício."
+        closed: "Este exercício está encerrado."
+        in_use: "Este exercício não pode ser eliminado: tem operações registadas."
+        already_closed: "Este exercício já está encerrado."
+        no_period: "Este exercício não tem nenhum período."
+      period:
+        overlap: "O período sobrepõe-se ao período de %{starts_on} a %{ends_on}."
+        fiscal_year_closed: "O exercício deste período está encerrado."
+        ends_on:
+          before_start: "O fim do período é anterior ao seu início."
+        starts_on:
+          out_of_range: "As datas devem estar entre %{min} e %{max}."
+        closed: "Este período está encerrado."
+        in_use: "Este período não pode ser eliminado: tem operações registadas."
+        already_closed: "Este período já está encerrado."
+        not_closed: "Este período não está encerrado."
+      currency:
+        code:
+          base_immutable: "A moeda de escrituração do dossier não pode ser alterada."
+          invalid: "O código «%{value}» não é um código ISO 4217 (três letras)."
+          taken: "A moeda %{value} já existe."
+          in_use: "Esta moeda está a ser utilizada e não pode ser eliminada."
+        name:
+          blank: "O nome da moeda é obrigatório."
+          too_long: "O nome não pode exceder %{max} caracteres."
+        decimals:
+          out_of_range: "O número de casas decimais deve estar entre %{min} e %{max}."
+        rate:
+          blank: "É obrigatória uma primeira cotação."
+          not_positive: "A cotação deve ser estritamente positiva."
+          too_precise: "A cotação não pode ter mais de %{decimals} casas decimais."
+          too_large: "A cotação é demasiado elevada."
+        valid_from:
+          blank: "A data da primeira cotação é obrigatória."
+          not_after_last: "A data deve ser posterior à última cotação (%{date})."
+      attachment:
+        filename:
+          blank: "O nome do ficheiro é obrigatório."
+          too_long: "O nome do ficheiro não pode exceder %{max} caracteres."
+        content:
+          empty: "O ficheiro está vazio."
+          too_large: "O ficheiro excede %{max} MiB."
+        content_type:
+          unsupported: "Este tipo de ficheiro (%{value}) não é aceite."
+          mismatch: "O conteúdo do ficheiro não corresponde ao seu tipo (%{value})."
+        in_use: "Este anexo ainda está associado e não pode ser eliminado."
+        corrupted: "Este anexo foi alterado: a sua impressão digital já não corresponde."
+    provision:
+      done: "Dossier «%{name}» criado: %{domain}."
+      regime: "Regime fiscal: %{regime}."
+      kind: "Tipo de dossier: %{kind}."
+      modules:
+        one: "%{count} módulo ativado: %{codes}."
+        other: "%{count} módulos ativados: %{codes}."
+      loaders:
+        zero: "Nenhum conjunto de dados inicial a carregar."
+        one: "%{count} conjunto de dados inicial carregado: %{names}."
+        other: "%{count} conjuntos de dados iniciais carregados: %{names}."
+      failed:
+        one: "Criação do dossier recusada: %{count} erro."
+        other: "Criação do dossier recusada: %{count} erros."
+      invalid_number: "Valor numérico ilegível (capital, nível ou duração da sessão)."
+      invitation: "Convite do administrador %{email}, válido até %{expires}, a transmitir-lhe: %{url}"
+      signup_code: "Código de criação da conta Partiduo de %{email}, a transmitir-lhe por um canal diferente da ligação (de viva voz, por telefone): %{code}"
+    instance_cli:
+      errors:
+        option: "Opção não reconhecida ou sem valor: %{option}."
+        database_unavailable: "Base de dados da instância inacessível: %{detail}"
+        read_only: "A instância está só de leitura: retire primeiro o modo só de leitura (read-only off)."
+        action_missing: "Ação em falta; ações possíveis: %{actions}."
+        action_unknown: "Ação desconhecida: %{action}; ações possíveis: %{actions}."
+        argument_missing: "Argumento em falta para a ação %{action}."
+        argument_extra: "Argumento a mais: %{argument}."
+        migrations_pending:
+          one: "Falta aplicar %{count} migração (migrate)."
+          other: "Faltam aplicar %{count} migrações (migrate)."
+        migration_failed: "Falha de migração após %{applied} migração(ões) aplicada(s): %{detail}"
+        module_unknown: "Módulo ou extensão desconhecido nesta versão: %{code}."
+        reason_missing: "O motivo é obrigatório (--reason)."
+        read_only_mode: "Modo só de leitura desconhecido: %{mode} (on, off ou status)."
+        approval_missing: "A referência da dupla validação é obrigatória (--approval-ref)."
+        approvers: "Duas pessoas distintas devem ter validado (--approvers a,b)."
+        approvers_single: "Validação a uma pessoa: é esperado um único nome (--approval-mode single --approvers a)."
+        approval_mode: "Modo de validação desconhecido: %{mode} (single ou dual)."
+        not_provisioned: "A instância não está aprovisionada (nenhuma empresa)."
+        not_admin: "%{email} tem uma conta sem perfil de administrador: só a empresa lhe pode conceder esses direitos."
+        revoked: "O acesso de %{email} foi revogado pela empresa: a plataforma não o reabre."
+        unknown: "Nenhuma conta para %{email}: a plataforma não cria administradores; só um administrador existente recebe um novo convite."
+        host_unknown: "Anfitrião da instância desconhecido (empresa sem domínio, sem PARTIDUO_HOST nem MARTEN_ALLOWED_HOSTS): impossível criar a ligação de convite."
+        internal: "Erro interno: %{detail}"
+    approvals:
+      statuses:
+        pending: "Pendente"
+        approved: "Aprovada"
+        rejected: "Rejeitada"
+        cancelled: "Retirada"
+      actions:
+        submitted: "Submetida"
+        approved: "Aprovada"
+        rejected: "Rejeitada"
+        cancelled: "Retirada"
+        consumed: "Executada"
+        refused: "Tentativa recusada"
+        policy_changed: "Regra alterada"
+  partiduo:
+    api:
+      errors:
+        module_disabled: "Este módulo não está ativado neste dossier."
+        forbidden: "Não tem permissão para efetuar esta operação."
+        not_found: "O elemento pedido não foi encontrado."

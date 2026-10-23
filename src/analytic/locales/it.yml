@@ -1,0 +1,95 @@
+it:
+  analytic:
+    module:
+      name: "Contabilità analitica"
+    permissions:
+      plan:
+        read: "Consultare i piani analitici"
+        write: "Modificare i piani analitici"
+      operation:
+        write: "Ripartire le registrazioni e registrare le operazioni varie analitiche"
+      report:
+        read: "Consultare i report analitici"
+    menu:
+      ana_plans: "Piani e centri"
+      ana_keys: "Chiavi di ripartizione"
+      ana_misc: "Operazioni varie analitiche"
+      ana_reports: "Report analitici"
+      ana_settings: "Impostazioni della contabilità analitica"
+    reports:
+      total: "Totale"
+      side:
+        debit: "Dare"
+        credit: "Avere"
+      columns:
+        post: "Centro"
+        description: "Descrizione"
+        group: "Gruppo"
+        debit: "Dare"
+        credit: "Avere"
+        balance: "Saldo"
+        side: "Segno"
+        other_post: "Centro (secondo piano)"
+        other_description: "Descrizione (secondo piano)"
+        date: "Data"
+        ledger: "Giornale"
+        internal_code: "Codice interno"
+        receipt: "Documento"
+        account: "Conto"
+        card: "Scheda"
+        label: "Descrizione"
+        running: "Saldo progressivo"
+    errors:
+      plan:
+        name_required: "Il nome del piano è obbligatorio."
+        name_too_long: "Il nome del piano ha al massimo %{max} caratteri."
+        name_taken: "Il piano %{name} esiste già."
+        limit: "È stato raggiunto il numero massimo di piani analitici (%{max})."
+        unknown: "Piano analitico sconosciuto."
+        closed_period: "Impossibile eliminare: un centro di questo piano è utilizzato in un periodo chiuso."
+      group:
+        code_required: "Il codice del gruppo è obbligatorio."
+        code_too_long: "Il codice del gruppo ha al massimo %{max} caratteri."
+        code_taken: "Il gruppo %{code} esiste già in questo piano."
+        unknown: "Gruppo analitico sconosciuto."
+      post:
+        code_required: "Il nome del centro non può essere vuoto."
+        code_too_long: "Il nome del centro ha al massimo %{max} caratteri."
+        code_taken: "Il nome %{code} deve essere unico in un piano analitico."
+        group_plan: "Il gruppo deve appartenere al piano del centro."
+        unknown: "Centro analitico sconosciuto (%{id})."
+        closed_period: "Impossibile eliminare: il centro è utilizzato in un periodo chiuso."
+      settings:
+        filter_invalid: "Solo cifre separate da virgole."
+      key:
+        name_required: "Il nome non può essere vuoto."
+        unknown: "Chiave di ripartizione sconosciuta."
+        incomplete: "La chiave %{name} è incompleta (totale diverso da 100% o riga senza centro): la corregga prima di applicarla."
+        name_too_long: "Il nome ha al massimo %{max} caratteri."
+        rows_required: "Nessuna ripartizione."
+        percent_invalid: "La percentuale deve essere compresa tra 0 (escluso) e 100."
+        percent_scale: "La percentuale ha al massimo quattro decimali."
+        post_required: "Scelga almeno un centro sulla riga."
+        total: "Il totale non è 100, totale calcolato = %{total}."
+        ledger_unknown: "Giornale sconosciuto (%{id})."
+      distribution:
+        amount_invalid: "L'importo deve essere positivo."
+        cancelled_entry: "Registrazione annullata o storno: la sua ripartizione segue quella della registrazione d'origine e non può più essere modificata."
+        amount_scale: "L'importo ha al massimo %{max} decimali."
+        post_required: "Scelga almeno un centro sulla riga."
+        plan_twice: "Un solo centro per piano su una stessa riga."
+        post_inactive: "Il centro %{code} non è attivo."
+        no_plan: "Nessun piano analitico è definito."
+        closed_period: "Il periodo è chiuso: l'imputazione analitica non può più cambiare."
+        line_unknown: "Questa riga non appartiene alla registrazione."
+        line_twice: "La riga è ripartita due volte."
+        account_not_analytic: "Il conto %{account} non è soggetto alla contabilità analitica."
+        required: "L'imputazione analitica è obbligatoria per questa riga."
+        exceeds: "Piano %{plan}: il totale ripartito (%{total}) supera l'importo della riga (%{amount})."
+        incomplete: "Piano %{plan}: il totale ripartito (%{total}) deve essere uguale all'importo della riga (%{amount})."
+      misc:
+        description_required: "Commento vuoto."
+        no_period: "Nessun periodo copre questa data."
+        rows_required: "Inserisca almeno una riga."
+        card_unknown: "Scheda sconosciuta: %{code}."
+        unbalanced: "Operazione non bilanciata nel piano %{plan} (differenza %{difference})."

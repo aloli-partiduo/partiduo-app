@@ -1,0 +1,743 @@
+it:
+  accounting:
+    micro:
+      accounts:
+        sale_bic: "Vendite di merci"
+        service_bic: "Prestazioni di servizi"
+        bnc: "Prestazioni di servizi"
+        goods: "Acquisti di merci"
+        other: "Acquisti non immagazzinati di materiali e forniture"
+        vat: "IVA a debito"
+        vat_deductible: "IVA detraibile su altri beni e servizi"
+    liberal:
+      disposal_account_label: "Proventi da cessioni di elementi dell'attivo"
+    module:
+      name: "Contabilità"
+    permissions:
+      entry:
+        read: "Consultare le registrazioni"
+        post: "Registrare scritture"
+        cancel: "Annullare registrazioni"
+      account:
+        read: "Consultare il piano dei conti"
+        write: "Modificare il piano dei conti"
+        import: "Importare il piano dei conti (CSV)"
+      ledger:
+        read: "Consultare i giornali"
+        write: "Creare e modificare i giornali"
+      matching:
+        write: "Abbinare i conti"
+      report:
+        read: "Consultare i report"
+        write: "Creare e modificare i report personalizzati"
+      vat:
+        declare: "Predisporre le dichiarazioni IVA"
+      period:
+        close: "Chiudere i periodi e gli esercizi"
+    menu:
+      acc_entry_purchase: "Acquisti"
+      acc_entry_sale: "Vendite"
+      acc_entry_financial: "Finanziario"
+      acc_entry_misc: "Operazioni varie"
+      acc_entry_received: "Fatture ricevute fuori piattaforma"
+      acc_invoicing_history: "Da contabilizzare (Fatturazione)"
+      acc_accounts: "Conti e terzi"
+      acc_entries: "Registrazioni"
+      acc_matching: "Abbinamento"
+      acc_reconciliation: "Riconciliazione bancaria"
+      acc_chart: "Piano dei conti"
+      acc_ledgers: "Giornali"
+      acc_trial_balance: "Bilancio di verifica"
+      acc_general_ledger: "Libro mastro"
+      acc_fec: "FEC"
+      acc_auxiliary_balance: "Bilancio di verifica terzi"
+      acc_aged_balance: "Scadenzario per anzianità"
+      acc_journals: "Giornali"
+      acc_balance_sheet: "Stato patrimoniale"
+      acc_income_statement: "Conto economico"
+      acc_reports: "Report personalizzati"
+      acc_forecasts: "Previsioni di bilancio"
+      acc_vat_return: "Dichiarazione IVA"
+      acc_vat_returns: "Dichiarazioni IVA registrate"
+      acc_vat_settings: "Parametri IVA"
+      acc_closing: "Chiusura"
+    forecast_natures:
+      income: "Entrata"
+      expense: "Uscita"
+    account_kinds:
+      asset: "Attivo"
+      liability: "Passivo"
+      asset_contra: "Attivo, conto rettificativo"
+      liability_contra: "Passivo, conto rettificativo"
+      income: "Ricavo"
+      income_contra: "Ricavo, conto rettificativo"
+      expense: "Costo"
+      expense_contra: "Costo, conto rettificativo"
+      context: "Contesto"
+    sides:
+      debit: "Dare"
+      credit: "Avere"
+    ledger_kinds:
+      purchase: "Acquisti"
+      sale: "Vendite"
+      financial: "Finanziario"
+      misc: "Operazioni varie"
+    ledger_access:
+      none: "Nessun accesso"
+      read: "Lettura"
+      write: "Scrittura"
+    default_accounts:
+      customer: "Clienti"
+      supplier: "Fornitori"
+      bank: "Banca"
+      cash: "Cassa"
+      sales: "Vendite"
+      internal_transfer: "Giroconti interni"
+      current_account: "Conto corrente"
+      vat: "IVA da versare"
+      non_deductible: "Spese non deducibili"
+      non_deductible_vat: "IVA non detraibile"
+      vat_deductible_tax: "IVA deducibile dalle imposte"
+      private_expense: "Spese a carico dell'amministratore"
+      bank_fees: "Spese bancarie"
+    initial_data:
+      bank_card: "Banca"
+      household:
+        accounts:
+          equity_and_debts: "Patrimonio e debiti"
+          opening_net_worth: "Patrimonio di apertura"
+          loans: "Prestiti e debiti"
+          mortgage_loans: "Mutui immobiliari"
+          other_debts: "Altri prestiti e debiti"
+          property: "Beni e investimenti"
+          goods: "Beni"
+          real_estate: "Beni immobili"
+          movable_goods: "Beni mobili"
+          main_residence: "Abitazione principale"
+          other_real_estate: "Altri beni immobili"
+          vehicles: "Veicoli"
+          other_goods: "Altri beni"
+          investments: "Investimenti"
+          life_insurance: "Assicurazione vita"
+          pea: "Piano di risparmio azionario (PEA)"
+          securities_account: "Conto titoli"
+          other_investments: "Altri investimenti"
+          third_parties: "Terzi"
+          other_receivables_payables: "Somme da ricevere o da pagare"
+          cash: "Liquidità"
+          banks: "Banche"
+          current_accounts: "Conti correnti"
+          current_account: "Conto corrente"
+          savings_accounts: "Libretti e conti di risparmio"
+          cash_in_hand: "Contanti"
+          internal_transfers: "Giroconti"
+          expenses: "Uscite"
+          other_expenses: "Altre uscite"
+          donations: "Donazioni"
+          home_employment: "Lavoro domestico"
+          savings: "Risparmio"
+          bank_fees: "Spese bancarie"
+          miscellaneous: "Varie"
+          housing: "Abitazione"
+          rent_or_mortgage: "Affitto o rata"
+          housing_charges: "Spese condominiali"
+          energy: "Energia"
+          water: "Acqua"
+          home_insurance: "Assicurazione casa"
+          works: "Lavori"
+          food: "Alimentari"
+          transport: "Trasporti"
+          fuel: "Carburante"
+          maintenance: "Manutenzione"
+          vehicle_insurance: "Assicurazione"
+          public_transport: "Trasporti pubblici"
+          health: "Salute"
+          children_education: "Figli e istruzione"
+          leisure_holidays: "Tempo libero e vacanze"
+          clothing: "Abbigliamento"
+          communication: "Comunicazioni"
+          taxes: "Imposte e tasse"
+          income_tax: "Imposta sul reddito"
+          property_tax: "Imposta fondiaria"
+          income: "Entrate"
+          revenues: "Redditi"
+          salaries: "Stipendi"
+          pensions: "Pensioni"
+          rental_income: "Redditi da locazione"
+          financial_income: "Redditi finanziari"
+          allowances: "Assegni e sussidi"
+          other_income: "Altri redditi"
+      ledgers:
+        purchase:
+          name: "Acquisti"
+          description: "Acquisti, fatture e note di credito ricevute, note spese"
+        sale:
+          name: "Vendite"
+          description: "Vendite e note di credito emesse"
+        financial:
+          name: "Finanziario"
+          description: "Movimenti finanziari: conti bancari, cassa, carte"
+        misc:
+          name: "Operazioni varie"
+          description: "Ammortamenti, IVA e altre operazioni"
+    closing:
+      closing_label: "Scrittura di chiusura dell'esercizio %{year}"
+      opening_label: "Scritture di apertura dell'esercizio %{year}"
+    reconciliation:
+      statement_label: "Estratto conto %{reference}"
+    received_invoice:
+      origins:
+        off_platform: "Ricevuta fuori piattaforma"
+        platform: "Ricevuta tramite la piattaforma accreditata"
+    import:
+      export_name: "piano-dei-conti"
+      fields:
+        number: "Numero"
+        label: "Descrizione"
+        parent: "Conto padre"
+        kind: "Tipo"
+        direct_use: "Uso diretto"
+    receipts:
+      archive_name: "documenti"
+    errors:
+      import:
+        number_exists: "Il conto %{number} esiste già: selezioni «Aggiorna i conti esistenti» per modificarlo."
+        kind: "Tipo di conto non riconosciuto: «%{value}»."
+      receipts:
+        none: "Nessuna registrazione del periodo ha un allegato."
+      received_invoice:
+        number:
+          blank: "Indichi il numero della fattura del fornitore"
+          too_long: "Al massimo %{max} caratteri"
+        platform_reference:
+          too_long: "Al massimo %{max} caratteri"
+        attachment:
+          required: "Alleghi la fattura (PDF o immagine)"
+        supplier:
+          unknown: "Nessuna scheda fornitore per «%{value}»: scelga un terzo che abbia una scheda"
+        duplicate: "Fattura %{number} già registrata per questo fornitore e questo importo (documento %{receipt}, fattura del %{date})"
+      closing:
+        already_posted: "Questa scrittura di fine esercizio è già registrata; la storni per rifarla."
+        nothing: "Nessun saldo da riportare: non c'è nulla da registrare."
+        ledger_kind: "Il giornale %{code} non è un giornale di operazioni varie."
+        fiscal_year_closed: "L'esercizio è chiuso: lo riapra prima di registrare questa scrittura."
+        no_previous: "Nessun esercizio termina il giorno precedente il primo giorno di questo esercizio."
+      reconciliation:
+        ledger_kind: "Il giornale %{code} non è un giornale finanziario."
+        reference:
+          blank: "Indichi il numero dell'estratto conto."
+          too_long: "Il numero dell'estratto conto ha al massimo %{max} caratteri."
+          taken: "L'estratto conto %{reference} è già riconciliato in questo giornale."
+        entries:
+          blank: "Selezioni almeno un'operazione."
+          invalid: "L'operazione %{id} non appartiene a questo giornale o è già riconciliata."
+        mismatch: "Secondo l'estratto conto, dovrebbero essere riconciliati %{expected}, mentre la selezione totalizza %{selected} (differenza %{difference})."
+      vat_return:
+        form:
+          invalid: "Il modulo «%{value}» non esiste."
+          regime: "Questo modulo non rientra nel regime del dossier (%{regime})."
+        periodicity:
+          invalid: "La periodicità «%{value}» non è ammessa per questo modulo."
+        exigibility:
+          invalid: "L'esigibilità «%{value}» non esiste."
+        year:
+          invalid: "L'anno %{value} non è valido."
+        number:
+          invalid: "Il periodo %{value} non è valido."
+        threshold:
+          negative: "La soglia non può essere negativa."
+        dates:
+          order: "La data di fine precede la data di inizio."
+          not_allowed: "Limiti liberi sono ammessi solo per una CA12 (esercizio non coincidente con l'anno solare): il file depositato riprende il mese, il trimestre o l'anno."
+        draft_exists: "Esiste già una bozza di questa dichiarazione (n. %{id})."
+        overlap: "Una dichiarazione chiusa copre già il periodo dal %{from} al %{to}."
+        closed: "Questa dichiarazione è chiusa e non può più essere modificata."
+        stale: "Le registrazioni sono cambiate dopo il calcolo: ricalcoli la dichiarazione prima di chiuderla."
+        not_closed: "La dichiarazione deve essere chiusa prima di essere liquidata."
+        not_settled_form: "Questo elenco non si liquida."
+        already_settled: "La scrittura di liquidazione di questa dichiarazione è già registrata."
+        nothing_to_settle: "Nessun importo IVA da liquidare."
+        settle_stale: "Le registrazioni del periodo sono cambiate dopo la chiusura: la scrittura di liquidazione non riprenderebbe più gli importi dichiarati; la registri a mano."
+        declarant_vat_number: "La partita IVA della società («%{value}») non è un numero belga valido: completi i parametri della società."
+        client_vat_number: "La partita IVA «%{value}» del cliente %{name} non è valida."
+        box:
+          not_editable: "La casella %{code} non può essere corretta."
+          too_many_decimals: "L'importo non può avere più di due decimali."
+          whole_euros: "Una dichiarazione francese si compila in euro interi."
+          negative: "Un rigo belga non può essere negativo."
+        format:
+          xml: "Il file XML Intervat esiste solo per le dichiarazioni belghe."
+        settlement:
+          account_missing: "Indichi il conto di liquidazione."
+          ledger_missing: "Indichi un giornale di operazioni varie per la liquidazione."
+          adjusted: "Casella/e %{codes} corretta/e o inserita/e: la scrittura di liquidazione non può riprenderle. Chiuda senza liquidazione e registri la scrittura a mano."
+          mismatch: "Le regole della dichiarazione non coprono tutta l'IVA delle registrazioni: la scrittura di liquidazione non corrisponderebbe agli importi dichiarati; la registri a mano."
+      vat_rule:
+        regime:
+          invalid: "Il regime «%{value}» non esiste."
+        box:
+          invalid: "La casella «%{value}» non si calcola tramite regole."
+        source:
+          invalid: "La fonte «%{value}» non esiste."
+        sign:
+          invalid: "Il segno «%{value}» non esiste."
+        operation:
+          invalid: "L'operazione «%{value}» non esiste."
+        ledger_kind:
+          invalid: "Il tipo di giornale «%{value}» non esiste."
+          balance: "Un saldo si legge in un giornale di operazioni varie o finanziario."
+          document: "L'imponibile e l'IVA si leggono in un giornale acquisti o vendite."
+        ledger_code:
+          not_found: "Il giornale %{code} non esiste."
+          kind: "Il giornale %{code} non è del tipo indicato."
+        vat_rate_code:
+          not_found: "L'aliquota IVA %{code} non esiste."
+          balance: "Un saldo di conti non ha un'aliquota IVA."
+        accounts:
+          invalid: "Il prefisso di conto «%{value}» non è valido."
+      vat_settings:
+        representative_id:
+          required: "Indichi l'identificativo del mandatario."
+        country:
+          invalid: "Indichi un codice paese di due lettere."
+      entry:
+        account_missing: "Indichi un conto."
+        amount_not_positive: "L'importo deve essere strettamente positivo."
+        too_many_decimals: "L'importo ha al massimo %{max} decimali."
+        too_few_lines: "Una registrazione ha almeno %{min} righe."
+        unbalanced: "La registrazione non è bilanciata: differenza di %{difference}."
+        amount_zero: "L'importo non può essere zero."
+        no_items: "Inserisca almeno una riga."
+        counterpart_missing: "Indichi una scheda o un conto di contropartita."
+        ledger:
+          disabled: "Questo giornale è disattivato."
+          not_document: "Il giornale %{code} non è né un giornale acquisti né un giornale vendite."
+          not_purchase: "Il giornale %{code} non è un giornale acquisti."
+          not_sale: "Il giornale %{code} non è un giornale vendite."
+          not_financial: "Il giornale %{code} non è un giornale finanziario."
+        date:
+          no_period: "Nessun periodo contiene la data %{date}: crei l'esercizio."
+          period_closed: "Il periodo del %{date} è chiuso."
+        receipt:
+          too_long: "Il documento ha al massimo %{max} caratteri."
+          taken: "Il documento %{receipt} esiste già in questo giornale."
+        source:
+          too_long: "Il riferimento ha al massimo %{max} caratteri."
+        attachment:
+          not_found: "Questo allegato non esiste."
+        currency_rate:
+          missing: "Nessun cambio noto per la valuta %{code} a questa data: lo indichi."
+        account:
+          not_found: "Il conto %{number} non esiste."
+          not_direct_use: "Il conto %{number} non può essere utilizzato direttamente."
+        card:
+          not_found: "Nessuna scheda ha il codice %{code}."
+          disabled: "La scheda %{code} non è più utilizzata."
+          no_account: "La scheda %{code} non è collegata ad alcun conto."
+        third_party:
+          required: "Indichi il terzo."
+        vat_rate:
+          not_found: "L'aliquota IVA %{code} non esiste."
+          disabled: "L'aliquota IVA %{code} è disattivata."
+          required: "Indichi l'aliquota IVA dell'importo IVA inserito."
+          no_account: "L'aliquota IVA %{code} non ha un conto per questo giornale."
+        vat_role:
+          invalid: "Ruolo IVA «%{value}» sconosciuto: imponibile o IVA."
+          without_rate: "Indichi l'aliquota IVA della riga di cui è indicato il ruolo."
+        external_reference:
+          too_long: "Il riferimento dell'emittente ha al massimo %{max} caratteri."
+        cancel:
+          is_reversal: "Uno storno non si annulla."
+          already_cancelled: "Questa registrazione è già annullata."
+      billing:
+        no_sale_ledger: "Nessun giornale vendite attivo: ne crei uno per contabilizzare le fatture."
+        no_financial_ledger: "Nessun giornale finanziario attivo: ne crei uno per contabilizzare i pagamenti."
+        no_sales_account: "Nessun conto di vendita: colleghi l'articolo a un conto o assegni un conto predefinito al giornale vendite."
+        customer_not_found: "La scheda cliente %{id} non esiste."
+        vat_rate_not_found: "L'aliquota IVA %{id} non esiste."
+        date_missing: "La data del documento è assente."
+        deposit_not_posted: "La fattura di acconto %{source} non è ancora contabilizzata."
+        failed: "Non è stato possibile registrare la scrittura di %{source}."
+        dry_run: "Prova a vuoto: non viene registrato nulla."
+        already_dismissed: "Questo evento è già scartato."
+        already_posted: "Questo evento è già contabilizzato."
+        not_dismissed: "Questo evento non è scartato."
+        reason_too_long: "Al massimo %{max} caratteri."
+        rejection:
+          payment_not_found: "L'incasso respinto non è stato trovato: lo storni a mano e poi scarti l'operazione."
+          no_fees_account: "Nessun conto di spese bancarie: lo scelga tra i conti predefiniti."
+      liberal:
+        no_financial_ledger: "Nessun giornale finanziario attivo: ne crei uno per contabilizzare il libro giornale della libera professione."
+        no_account: "Nessun conto per %{key}: lo configuri per la libera professione."
+        key_invalid: "Natura, voce o categoria non valida (lettere, cifre e _, al massimo 40 caratteri)."
+        not_direct_use: "Il conto %{number} non è utilizzabile in inserimento."
+      micro:
+        no_financial_ledger: "Nessun giornale finanziario attivo: ne crei uno per contabilizzare i registri della microimpresa."
+        no_account: "Nessun conto per la categoria %{category}: lo configuri per la microimpresa."
+        key_invalid: "Natura o categoria non valida (lettere, cifre e _, al massimo 26 caratteri)."
+        not_direct_use: "Il conto %{number} non è utilizzabile in inserimento."
+      matching:
+        too_few_lines: "Scelga almeno due righe da abbinare."
+        line_not_found: "La riga %{id} non esiste."
+        different_accounts: "Le righe da abbinare appartengono a uno stesso conto."
+        one_side: "Abbini righe in dare e in avere."
+      account:
+        number:
+          blank: "Indichi il numero del conto."
+          too_long: "Il numero ha al massimo %{max} caratteri."
+          invalid: "Il numero contiene solo lettere e cifre."
+          taken: "Il conto %{number} esiste già."
+          in_use: "Questo conto ha movimenti: il suo numero non cambia più."
+        label:
+          blank: "Indichi la descrizione del conto."
+          too_long: "La descrizione ha al massimo %{max} caratteri."
+        parent:
+          not_found: "Il conto padre %{number} non esiste."
+          self: "Un conto non può essere padre di se stesso."
+          cycle: "Il conto padre non può dipendere da questo conto."
+          required: "Nessun conto padre corrisponde a questo numero: lo indichi."
+        has_children: "Questo conto ha sottoconti: eliminazione vietata."
+        in_use: "Questo conto è utilizzato: eliminazione vietata."
+      ledger:
+        in_use: "Questo giornale contiene registrazioni: eliminazione vietata."
+        kind:
+          in_use: "Questo giornale contiene registrazioni: il suo tipo non cambia più."
+        name:
+          blank: "Indichi il nome del giornale."
+          too_long: "Il nome ha al massimo %{max} caratteri."
+          taken: "Esiste già un giornale con questo nome."
+        code:
+          invalid: "Il codice ha al massimo %{max} lettere o cifre."
+          taken: "Il codice %{code} è già utilizzato."
+        default_account:
+          not_found: "Il conto %{number} non esiste."
+          not_direct_use: "Il conto %{number} non può essere utilizzato direttamente."
+        bank_card:
+          required: "Un giornale finanziario indica la scheda della sua banca o della sua cassa."
+          not_found: "Nessuna scheda ha il codice %{code}."
+          not_bank: "La scheda %{code} non è una scheda banca."
+          no_account: "La scheda %{code} non è collegata ad alcun conto."
+          not_direct_use: "Il conto %{number} della scheda %{code} non può essere utilizzato direttamente."
+        receipt_prefix:
+          too_long: "Il prefisso ha al massimo %{max} caratteri."
+        receipt_padding:
+          invalid: "La lunghezza del numero è compresa tra 0 e %{max}."
+        next_receipt_number:
+          invalid: "Il prossimo numero di documento è almeno 1."
+        currency_code:
+          invalid: "Indichi un codice valuta ISO 4217 (tre lettere)."
+          unknown: "La valuta %{code} non è dichiarata."
+          in_use: "Questo giornale contiene registrazioni: la sua valuta non cambia più."
+      default_account:
+        code:
+          invalid: "Uso di conto predefinito sconosciuto."
+        account:
+          not_found: "Il conto %{number} non esiste."
+      vat_rate_account:
+        vat_rate_id:
+          not_found: "Questa aliquota IVA non esiste."
+        account:
+          not_found: "Il conto %{number} non esiste."
+          not_direct_use: "Il conto %{number} non può essere utilizzato direttamente."
+          required: "Un'aliquota in inversione contabile ha un conto IVA detraibile e un conto IVA a debito."
+      card_account:
+        card_id:
+          not_found: "Questa scheda non esiste."
+        account:
+          not_direct_use: "Il conto %{number} non può essere utilizzato direttamente."
+          required: "Indichi un conto: la categoria della scheda non ne fornisce."
+      card_category:
+        category_id:
+          not_found: "Questa categoria non esiste."
+        base_account:
+          not_found: "Il conto %{number} non esiste."
+          required: "Indichi il conto base per creare un conto per scheda."
+      initial_data:
+        regime:
+          invalid: "Regime fiscale sconosciuto."
+        chart:
+          invalid: "Piano dei conti di base sconosciuto."
+        not_empty: "Il piano dei conti o i giornali sono già caricati."
+      formula:
+        empty: "Indichi una formula."
+        syntax: "Formula illeggibile (posizione %{position})."
+        function: "Funzione sconosciuta: %{name}."
+        arguments: "Numero di argomenti errato per %{name}."
+        account: "Riferimento di conto errato: %{value}."
+        card: "Riferimento di scheda errato: %{value}."
+        analytic: "La contabilità analitica non è ancora disponibile nelle formule."
+        variable: "Variabile sconosciuta: %{name}."
+        cycle: "La voce %{name} dipende da se stessa."
+        from: "Clausola FROM errata: %{value} (atteso FROM=MM.AAAA)."
+        depth: "Formula troppo annidata (al massimo %{max} livelli)."
+        round: "Il numero di decimali di round è un intero da 0 a %{max}."
+        too_long: "La formula ha al massimo %{max} caratteri."
+      report:
+        name:
+          blank: "Indichi il nome del report."
+          too_long: "Il nome ha al massimo %{max} caratteri."
+          taken: "Esiste già un report con questo nome."
+        lines:
+          blank: "Un report ha almeno una riga."
+          too_many: "Un report ha al massimo %{max} righe."
+        label:
+          blank: "Indichi la descrizione della riga."
+          too_long: "La descrizione ha al massimo %{max} caratteri."
+        formula:
+          too_long: "La formula ha al massimo %{max} caratteri."
+      forecast:
+        name:
+          blank: "Indichi il nome della previsione."
+          too_long: "Il nome ha al massimo %{max} caratteri."
+        owner:
+          unknown: "Nessun componente attivo si chiama %{owner}: non può gestire la previsione."
+        owned: "Questa previsione è gestita da %{owner}: la modifichi da questa estensione."
+        period:
+          unknown: "Periodo sconosciuto (%{id})."
+          order: "L'ultimo periodo precede il primo."
+          outside: "Questo periodo non appartiene alla previsione (%{id})."
+          twice: "Questo periodo ha già un importo."
+        label:
+          blank: "Indichi la descrizione."
+          too_long: "La descrizione ha al massimo %{max} caratteri."
+        formula:
+          blank: "Indichi la formula del consuntivo."
+          too_long: "La formula ha al massimo %{max} caratteri."
+        amount:
+          scale: "L'importo ha al massimo %{max} decimali."
+        nature:
+          invalid: "Scelga entrata o uscita."
+      fec:
+        fiscal_year: "Il FEC copre un solo esercizio: le date devono appartenere allo stesso esercizio."
+        ledgers: "Il FEC riprende tutti i giornali: Lei non ha accesso a ciascuno di essi."
+    reports:
+      period: "Dal %{from} al %{to}"
+      as_of: "Al %{date}"
+      previous_period: "Esercizio precedente: %{period}"
+      partial: "Incompleto: alcuni giornali non Le sono visibili."
+      page: "Pagina %{page} di %{count}"
+      total: "Totale generale"
+      class_total: "Totale classe %{class}"
+      card_total: "Totale %{card}"
+      section_total: "Totale %{key}"
+      month_total: "Totale del mese %{month}"
+      opening: "Saldo di apertura"
+      difference: "Differenza"
+      unmapped: "Conto non ripreso: %{number} %{label}"
+      summary:
+        balance_sheet: "Classi da 1 a 5"
+        expenses: "Classe 6 (costi)"
+        income: "Classe 7 (ricavi)"
+        result: "Risultato (ricavi − costi)"
+      titles:
+        trial_balance: "Bilancio di verifica generale"
+        auxiliary_balance: "Bilancio di verifica terzi"
+        aged_balance: "Scadenzario per anzianità"
+        general_ledger: "Libro mastro"
+        auxiliary_ledger: "Mastro terzi"
+        journals: "Giornali"
+        balance_sheet_fr: "Stato patrimoniale (modello abbreviato)"
+        income_statement_fr: "Conto economico (modello abbreviato)"
+        balance_sheet_be: "Stato patrimoniale (schema abbreviato)"
+        income_statement_be: "Conto economico (schema abbreviato)"
+      columns:
+        account: "Conto"
+        label: "Descrizione"
+        opening_debit: "Apertura dare"
+        opening_credit: "Apertura avere"
+        debit: "Dare"
+        credit: "Avere"
+        balance_debit: "Saldo dare"
+        balance_credit: "Saldo avere"
+        balance: "Saldo"
+        card: "Scheda"
+        name: "Nome"
+        date: "Data"
+        receipt: "Documento"
+        due_date: "Scadenza"
+        days: "Giorni"
+        not_due: "Non scaduto"
+        days_1_30: "Da 1 a 30 giorni"
+        days_31_60: "Da 31 a 60 giorni"
+        over_60: "Oltre 60 giorni"
+        remaining: "Residuo dovuto"
+        ledger: "Giornale"
+        matching: "Abbinamento"
+        internal_code: "Codice interno"
+        rubric: "Voce"
+        gross: "Lordo"
+        less: "Amm. e svalut."
+        net: "Netto"
+        previous: "Esercizio precedente"
+        formula: "Formula"
+        amount: "Importo"
+    statements:
+      fr:
+        balance_sheet:
+          assets: "ATTIVO"
+          fixed_assets: "Attivo immobilizzato"
+          intangible: "Immobilizzazioni immateriali"
+          tangible: "Immobilizzazioni materiali"
+          financial: "Immobilizzazioni finanziarie"
+          total_fixed: "Totale attivo immobilizzato (I)"
+          current_assets: "Attivo circolante"
+          stocks: "Rimanenze e lavori in corso (diversi dalle merci)"
+          goods: "Merci"
+          advances_paid: "Anticipi e acconti versati su ordini"
+          trade_receivables: "Crediti verso clienti e conti collegati"
+          other_receivables: "Altri crediti"
+          securities: "Titoli e valori mobiliari di investimento"
+          cash: "Disponibilità liquide"
+          prepaid_expenses: "Risconti attivi e conti di regolarizzazione"
+          total_current: "Totale attivo circolante (II)"
+          total_assets: "TOTALE ATTIVO"
+          liabilities: "PASSIVO"
+          equity: "Patrimonio netto"
+          capital: "Capitale"
+          revaluation: "Riserve di rivalutazione"
+          legal_reserve: "Riserva legale"
+          regulated_reserves: "Riserve statutarie e regolamentate"
+          other_reserves: "Altre riserve"
+          retained_earnings: "Utili (perdite) portati a nuovo"
+          result: "Risultato dell'esercizio"
+          investment_grants: "Contributi in conto capitale"
+          regulated_provisions: "Accantonamenti regolamentati"
+          total_equity: "Totale patrimonio netto (I)"
+          provisions: "Fondi per rischi e oneri (II)"
+          debts: "Debiti"
+          borrowings: "Prestiti e debiti assimilati"
+          advances_received: "Anticipi e acconti ricevuti su ordini"
+          trade_payables: "Debiti verso fornitori e conti collegati"
+          other_debts: "Altri debiti"
+          deferred_income: "Risconti passivi e conti di regolarizzazione"
+          total_debts: "Totale debiti (III)"
+          total_liabilities: "TOTALE PASSIVO"
+        income_statement:
+          operating_income: "Ricavi della gestione caratteristica"
+          sales_goods: "Vendite di merci"
+          production_sold: "Produzione venduta (beni e servizi)"
+          production_stocked: "Variazione delle rimanenze di prodotti"
+          production_capitalized: "Incrementi di immobilizzazioni per lavori interni"
+          operating_grants: "Contributi in conto esercizio"
+          other_operating_income: "Riprese, trasferimenti di costi e altri ricavi"
+          total_operating_income: "Totale dei ricavi della gestione caratteristica"
+          operating_charges: "Costi della gestione caratteristica"
+          purchases_goods: "Acquisti di merci"
+          stock_change_goods: "Variazione delle rimanenze (merci)"
+          purchases_materials: "Acquisti di materie prime e altri approvvigionamenti"
+          stock_change_materials: "Variazione delle rimanenze (materie prime e approvvigionamenti)"
+          external_charges: "Altri acquisti e costi esterni"
+          taxes: "Imposte, tasse e versamenti assimilati"
+          wages: "Salari e stipendi"
+          social_charges: "Oneri sociali"
+          depreciation: "Ammortamenti e accantonamenti"
+          other_operating_charges: "Altri costi"
+          total_operating_charges: "Totale dei costi della gestione caratteristica"
+          operating_result: "Risultato operativo"
+          financial_income: "Proventi finanziari"
+          financial_charges: "Oneri finanziari"
+          financial_result: "Risultato finanziario"
+          current_result: "Risultato corrente prima delle imposte"
+          exceptional_income: "Proventi straordinari"
+          exceptional_charges: "Oneri straordinari"
+          exceptional_result: "Risultato straordinario"
+          profit_sharing: "Partecipazione dei dipendenti agli utili"
+          income_tax: "Imposte sugli utili"
+          total_income: "Totale dei ricavi"
+          total_charges: "Totale dei costi"
+          net_result: "Utile o perdita"
+      be:
+        balance_sheet:
+          assets: "ATTIVO"
+          fixed_assets: "Attività immobilizzate"
+          formation_expenses: "Spese di costituzione"
+          intangible: "Immobilizzazioni immateriali"
+          tangible: "Immobilizzazioni materiali"
+          financial: "Immobilizzazioni finanziarie"
+          total_fixed: "Totale delle attività immobilizzate"
+          current_assets: "Attività circolanti"
+          long_term_receivables: "Crediti a più di un anno"
+          stocks: "Rimanenze e ordini in corso di esecuzione"
+          short_term_receivables: "Crediti a un anno al massimo"
+          investments: "Investimenti di liquidità"
+          cash: "Disponibilità liquide"
+          accruals_assets: "Ratei e risconti"
+          total_current: "Totale delle attività circolanti"
+          total_assets: "TOTALE DELL'ATTIVO"
+          liabilities: "PASSIVO"
+          equity: "Patrimonio netto"
+          contribution: "Conferimento"
+          revaluation: "Plusvalenze di rivalutazione"
+          reserves: "Riserve"
+          retained_earnings: "Utile (perdita) portato/a a nuovo"
+          result_pending: "Risultato dell'esercizio da destinare"
+          capital_grants: "Contributi in conto capitale"
+          total_equity: "Totale del patrimonio netto"
+          provisions: "Fondi e imposte differite"
+          debts: "Debiti"
+          long_term_debts: "Debiti a più di un anno"
+          current_portion: "Debiti a più di un anno in scadenza entro l'anno"
+          financial_debts: "Debiti finanziari"
+          trade_debts: "Debiti commerciali"
+          advances_received: "Acconti ricevuti su ordini"
+          tax_social_debts: "Debiti tributari, retributivi e previdenziali"
+          other_debts: "Altri debiti"
+          accruals_liabilities: "Ratei e risconti"
+          total_debts: "Totale dei debiti"
+          total_liabilities: "TOTALE DEL PASSIVO"
+        income_statement:
+          revenue: "Fatturato"
+          other_operating_income: "Altri ricavi della gestione caratteristica"
+          purchases: "Approvvigionamenti, merci, servizi e beni diversi"
+          gross_margin: "Margine operativo lordo"
+          wages: "Retribuzioni, oneri sociali e pensioni"
+          depreciation: "Ammortamenti"
+          write_downs: "Svalutazioni"
+          provisions: "Accantonamenti per rischi e oneri"
+          other_operating_charges: "Altri costi della gestione caratteristica"
+          operating_result: "Utile (perdita) operativo/a"
+          financial_income: "Proventi finanziari"
+          financial_charges: "Oneri finanziari"
+          non_recurring_income: "Proventi non ricorrenti"
+          non_recurring_charges: "Oneri non ricorrenti"
+          result_before_tax: "Utile (perdita) dell'esercizio prima delle imposte"
+          deferred_taxes: "Prelievi (trasferimenti) sulle imposte differite"
+          income_taxes: "Imposte sul reddito"
+          result_of_year: "Utile (perdita) dell'esercizio"
+          untaxed_reserves: "Prelievi (trasferimenti) sulle riserve esenti"
+          net_result: "Utile (perdita) dell'esercizio da destinare"
+    vat_returns:
+      settlement_label: "Liquidazione dell'IVA — %{form} dal %{from} al %{to}"
+      total: "Totale"
+      annex_title: "Allegato 3310-A — operazioni imponibili ad aliquota particolare (rigo 14)"
+      annex_base: "Imponibile — %{rate}"
+      annex_tax: "Imposta dovuta — %{rate}"
+      columns:
+        box: "Casella"
+        label: "Descrizione"
+        amount: "Importo"
+        vat_number: "Partita IVA"
+        name: "Nome"
+        code: "Codice"
+        vat: "IVA"
+    billing:
+      rejection_label: "Pagamento respinto"
+      rejection_fees_label: "Spese di respingimento"
+    fec_reader:
+      issues:
+        encoding_unknown: "Codifica sconosciuta: %{name}."
+        invalid_utf8: "Il file non è in UTF-8 valido: scelga un'altra codifica."
+        unreadable_encoding: "Il file non si legge in %{name}."
+        c1_characters: "Caratteri di controllo letti in %{encoding}: il file è forse in Windows-1252."
+        empty_file: "Il file è vuoto."
+        separator: "Separatore non riconosciuto: tabulazione, barra verticale o punto e virgola."
+        separator_strict: "Separatore non riconosciuto: tabulazione o barra verticale (article A47 A-1)."
+        missing_column: "Campo %{column} assente dall'intestazione."
+        field_count: "%{count} campi invece di %{expected} (separatore in una descrizione?)."
+        unbalanced: "Registrazione %{entry} non bilanciata: dare %{debit}, avere %{credit}."
+        no_entry: "Il file non contiene alcuna registrazione."
+        empty_field: "Campo %{column} vuoto."
+        unreadable_date: "Data illeggibile: «%{value}» (atteso AAAAMMGG)."
+        unreadable_amount: "Importo illeggibile: «%{value}»."
+        unreadable_direction: "Segno illeggibile: «%{value}» (atteso D o C)."
+        date_mismatch: "Registrazione %{entry}: data %{date} diversa da quella della sua prima riga (%{expected})."

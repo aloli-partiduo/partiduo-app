@@ -43,6 +43,9 @@ module Partiduo
       # Session de connect qui a ouvert celle-ci (`sid`, ADR-012 D8) : la
       # déconnexion par canal arrière la ferme.
       field :federated_sid, :string, max_size: 64, null: true, blank: true
+      # Langue de connect (claim `locale`, D-UI-082) : vide si le compte
+      # connect n'en a pas ; nulle pour une session ouverte sans connect.
+      field :locale, :string, max_size: 8, null: true, blank: true
     end
 
     # Défi à usage unique, conservé côté serveur : WebAuthn (enregistrement,

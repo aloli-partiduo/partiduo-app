@@ -124,7 +124,7 @@ describe "Utilisateurs (ADR-002 D1, D6)" do
 
   it "valide l'adresse, son unicité, le rôle, la langue et le profil" do
     AuthSpec.create_user
-    input = Partiduo::Api::Auth::UserInput.new(email: "ALICE@example.com", role: "chef", locale: "de", profile_id: 999_i64)
+    input = Partiduo::Api::Auth::UserInput.new(email: "ALICE@example.com", role: "chef", locale: "pl", profile_id: 999_i64)
     result = Partiduo::Api::Auth.create_user(AuthSpec.system, input)
     result.errors_for("email").map(&.key).should eq(["auth.errors.user.email_taken"])
     result.errors_for("role").map(&.key).should eq(["auth.errors.user.role_invalid"])

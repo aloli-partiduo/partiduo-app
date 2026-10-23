@@ -25,6 +25,34 @@ describe "connect (ADR-012), côté dossier" do
     end
   end
 
+  it "prend la langue du compte connect à chaque connexion, et rien sans claim (D-UI-082)" do
+    ConnectSpec.with_connect do |transport|
+      created = AuthSpec.create_user("alice@example.com", profile: nil)
+      link(created.user.id)
+      session_of = ->(view : Auth::LoginView) { Auth.session(view.session_token!) || raise "session absente" }
+
+      german = session_of.call(ConnectSpec.login(transport, locale: "de-DE").value!)
+      {german.locale, german.locale_from_connect}.should eq({"de", true})
+      Partiduo::Auth::User.get!(id: created.user.id).locale.should eq("de")
+
+      # Changement fait dans connect : repris à la connexion suivante.
+      session_of.call(ConnectSpec.login(transport, locale: "it").value!).locale.should eq("it")
+
+      # Compte connect sans langue, ou langue non livrée : le navigateur décide.
+      [nil, "ja"].each do |claim|
+        none = session_of.call(ConnectSpec.login(transport, locale: claim).value!)
+        {claim, none.locale, none.locale_from_connect}.should eq({claim, "", true})
+      end
+      Partiduo::Auth::User.get!(id: created.user.id).locale.should eq("it")
+    end
+  end
+
+  it "garde la langue de l'utilisateur du dossier pour une session ouverte sans connect" do
+    created = AuthSpec.create_user("bob@example.com")
+    view = Auth.session(AuthSpec.login("bob@example.com").value!.session_token!) || raise "session absente"
+    {view.locale, view.locale_from_connect}.should eq({created.user.locale, false})
+  end
+
   it "demande le niveau et la ré-authentification à connect" do
     ConnectSpec.with_connect do
       start = Auth.begin_federated_login(Partiduo::Api::Actor.anonymous, "connect",

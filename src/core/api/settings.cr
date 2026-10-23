@@ -173,6 +173,16 @@ module Partiduo
         !Partiduo::Core::SettingsRules.current.nil?
       end
 
+      # Langue configurée du dossier (`default_locale` de la configuration
+      # société), lue sans acteur : l'interface en sert les pages d'un
+      # visiteur non connecté dont le navigateur ne demande aucune langue
+      # livrée (D-UI-080). `fr` si l'instance n'est pas provisionnée ou si la
+      # langue enregistrée n'est pas livrée. Elle ne révèle rien d'autre.
+      def self.default_locale : String
+        locale = Partiduo::Core::SettingsRules.current.try(&.default_locale.to_s)
+        locale && Partiduo::LOCALES.includes?(locale) ? locale : "fr"
+      end
+
       # Configuration société. Tout utilisateur authentifié la lit (en-tête,
       # mentions des documents). `NotFound` si l'instance n'est pas provisionnée.
       def self.settings(actor : Actor) : SettingsView

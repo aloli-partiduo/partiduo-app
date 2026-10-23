@@ -1,0 +1,256 @@
+it:
+  cards:
+    module:
+      name: "Schede"
+    permissions:
+      card:
+        read: "Consultare le schede"
+        write: "Creare e modificare le schede"
+        import: "Importare schede (CSV)"
+      category:
+        manage: "Gestire le categorie di schede"
+    menu:
+      cards_list: "Terzi e articoli"
+      cards_categories: "Categorie di schede"
+    kinds:
+      customer: "Cliente"
+      supplier: "Fornitore"
+      item: "Articolo o servizio"
+      bank: "Banca"
+      employee: "Dipendente"
+      contact: "Contatto"
+      other: "Altro"
+    natures:
+      individual: "Privato"
+      business: "Professionista"
+      public: "Pubblica amministrazione"
+    supplier_natures:
+      individual: "Persona fisica"
+      business: "Persona giuridica"
+    value_types:
+      text: "Testo"
+      number: "Numero"
+      date: "Data"
+      boolean: "Sì / no"
+      card: "Scheda"
+    address_kinds:
+      main: "Indirizzo"
+      delivery: "Indirizzo di consegna"
+    units:
+      c62: "unità"
+      h87: "pezzo"
+      ea: "ciascuno"
+      xpp: "collo singolo"
+      set: "set"
+      pr: "paio"
+      dzn: "dozzina"
+      xbx: "scatola"
+      xpk: "pacco"
+      ls: "forfait"
+      e48: "unità di servizio"
+      sec: "secondo"
+      min: "minuto"
+      hur: "ora"
+      day: "giorno"
+      wee: "settimana"
+      mon: "mese"
+      ann: "anno"
+      kgm: "chilogrammo"
+      grm: "grammo"
+      mgm: "milligrammo"
+      tne: "tonnellata"
+      mtr: "metro"
+      cmt: "centimetro"
+      mmt: "millimetro"
+      kmt: "chilometro"
+      mtk: "metro quadrato"
+      mtq: "metro cubo"
+      ltr: "litro"
+      mlt: "millilitro"
+      clt: "centilitro"
+      kwh: "chilowattora"
+      mwh: "megawattora"
+      kwt: "chilowatt"
+      p1: "per cento"
+    initial:
+      categories:
+        customer: "Clienti"
+        supplier: "Fornitori"
+        bank: "Banche"
+        sale: "Vendite: articoli e servizi"
+        purchase: "Acquisti di merci"
+        expense: "Servizi e beni diversi"
+        employee: "Dipendenti"
+        contact: "Contatti"
+        tax_authority: "Amministrazioni"
+      attributes:
+        first_name: "Nome"
+        company: "Società"
+    import:
+      export_name: "schede"
+      fields:
+        name: "Nome"
+        code: "Quick code"
+        description: "Descrizione"
+        enabled: "Attiva"
+        vat_number: "Partita IVA"
+        siren: "SIREN"
+        siret: "SIRET"
+        routing_id: "Codice di instradamento"
+        iban: "IBAN"
+        bic: "BIC"
+        email: "E-mail"
+        phone: "Telefono"
+        contact_name: "Contatto"
+        address_line1: "Indirizzo"
+        address_line2: "Complemento d'indirizzo"
+        address_postcode: "CAP"
+        address_city: "Località"
+        address_country_code: "Paese"
+        unit_code: "Unità"
+        sale_price: "Prezzo di vendita"
+        purchase_price: "Prezzo di acquisto"
+        vat_rate: "Aliquota IVA"
+        customer_nature: "Natura del cliente"
+        supplier_nature: "Natura del fornitore"
+        last_name: "Cognome"
+        first_names: "Nomi"
+        birth_date: "Data di nascita"
+        account: "Conto contabile"
+    errors:
+      import:
+        code_exists: "La scheda %{code} esiste già: selezioni «Aggiorna le schede esistenti» per modificarla."
+        other_category: "La scheda %{code} esiste già in un'altra categoria."
+        account_on_update: "La scheda %{code} esiste già: il suo conto contabile si cambia dalla scheda, non tramite l'importazione."
+        account_forbidden: "Non ha il permesso di scegliere il conto contabile di una scheda."
+        card_unknown: "Nessuna scheda ha il quick code «%{code}»."
+        vat_rate_unknown: "Nessuna aliquota IVA ha il codice «%{code}»."
+      card:
+        base:
+          in_use: "Questa scheda è utilizzata e non può essere eliminata; la disattivi."
+        account:
+          no_accounting: "Un conto può essere richiesto per la scheda solo se la Contabilità è attiva."
+        category_id:
+          no_customer_category: "Nessuna categoria di schede clienti: ne crei una in «Terzi e articoli»."
+          not_found: "Questa categoria di scheda non esiste."
+          kind_mismatch: "Un articolo non può diventare un terzo, né un terzo un articolo."
+        name:
+          blank: "Il nome è obbligatorio."
+          too_long: "Questo campo non può superare %{max} caratteri."
+        description:
+          too_long: "Questo campo non può superare %{max} caratteri."
+        email:
+          too_long: "Questo campo non può superare %{max} caratteri."
+          invalid: "L'indirizzo e-mail non è valido."
+        phone:
+          too_long: "Questo campo non può superare %{max} caratteri."
+        contact_name:
+          too_long: "Questo campo non può superare %{max} caratteri."
+        code:
+          too_long: "Il quick code non può superare %{max} caratteri."
+          taken: "Il quick code %{value} è già utilizzato."
+        unit_code:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          invalid: "L'unità «%{value}» non è un'unità UN/ECE riconosciuta."
+        sale_price:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          negative: "Il prezzo non può essere negativo."
+          too_precise: "Il prezzo non può avere più di %{decimals} decimali."
+          too_large: "Il prezzo è troppo elevato."
+        purchase_price:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          negative: "Il prezzo non può essere negativo."
+          too_precise: "Il prezzo non può avere più di %{decimals} decimali."
+          too_large: "Il prezzo è troppo elevato."
+        vat_rate_id:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          not_found: "Questa aliquota IVA non esiste."
+          disabled: "L'aliquota IVA %{code} è disattivata."
+        supplier_nature:
+          not_applicable: "La natura del fornitore riguarda solo le schede fornitore."
+          invalid: "La natura «%{value}» non è riconosciuta (persona fisica, persona giuridica)."
+        last_name:
+          not_applicable: "Il cognome si inserisce solo per un fornitore persona fisica."
+          blank: "Il cognome della persona fisica è obbligatorio."
+          too_long: "Il cognome non può superare %{max} caratteri."
+        first_names:
+          not_applicable: "I nomi si inseriscono solo per un fornitore persona fisica."
+          blank: "I nomi della persona fisica sono obbligatori."
+          too_long: "I nomi non possono superare %{max} caratteri."
+        birth_date:
+          not_applicable: "La data di nascita si inserisce solo per un fornitore persona fisica."
+          invalid: "La data di nascita non è plausibile (dopo il 1900, non nel futuro)."
+        customer_nature:
+          not_applicable: "La natura riguarda solo le schede cliente."
+          invalid: "La natura «%{value}» non è riconosciuta (privato, professionista, pubblica amministrazione)."
+        siren:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          invalid: "Il SIREN «%{value}» non è valido (9 cifre, cifra di controllo)."
+        siret:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          invalid: "Il SIRET «%{value}» non è valido (14 cifre, cifra di controllo)."
+          siren_mismatch: "Il SIRET deve iniziare con il SIREN %{siren}."
+        routing_id:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          siren_required: "Un codice di instradamento presuppone un SIREN."
+          invalid: "Il codice di instradamento «%{value}» non è valido (lettere, cifre, punto, trattino, trattino basso)."
+        vat_number:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          invalid: "La partita IVA «%{value}» non è valida."
+          siren_mismatch: "La partita IVA non corrisponde al SIREN %{siren}."
+        iban:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          invalid: "L'IBAN «%{value}» non è valido."
+        bic:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          invalid: "Il BIC «%{value}» non è valido."
+        delivery_addresses:
+          not_applicable: "Questo campo non riguarda questa categoria di scheda."
+          too_many: "Una scheda ha al massimo %{max} indirizzi di consegna."
+        address:
+          too_long: "Questo campo non può superare %{max} caratteri."
+          country_invalid: "Il codice paese «%{value}» non è valido (due lettere, ISO 3166-1)."
+        extra:
+          unknown: "L'attributo «%{key}» non esiste in questa categoria."
+          required: "%{label} è obbligatorio."
+          too_long: "%{label} non può superare %{max} caratteri."
+          too_precise: "%{label} non può avere più di %{decimals} decimali."
+          card_not_found: "%{label}: la scheda %{id} non esiste."
+          invalid_text: "%{label} deve essere un testo."
+          invalid_number: "%{label} deve essere un numero decimale."
+          invalid_date: "%{label} deve essere una data (AAAA-MM-GG)."
+          invalid_boolean: "%{label} deve valere sì o no."
+          invalid_card: "%{label} deve indicare una scheda."
+      category:
+        base:
+          has_cards: "Questa categoria contiene schede e non può essere eliminata."
+          in_use: "Questa categoria è utilizzata e non può essere eliminata."
+        code:
+          immutable: "Il codice di una categoria non cambia."
+          invalid: "Il codice «%{value}» non è valido (maiuscole, cifre, trattino basso)."
+          taken: "Il codice %{value} è già utilizzato."
+        name:
+          blank: "Il nome della categoria non può essere vuoto."
+          too_long: "Questo campo non può superare %{max} caratteri."
+          taken: "La categoria «%{value}» esiste già."
+        kind:
+          invalid: "Un modello di categoria è obbligatorio («%{value}» è sconosciuto)."
+          in_use: "La natura di una categoria che contiene schede non cambia."
+        attributes:
+          too_many: "Una categoria ha al massimo %{max} attributi."
+        attribute:
+          key:
+            invalid: "La chiave «%{value}» non è valida (minuscole, cifre, trattino basso)."
+            duplicate: "La chiave «%{value}» è già utilizzata da un altro attributo."
+          label:
+            blank: "La descrizione è obbligatoria."
+            too_long: "Questo campo non può superare %{max} caratteri."
+          value_type:
+            invalid: "Il tipo «%{value}» è sconosciuto."
+            in_use: "Alcune schede compilano questo attributo: il suo tipo non può più cambiare."
+          max_length:
+            out_of_range: "La lunghezza massima deve essere compresa tra 1 e %{max}."
+          decimals:
+            out_of_range: "Il numero di decimali deve essere compreso tra 0 e %{max}."
+          required:
+            missing_values: "Alcune schede non compilano questo attributo: non può diventare obbligatorio."

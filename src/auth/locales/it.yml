@@ -1,0 +1,133 @@
+it:
+  auth:
+    module:
+      name: "Autenticazione"
+    permissions:
+      users:
+        manage: "Gestire gli utenti e i loro accessi"
+      profiles:
+        manage: "Gestire i profili e le loro autorizzazioni"
+      audit:
+        view: "Consultare il registro di audit"
+      providers:
+        manage: "Configurare i provider di identità"
+    profiles:
+      admin: "Amministratore"
+      accountant: "Contabile"
+      accountant_guest: "Contabile ospite (lettura)"
+      accountant_guest_description: "Accesso in sola lettura del contabile esterno: consultazione, report e trasmissione delle fatture, senza alcun inserimento."
+    roles:
+      member: "Utente della società"
+      accountant: "Contabile"
+    levels:
+      enrollment: "Registrazione iniziale"
+      password: "Password"
+      two_factor: "Password e app di autenticazione"
+      passkey: "Passkey"
+    methods:
+      password: "Password"
+      totp: "App di autenticazione"
+      recovery_code: "Codice di recupero"
+      passkey: "Passkey"
+      federated: "Provider di identità"
+      invitation: "Invito"
+    missing:
+      totp: "Attivi un'app di autenticazione per raggiungere il livello 2."
+      passkey: "Registri una passkey per raggiungere il livello 3."
+      recovery_codes: "Generi dei codici di recupero: Le serviranno se perde il dispositivo."
+    provider_kinds:
+      saml: "SAML 2.0"
+      oidc: "OpenID Connect"
+    provider_settings:
+      idp_entity_id: "Identificativo (entity ID) del provider"
+      idp_sso_service_url: "Indirizzo di accesso unico (SSO) del provider"
+      idp_cert: "Certificato di firma del provider (PEM)"
+      sp_entity_id: "Identificativo (entity ID) di questo dossier"
+      assertion_consumer_service_url: "Indirizzo di ritorno (ACS) di questo dossier"
+      name_identifier_format: "Formato del NameID (facoltativo)"
+      issuer: "Emittente (issuer)"
+      authorization_endpoint: "Endpoint di autorizzazione"
+      token_endpoint: "Endpoint del token"
+      jwks_uri: "Indirizzo delle chiavi pubbliche (JWKS)"
+      client_id: "Identificativo del client"
+      client_secret: "Segreto del client"
+      redirect_uri: "Indirizzo di ritorno di questo dossier"
+      scopes: "Ambiti (facoltativo, «openid email» per impostazione predefinita)"
+      subject_claim: "Claim dell'identificativo (facoltativo, «sub» per impostazione predefinita)"
+    errors:
+      elevation_required: "Questa operazione richiede un'ulteriore verifica della Sua identità."
+      password:
+        empty: "Inserisca una password."
+        too_short: "La password deve contenere almeno %{minimum} caratteri."
+        too_long: "La password non può superare %{maximum} caratteri."
+        too_many_bytes: "La password è troppo lunga: al massimo %{max_bytes} byte (le lettere accentate ne contano due)."
+        missing_uppercase: "La password deve contenere una lettera maiuscola."
+        missing_lowercase: "La password deve contenere una lettera minuscola."
+        missing_digit: "La password deve contenere una cifra."
+        missing_special: "La password deve contenere un carattere speciale."
+        too_few_words: "La passphrase non contiene abbastanza parole."
+        forbidden: "Questa password è troppo comune; ne scelga un'altra."
+        personal: "La password non deve contenere né il Suo nome né il Suo indirizzo."
+        current_invalid: "La password attuale non è corretta."
+      login:
+        method_disabled: "Questo metodo di accesso non è consentito su questo dossier."
+        invalid_credentials: "Indirizzo o password non corretti."
+        access_denied: "Il Suo accesso a questo dossier è chiuso."
+        passkey_required: "Acceda con la Sua passkey."
+        use_connect: "Acceda con il Suo account Partiduo."
+        expired: "La richiesta è scaduta; ripeta l'accesso."
+        invalid_code: "Codice non corretto."
+        locked: "Account bloccato dopo troppi tentativi falliti. Richieda un link di sblocco o contatti l'amministratore."
+        throttled:
+          one: "Troppi tentativi: riprovi tra %{count} secondo."
+          other: "Troppi tentativi: riprovi tra %{count} secondi."
+      passkey:
+        challenge: "La richiesta è scaduta; ricominci."
+        invalid: "Non è stato possibile verificare la passkey."
+        already_registered: "Questa passkey è già registrata."
+        unknown: "Passkey sconosciuta su questo dossier."
+        cloned: "Questa passkey sembra essere stata copiata: è rifiutata."
+        origin: "Indirizzo del sito non riconosciuto per questa passkey."
+      federated:
+        invalid: "La risposta del provider di identità non è valida."
+        signature: "La firma del provider di identità non è valida."
+        unsupported: "Questo tipo di provider di identità non è supportato."
+        unknown_identity: "Questa identità non ha accesso a questo dossier."
+        denied: "Il provider di identità ha rifiutato l'accesso."
+        invitation_email: "Questo account Partiduo non ha l'indirizzo invitato: acceda con l'account dell'indirizzo che ha ricevuto l'invito."
+        already_linked: "Un account Partiduo è già collegato a questo utente."
+        unreachable: "Il provider di identità non risponde; riprovi più tardi."
+        subject_required: "Inserisca l'identificativo della persona presso il provider."
+        subject_taken: "Questa identità è già associata a un utente."
+      token:
+        invalid: "Questo link non è più valido."
+      user:
+        self: "Non può revocare il Suo stesso accesso."
+        email_required: "Inserisca l'indirizzo e-mail."
+        email_invalid: "Indirizzo e-mail non valido."
+        email_taken: "Questo indirizzo è già utilizzato."
+        role_invalid: "Ruolo sconosciuto."
+        nominative: "Un account da contabile è nominativo: nome e cognome sono obbligatori."
+        too_long: "Al massimo 100 caratteri."
+        locale_invalid: "Lingua non disponibile."
+        profile_unknown: "Profilo sconosciuto."
+        access_ends_on_past: "La data di fine accesso è già passata."
+      preferences:
+        interface_invalid: "Interfaccia sconosciuta."
+      ledger:
+        access_invalid: "Autorizzazione sconosciuta (W, R o X)."
+      profile:
+        in_use: "Questo profilo è assegnato a degli utenti."
+        name_required: "Inserisca il nome del profilo."
+        name_taken: "Esiste già un profilo con questo nome."
+        permission_unknown: "Autorizzazione sconosciuta: %{permission}."
+      provider:
+        required: "Campo obbligatorio."
+        certificate: "Certificato illeggibile (formato PEM atteso)."
+        unknown: "Provider di identità sconosciuto."
+        code_invalid: "Codice non valido (minuscole, cifre, - e _)."
+        level_invalid: "Livello non valido (da 1 a 3)."
+        kind_unsupported: "Tipo di provider non supportato."
+        kind_immutable: "Il tipo di un provider esistente non cambia."
+        url: "Indirizzo HTTPS atteso (HTTP solo per localhost)."
+        openid_scope: "Gli ambiti devono comprendere «openid»."

@@ -68,6 +68,10 @@ fr:
         fr: "Français"
         en: "Anglais"
         nl: "Néerlandais"
+        de: "Allemand"
+        es: "Espagnol"
+        it: "Italien"
+        pt: "Portugais"
       auth_methods:
         password: "Mot de passe (TOTP en second facteur)"
         passkey: "Passkey"

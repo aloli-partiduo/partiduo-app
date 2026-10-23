@@ -1,0 +1,256 @@
+de:
+  cards:
+    module:
+      name: "Stammdaten"
+    permissions:
+      card:
+        read: "Stammsätze ansehen"
+        write: "Stammsätze anlegen und bearbeiten"
+        import: "Stammsätze importieren (CSV)"
+      category:
+        manage: "Stammsatzkategorien verwalten"
+    menu:
+      cards_list: "Geschäftspartner und Artikel"
+      cards_categories: "Stammsatzkategorien"
+    kinds:
+      customer: "Kunde"
+      supplier: "Lieferant"
+      item: "Artikel oder Leistung"
+      bank: "Bank"
+      employee: "Mitarbeiter"
+      contact: "Kontakt"
+      other: "Sonstiges"
+    natures:
+      individual: "Privatperson"
+      business: "Geschäftskunde"
+      public: "Öffentliche Verwaltung"
+    supplier_natures:
+      individual: "Natürliche Person"
+      business: "Juristische Person"
+    value_types:
+      text: "Text"
+      number: "Zahl"
+      date: "Datum"
+      boolean: "Ja / Nein"
+      card: "Stammsatz"
+    address_kinds:
+      main: "Adresse"
+      delivery: "Lieferadresse"
+    units:
+      c62: "Einheit"
+      h87: "Stück"
+      ea: "je"
+      xpp: "Einzelpackung"
+      set: "Satz"
+      pr: "Paar"
+      dzn: "Dutzend"
+      xbx: "Schachtel"
+      xpk: "Paket"
+      ls: "Pauschale"
+      e48: "Leistungseinheit"
+      sec: "Sekunde"
+      min: "Minute"
+      hur: "Stunde"
+      day: "Tag"
+      wee: "Woche"
+      mon: "Monat"
+      ann: "Jahr"
+      kgm: "Kilogramm"
+      grm: "Gramm"
+      mgm: "Milligramm"
+      tne: "Tonne"
+      mtr: "Meter"
+      cmt: "Zentimeter"
+      mmt: "Millimeter"
+      kmt: "Kilometer"
+      mtk: "Quadratmeter"
+      mtq: "Kubikmeter"
+      ltr: "Liter"
+      mlt: "Milliliter"
+      clt: "Zentiliter"
+      kwh: "Kilowattstunde"
+      mwh: "Megawattstunde"
+      kwt: "Kilowatt"
+      p1: "Prozent"
+    initial:
+      categories:
+        customer: "Kunden"
+        supplier: "Lieferanten"
+        bank: "Banken"
+        sale: "Verkauf: Artikel und Leistungen"
+        purchase: "Wareneinkauf"
+        expense: "Dienstleistungen und verschiedene Güter"
+        employee: "Mitarbeiter"
+        contact: "Kontakte"
+        tax_authority: "Behörden"
+      attributes:
+        first_name: "Vorname"
+        company: "Unternehmen"
+    import:
+      export_name: "stammsaetze"
+      fields:
+        name: "Name"
+        code: "Quick code"
+        description: "Beschreibung"
+        enabled: "Aktiv"
+        vat_number: "USt-IdNr."
+        siren: "SIREN"
+        siret: "SIRET"
+        routing_id: "Routing-Code"
+        iban: "IBAN"
+        bic: "BIC"
+        email: "E-Mail"
+        phone: "Telefon"
+        contact_name: "Kontakt"
+        address_line1: "Adresse"
+        address_line2: "Adresszusatz"
+        address_postcode: "Postleitzahl"
+        address_city: "Ort"
+        address_country_code: "Land"
+        unit_code: "Einheit"
+        sale_price: "Verkaufspreis"
+        purchase_price: "Einkaufspreis"
+        vat_rate: "USt.-Satz"
+        customer_nature: "Kundenart"
+        supplier_nature: "Lieferantenart"
+        last_name: "Nachname"
+        first_names: "Vornamen"
+        birth_date: "Geburtsdatum"
+        account: "Sachkonto"
+    errors:
+      import:
+        code_exists: "Der Stammsatz %{code} existiert bereits: Aktivieren Sie „Bestehende Stammsätze aktualisieren“, um ihn zu ändern."
+        other_category: "Der Stammsatz %{code} existiert bereits in einer anderen Kategorie."
+        account_on_update: "Der Stammsatz %{code} existiert bereits: Sein Sachkonto wird im Stammsatz geändert, nicht über den Import."
+        account_forbidden: "Sie sind nicht berechtigt, das Sachkonto eines Stammsatzes zu wählen."
+        card_unknown: "Kein Stammsatz hat den Quick code „%{code}“."
+        vat_rate_unknown: "Kein USt.-Satz hat den Code „%{code}“."
+      card:
+        base:
+          in_use: "Dieser Stammsatz wird verwendet und kann nicht gelöscht werden; deaktivieren Sie ihn."
+        account:
+          no_accounting: "Ein Konto kann für den Stammsatz nur angefordert werden, wenn die Buchhaltung aktiv ist."
+        category_id:
+          no_customer_category: "Keine Kategorie für Kundenstammsätze: Legen Sie eine unter „Geschäftspartner und Artikel“ an."
+          not_found: "Diese Stammsatzkategorie existiert nicht."
+          kind_mismatch: "Ein Artikel kann kein Geschäftspartner werden und ein Geschäftspartner kein Artikel."
+        name:
+          blank: "Der Name ist ein Pflichtfeld."
+          too_long: "Dieses Feld darf höchstens %{max} Zeichen haben."
+        description:
+          too_long: "Dieses Feld darf höchstens %{max} Zeichen haben."
+        email:
+          too_long: "Dieses Feld darf höchstens %{max} Zeichen haben."
+          invalid: "Die E-Mail-Adresse ist ungültig."
+        phone:
+          too_long: "Dieses Feld darf höchstens %{max} Zeichen haben."
+        contact_name:
+          too_long: "Dieses Feld darf höchstens %{max} Zeichen haben."
+        code:
+          too_long: "Der Quick code darf höchstens %{max} Zeichen haben."
+          taken: "Der Quick code %{value} wird bereits verwendet."
+        unit_code:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          invalid: "Die Einheit „%{value}“ ist keine anerkannte UN/ECE-Einheit."
+        sale_price:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          negative: "Der Preis darf nicht negativ sein."
+          too_precise: "Der Preis darf höchstens %{decimals} Dezimalstellen haben."
+          too_large: "Der Preis ist zu hoch."
+        purchase_price:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          negative: "Der Preis darf nicht negativ sein."
+          too_precise: "Der Preis darf höchstens %{decimals} Dezimalstellen haben."
+          too_large: "Der Preis ist zu hoch."
+        vat_rate_id:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          not_found: "Dieser USt.-Satz existiert nicht."
+          disabled: "Der USt.-Satz %{code} ist deaktiviert."
+        supplier_nature:
+          not_applicable: "Die Lieferantenart betrifft nur Lieferantenstammsätze."
+          invalid: "Die Art „%{value}“ wird nicht erkannt (natürliche Person, juristische Person)."
+        last_name:
+          not_applicable: "Der Nachname wird nur für einen Lieferanten als natürliche Person erfasst."
+          blank: "Der Nachname der natürlichen Person ist ein Pflichtfeld."
+          too_long: "Der Nachname darf höchstens %{max} Zeichen haben."
+        first_names:
+          not_applicable: "Die Vornamen werden nur für einen Lieferanten als natürliche Person erfasst."
+          blank: "Die Vornamen der natürlichen Person sind Pflichtfelder."
+          too_long: "Die Vornamen dürfen höchstens %{max} Zeichen haben."
+        birth_date:
+          not_applicable: "Das Geburtsdatum wird nur für einen Lieferanten als natürliche Person erfasst."
+          invalid: "Das Geburtsdatum ist nicht plausibel (nach 1900, nicht in der Zukunft)."
+        customer_nature:
+          not_applicable: "Die Art betrifft nur Kundenstammsätze."
+          invalid: "Die Art „%{value}“ wird nicht erkannt (Privatperson, Geschäftskunde, öffentliche Verwaltung)."
+        siren:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          invalid: "Die SIREN „%{value}“ ist ungültig (9 Ziffern, Prüfziffer)."
+        siret:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          invalid: "Die SIRET „%{value}“ ist ungültig (14 Ziffern, Prüfziffer)."
+          siren_mismatch: "Die SIRET muss mit der SIREN %{siren} beginnen."
+        routing_id:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          siren_required: "Ein Routing-Code setzt eine SIREN voraus."
+          invalid: "Der Routing-Code „%{value}“ ist ungültig (Buchstaben, Ziffern, Punkt, Bindestrich, Unterstrich)."
+        vat_number:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          invalid: "Die USt-IdNr. „%{value}“ ist ungültig."
+          siren_mismatch: "Die USt-IdNr. entspricht nicht der SIREN %{siren}."
+        iban:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          invalid: "Die IBAN „%{value}“ ist ungültig."
+        bic:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          invalid: "Die BIC „%{value}“ ist ungültig."
+        delivery_addresses:
+          not_applicable: "Dieses Feld betrifft diese Stammsatzkategorie nicht."
+          too_many: "Ein Stammsatz hat höchstens %{max} Lieferadressen."
+        address:
+          too_long: "Dieses Feld darf höchstens %{max} Zeichen haben."
+          country_invalid: "Der Ländercode „%{value}“ ist ungültig (zwei Buchstaben, ISO 3166-1)."
+        extra:
+          unknown: "Das Attribut „%{key}“ existiert in dieser Kategorie nicht."
+          required: "%{label} ist ein Pflichtfeld."
+          too_long: "%{label} darf höchstens %{max} Zeichen haben."
+          too_precise: "%{label} darf höchstens %{decimals} Dezimalstellen haben."
+          card_not_found: "%{label}: Der Stammsatz %{id} existiert nicht."
+          invalid_text: "%{label} muss ein Text sein."
+          invalid_number: "%{label} muss eine Dezimalzahl sein."
+          invalid_date: "%{label} muss ein Datum sein (JJJJ-MM-TT)."
+          invalid_boolean: "%{label} muss Ja oder Nein sein."
+          invalid_card: "%{label} muss einen Stammsatz bezeichnen."
+      category:
+        base:
+          has_cards: "Diese Kategorie enthält Stammsätze und kann nicht gelöscht werden."
+          in_use: "Diese Kategorie wird verwendet und kann nicht gelöscht werden."
+        code:
+          immutable: "Der Code einer Kategorie ändert sich nicht."
+          invalid: "Der Code „%{value}“ ist ungültig (Großbuchstaben, Ziffern, Unterstrich)."
+          taken: "Der Code %{value} wird bereits verwendet."
+        name:
+          blank: "Der Name der Kategorie darf nicht leer sein."
+          too_long: "Dieses Feld darf höchstens %{max} Zeichen haben."
+          taken: "Die Kategorie „%{value}“ existiert bereits."
+        kind:
+          invalid: "Eine Kategorievorlage ist erforderlich („%{value}“ ist unbekannt)."
+          in_use: "Die Art einer Kategorie, die Stammsätze enthält, ändert sich nicht."
+        attributes:
+          too_many: "Eine Kategorie hat höchstens %{max} Attribute."
+        attribute:
+          key:
+            invalid: "Der Schlüssel „%{value}“ ist ungültig (Kleinbuchstaben, Ziffern, Unterstrich)."
+            duplicate: "Der Schlüssel „%{value}“ wird bereits von einem anderen Attribut verwendet."
+          label:
+            blank: "Die Bezeichnung ist ein Pflichtfeld."
+            too_long: "Dieses Feld darf höchstens %{max} Zeichen haben."
+          value_type:
+            invalid: "Der Typ „%{value}“ ist unbekannt."
+            in_use: "Stammsätze enthalten dieses Attribut: Sein Typ kann nicht mehr geändert werden."
+          max_length:
+            out_of_range: "Die maximale Länge muss zwischen 1 und %{max} liegen."
+          decimals:
+            out_of_range: "Die Anzahl der Dezimalstellen muss zwischen 0 und %{max} liegen."
+          required:
+            missing_values: "Einige Stammsätze enthalten dieses Attribut nicht: Es kann kein Pflichtfeld werden."

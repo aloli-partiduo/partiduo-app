@@ -18,9 +18,10 @@ module Partiduo
     Partiduo::Liberal::App,
   ] of Marten::Apps::Config.class
 
-  # Langues livrées (ADR-005 D7) ; les 21 autres langues de l'UE s'ajoutent par
-  # un fichier de traduction.
-  LOCALES = %w[fr en nl]
+  # Langues livrées de l'interface (ADR-005 D7) ; les 17 autres langues de
+  # l'UE s'ajoutent par un fichier de traduction. Langue de l'interface
+  # seulement : les règles fiscales restent celles du régime du dossier.
+  LOCALES = %w[fr en nl de es it pt]
 
   # Réglages Marten communs à tout projet qui embarque le cœur. À appeler dans
   # un bloc `Marten.configure` ; le projet ajoute ensuite ses propres

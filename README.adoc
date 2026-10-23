@@ -41,7 +41,7 @@ src/
 
 Chaque application Marten suit le même plan : `app.cr`, `manifest.cr`,
 `models/`, `migrations/`, `services/` (interne), `api/` (contrat public),
-`locales/` (fr, en, nl).
+`locales/` (fr, en, nl, de, es, it, pt).
 
 == Prérequis
 

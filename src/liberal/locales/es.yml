@@ -1,0 +1,276 @@
+es:
+  liberal:
+    module:
+      name: "Profesión liberal (2035)"
+    permissions:
+      register:
+        read: "Consultar el libro diario, los inmovilizados y la 2035"
+        write: "Registrar, modificar y eliminar en un ejercicio abierto, contraasentar ingresos, gastos e inmovilizados, anotar reintegraciones y deducciones"
+      settings:
+        write: "Configurar la profesión liberal (naturalezas, líneas de la 2035)"
+    menu:
+      liberal_journal: "Libro diario"
+      liberal_assets: "Inmovilizados"
+      liberal_tax_return: "Declaración 2035"
+      liberal_settings: "Profesión liberal"
+    kinds:
+      receipt: "Ingreso"
+      expense: "Gasto"
+    headings:
+      receipts: "Ingresos cobrados"
+      financial_income: "Ingresos financieros"
+      other_gains: "Ganancias diversas"
+      contribution: "Aportación personal (fuera de la 2035)"
+      loan_received: "Préstamo recibido (fuera de la 2035)"
+      disbursements: "Suplidos pagados por cuenta de los clientes"
+      fees_retroceded: "Honorarios retrocedidos"
+      purchases: "Compras"
+      salaries: "Salarios netos y retribuciones en especie"
+      staff_social_charges: "Cargas sociales sobre salarios"
+      vat_paid: "IVA pagado"
+      cet: "Contribución económica territorial (CET)"
+      other_taxes: "Otros impuestos"
+      deductible_csg: "CSG deducible"
+      rent: "Alquileres y gastos de arrendamiento"
+      equipment_rental: "Alquiler de material y mobiliario"
+      maintenance: "Mantenimiento y reparaciones"
+      temporary_staff: "Personal temporal"
+      small_tools: "Pequeño utillaje"
+      utilities: "Calefacción, agua, gas, electricidad"
+      fees: "Honorarios que no constituyen retrocesiones"
+      insurance: "Primas de seguro"
+      vehicle: "Gastos de vehículos"
+      travel: "Otros gastos de desplazamiento"
+      personal_social_mandatory: "Cargas sociales personales obligatorias"
+      personal_social_optional: "Cargas sociales personales voluntarias"
+      reception: "Gastos de recepción, representación y congresos"
+      office: "Material de oficina, documentación, correspondencia y teléfono"
+      legal_costs: "Gastos de actos jurídicos y contenciosos"
+      professional_dues: "Cuotas sindicales y profesionales"
+      other_management: "Otros gastos diversos de gestión"
+      financial_costs: "Gastos financieros"
+      other_losses: "Pérdidas diversas"
+      withdrawal: "Retirada personal (fuera de la 2035)"
+      loan_repayment: "Devolución del capital de un préstamo (fuera de la 2035)"
+    items:
+      net_receipts: "Importe neto de los ingresos"
+      total_receipts: "Total de ingresos"
+      works_total: "Total trabajos, suministros y servicios exteriores"
+      transport_total: "Total transportes y desplazamientos"
+      personal_social_total: "Cargas sociales personales"
+      management_total: "Total gastos diversos de gestión"
+      total_expenses: "Total de gastos"
+      excess: "Excedente"
+      short_term_gains: "Plusvalías a corto plazo"
+      reintegrations: "Diversos a reintegrar"
+      scm_profit: "Beneficio de SCM o de SCP"
+      total_additions: "Total de las líneas a sumar"
+      shortfall: "Insuficiencia"
+      establishment_costs: "Gastos de establecimiento"
+      depreciation: "Dotación a las amortizaciones"
+      provision: "Provisiones"
+      short_term_losses: "Minusvalías a corto plazo"
+      deductions: "Diversos a deducir"
+      scm_loss: "Déficit de SCM o de SCP"
+      total_subtractions: "Total de las líneas a deducir"
+      profit: "Beneficio"
+      loss: "Déficit"
+      assets_cost: "Inmovilizados: valor de origen"
+      assets_prior_depreciation: "Amortizaciones anteriores"
+      assets_year_depreciation: "Amortizaciones del año"
+      disposals_price: "Precio de enajenación de los inmovilizados"
+      long_term_gains: "Plusvalías a largo plazo"
+      long_term_losses: "Minusvalías a largo plazo"
+    asset_categories:
+      intangible: "Inmovilizado intangible"
+      goodwill: "Clientela, derecho de presentación"
+      land: "Terreno"
+      building: "Construcción"
+      fittings: "Acondicionamientos e instalaciones"
+      equipment: "Material profesional"
+      vehicle: "Vehículo"
+      office: "Material de oficina e informático"
+      furniture: "Mobiliario"
+      other: "Otro inmovilizado"
+    adjustment_kinds:
+      reintegration: "Diversos a reintegrar"
+      deduction: "Diversos a deducir"
+      scm_profit: "Beneficio de SCM o de SCP"
+      scm_loss: "Déficit de SCM o de SCP"
+      establishment_costs: "Gastos de establecimiento"
+      provision: "Provisión"
+    methods:
+      transfer: "Transferencia"
+      card: "Tarjeta bancaria"
+      cheque: "Cheque"
+      cash: "Efectivo"
+      direct_debit: "Domiciliación"
+      other: "Otro"
+    severities:
+      error: "Bloqueante"
+      warning: "Por verificar"
+    controls:
+      siren_missing: "Falta el SIREN de la empresa o tiene un formato incorrecto: la 2035 no puede transmitirse"
+      profession_missing: "Profesión ejercida no indicada"
+      mapping_missing: "«%{item}» no tiene línea en la tabla del año %{year}"
+      box_missing: "«%{item}» no tiene casilla en la tabla del año %{year}: no se transmitiría"
+      box_manual: "«%{item}» (%{year}) no tiene casilla transmitida: debe trasladarse a mano al cuadro %{line} de la 2035"
+      heading_negative: "La rúbrica «%{heading}» es negativa"
+      box_duplicate: "Las partidas %{items} se trasladan a la misma casilla %{box} del formulario %{form}: solo se transmitiría una"
+      vehicle_depreciation_ceiling: "Vehículo %{number}: su base supera %{ceiling} €, el más bajo de los límites de amortización de los turismos (de 9900 a 30 000 € según las emisiones de CO2). Reintegre la parte excedente mediante un ajuste"
+      asset_over_depreciated: "Inmovilizado %{number} amortizado por encima de su base"
+      no_receipts: "Ninguna línea en el libro diario para el año"
+      no_fiscal_year: "Ningún ejercicio del expediente cubre %{year}"
+      year_open: "El ejercicio %{year} no está cerrado: la 2035 aún puede cambiar; ciérrelo antes de transmitirla"
+      frozen_changed: "La 2035 de %{year} ha cambiado desde que se congeló el ejercicio (¿identificación modificada?): verifíquela antes de cualquier presentación"
+      asset_register_ignored: "Los inmovilizados de la 2035 proceden de %{source}: no se incluyen las %{lines} líneas del registro del módulo"
+    reversal_label: "Anulación de %{number}"
+    export:
+      filename:
+        journal: "libro-diario"
+        tax_return: "2035-control-%{year}"
+    columns:
+      number: "N.º"
+      date: "Fecha"
+      kind: "Sentido"
+      party: "Cliente o proveedor"
+      label: "Designación"
+      heading: "Rúbrica"
+      method: "Pago"
+      reference: "Documento"
+      amount: "Importe"
+      nondeductible: "No deducible"
+      form: "Formulario"
+      line: "Línea"
+      box: "Casilla"
+      item: "Partida"
+      category: "Categoría"
+      acquired_on: "Adquisición"
+      service_on: "Puesta en servicio"
+      rate: "Tipo %"
+      prior: "Amort. anteriores"
+      year_amount: "Dotación"
+      net_value: "Valor residual"
+      price: "Precio de enajenación"
+      gain: "Plusvalía o minusvalía"
+      short_term: "Corto plazo"
+      long_term: "Largo plazo"
+      severity: "Nivel"
+      control: "Control"
+    reports:
+      journal: "Libro diario de ingresos y gastos"
+      tax_return: "Declaración 2035 de las rentas de %{year} — informe de control"
+      period: "Del %{from} al %{to}"
+      total: "Total"
+      total_receipts: "Total de ingresos"
+      total_expenses: "Total de gastos"
+      balance: "Saldo"
+      identity: "%{name} — SIREN %{siren}"
+      profession: "Profesión: %{profession}"
+      fingerprint: "Huella: %{fingerprint}"
+      form: "Formulario %{form}"
+      assets: "Inmovilizados y amortizaciones"
+      disposals: "Plusvalías y minusvalías"
+      adjustments: "Reintegraciones y deducciones"
+      controls: "Controles de coherencia"
+      no_control: "Ninguna anomalía"
+      page: "Página %{page} de %{count}"
+    errors:
+      year:
+        invalid: "Año no válido"
+        close:
+          future: "El ejercicio %{year} no ha comenzado: no se puede cerrar"
+          already: "El ejercicio %{year} ya está cerrado"
+          locked: "La 2035 de %{year} está transmitida: el ejercicio está bloqueado"
+        reopen:
+          locked: "La 2035 de %{year} está transmitida: el ejercicio está bloqueado y ya no puede reabrirse; corrija mediante un contraasiento en un ejercicio abierto"
+          core_closed: "El ejercicio %{year} está cerrado con el ejercicio del expediente (periodos cerrados): no se reabre aquí"
+          open: "El ejercicio %{year} está abierto: no hay nada que reabrir"
+      line:
+        nature:
+          unknown: "Naturaleza desconocida"
+          disabled: "Esta naturaleza ya no se utiliza"
+        amount:
+          not_positive: "El importe debe ser positivo"
+          scale: "El importe se expresa en céntimos"
+        nondeductible:
+          receipt: "Un ingreso no tiene parte no deducible"
+          invalid: "Parte no deducible no válida (positiva, en céntimos)"
+          exceeds: "La parte no deducible no puede superar el importe"
+          excluded: "Una rúbrica fuera de la 2035 no tiene parte no deducible"
+        method:
+          invalid: "Forma de pago desconocida"
+        card:
+          unknown: "Ficha desconocida"
+        attachment:
+          unknown: "Adjunto desconocido"
+        date:
+          future: "Fecha futura: registre solo operaciones realizadas"
+          closed_period: "El periodo de esta fecha está cerrado: corrija mediante un contraasiento en un periodo abierto"
+          transmitted: "La 2035 de %{year} está transmitida, el ejercicio está congelado: corrija mediante un contraasiento en un ejercicio abierto"
+          year_closed: "El ejercicio %{year} está cerrado: reábralo para registrar una línea, o feche la línea en un ejercicio abierto"
+        reversal:
+          is_reversal: "Un contraasiento no se puede contraasentar"
+          already: "Esta línea ya tiene un contraasiento"
+          before_line: "El contraasiento no puede ser anterior a la línea"
+        change:
+          from_invoicing: "Ingreso procedente de una factura cobrada: corríjalo en Facturación o contraasiéntelo"
+          is_reversal: "Un contraasiento no se modifica: elimínelo y registre la línea correcta"
+          reversed: "Línea con contraasiento: elimine primero su contraasiento"
+          closed_period: "Ejercicio o periodo cerrado: la línea es intangible, corríjala mediante un contraasiento"
+          transmitted: "La 2035 de %{year} está transmitida: la línea es intangible, corríjala mediante un contraasiento"
+          year_closed: "El ejercicio %{year} está cerrado: reábralo para modificar la línea, o corríjala mediante un contraasiento"
+        too_long: "%{max} caracteres como máximo"
+      nature:
+        in_use: "Naturaleza ya utilizada: solo cambian la descripción y la activación"
+        code:
+          invalid: "Código en mayúsculas, cifras y _, 32 caracteres como máximo"
+          taken: "Código ya utilizado"
+        label:
+          blank: "Indique una descripción"
+        kind:
+          invalid: "Sentido desconocido"
+        heading:
+          invalid: "Rúbrica incompatible con el sentido"
+      asset:
+        label:
+          blank: "Indique una designación"
+        category:
+          invalid: "Categoría de inmovilizado desconocida"
+        service_before_acquisition: "La puesta en servicio no puede ser anterior a la adquisición"
+        duration:
+          invalid: "Duración de amortización de 0 a 50 años"
+          not_depreciable: "Esta categoría no se amortiza: duración 0"
+        reversal:
+          disposed: "Inmovilizado enajenado: ya no se puede contraasentar"
+          other_year: "Un inmovilizado solo se contraasienta el año de su adquisición; después, hay que enajenarlo"
+        change:
+          disposed: "Inmovilizado enajenado: elimine primero la enajenación"
+          later_year_frozen: "Un año congelado posterior incluye este inmovilizado en su 2035: ya no puede cambiar"
+      disposal:
+        none: "Este inmovilizado no está enajenado"
+        asset:
+          unknown: "Inmovilizado desconocido o anulado"
+          already: "Inmovilizado ya enajenado"
+        before_acquisition: "La enajenación no puede ser anterior a la adquisición"
+        price:
+          invalid: "Precio no válido (positivo o cero, en céntimos)"
+      adjustment:
+        year:
+          invalid: "Año no válido"
+          closed: "Este año está cerrado, bloqueado o incluye un periodo cerrado"
+        kind:
+          invalid: "Tipo desconocido"
+        label:
+          blank: "Indique una descripción"
+      form_line:
+        year:
+          closed: "Año de formulario congelado: lo utiliza un año cerrado; añada una línea al año siguiente"
+        box:
+          taken: "Casilla ya ocupada por «%{item}» en este formulario"
+        item:
+          unknown: "Partida desconocida"
+        form:
+          unknown: "Formulario desconocido (2035, 2035-A, 2035-B)"
+        millesime:
+          invalid: "Año de formulario no válido"

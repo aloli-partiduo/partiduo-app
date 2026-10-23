@@ -1,0 +1,12 @@
+es:
+  modules:
+    module:
+      name: "Módulos"
+    errors:
+      activation:
+        socle: "%{module} forma parte del núcleo: siempre está activo."
+        missing_dependency: "%{module} requiere %{dependency}, que no está activo."
+        required_by: "%{dependent} requiere %{module}: desactive primero %{dependent}."
+        incompatible: "%{module} es incompatible con esta instancia: %{detail}"
+        incompatible_with: "%{module} es incompatible con %{other}, activo en este expediente: desactive primero %{other}."
+        excluded_kind: "%{module} no puede estar activo en un expediente de este tipo (%{kind})."

@@ -17,6 +17,7 @@ require "./partiduo/ext/date_time_precision"
 
 require "./partiduo/version"
 require "./partiduo/config"
+require "./partiduo/locale_formats"
 require "./partiduo/api/**"
 
 # Applications Marten, dans l'ordre de l'ADR-001 § Organisation du code.

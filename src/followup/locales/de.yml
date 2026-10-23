@@ -1,0 +1,80 @@
+de:
+  followup:
+    module:
+      name: "Nachverfolgung"
+    permissions:
+      action:
+        read: "Aktionen der Nachverfolgung ansehen"
+        write: "Aktionen der Nachverfolgung anlegen und bearbeiten"
+      settings:
+        write: "Aktionstypen und Schlagwörter einrichten"
+    menu:
+      fup_actions: "Aktionen"
+      fup_reminders: "Erinnerungen"
+      fup_types: "Aktionstypen"
+      fup_tags: "Schlagwörter"
+    states:
+      todo: "Zu erledigen"
+      follow: "Zu verfolgen"
+      closed: "Abgeschlossen"
+      abandoned: "Aufgegeben"
+    priorities:
+      p1: "Hoch"
+      p2: "Normal"
+      p3: "Niedrig"
+    columns:
+      reference: "Referenz"
+      date: "Datum"
+      hour: "Uhrzeit"
+      type: "Typ"
+      title: "Titel"
+      card: "Empfänger"
+      state: "Status"
+      priority: "Priorität"
+      remind_on: "Erinnerung"
+      tags: "Schlagwörter"
+    default_types:
+      di: "Internes Dokument"
+      bcl: "Kundenbestellung"
+      bfo: "Lieferantenbestellung"
+      fac: "Rechnung"
+      rap: "Erinnerungsschreiben"
+      co: "Brief"
+      prp: "Vorschlag"
+      el: "E-Mail"
+      ds: "Verschiedenes"
+      nfr: "Spesenabrechnung"
+      rfo: "Wareneingang Lieferantenbestellung"
+      rcl: "Eingang Kundenbestellung"
+      rmg: "Lagereingang"
+    errors:
+      action_type:
+        code_required: "Das Präfix ist ein Pflichtfeld."
+        code_too_long: "Das Präfix hat höchstens %{max} Zeichen."
+        code_invalid: "Das Präfix enthält nur Buchstaben und Ziffern."
+        code_taken: "Das Präfix %{code} wird bereits verwendet."
+        label_required: "Die Bezeichnung ist ein Pflichtfeld."
+        label_too_long: "Die Bezeichnung hat höchstens %{max} Zeichen."
+        next_number_invalid: "Die nächste Nummer ist mindestens 1."
+        in_use: "Dieser Aktionstyp wird verwendet: Löschen nicht möglich."
+      tag:
+        label_required: "Die Bezeichnung des Schlagworts ist ein Pflichtfeld."
+        label_too_long: "Die Bezeichnung des Schlagworts hat höchstens %{max} Zeichen."
+        label_taken: "Das Schlagwort %{label} existiert bereits."
+        color_invalid: "Die Farbe ist eine Zahl von 1 bis 10."
+      action:
+        type_unknown: "Unbekannter Aktionstyp (%{id})."
+        title_too_long: "Der Titel hat höchstens %{max} Zeichen."
+        hour_invalid: "Ungültige Uhrzeit (HH:MM)."
+        priority_invalid: "Ungültige Priorität."
+        state_invalid: "Ungültiger Status."
+        profile_unknown: "Unbekanntes Profil: Die Aktion kann ihm nicht vorbehalten werden."
+        card_unknown: "Unbekannter Stammsatz (%{id})."
+        tag_unknown: "Unbekanntes Schlagwort (%{id})."
+      comment:
+        text_required: "Der Kommentar ist leer."
+        text_too_long: "Der Kommentar hat höchstens %{max} Zeichen."
+      link:
+        invalid: "Ungültige Vorgangsreferenz (zum Beispiel entry:42)."
+      relation:
+        self: "Eine Aktion kann nicht mit sich selbst verknüpft werden."

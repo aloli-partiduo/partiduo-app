@@ -1,0 +1,133 @@
+es:
+  auth:
+    module:
+      name: "Autenticación"
+    permissions:
+      users:
+        manage: "Gestionar los usuarios y sus accesos"
+      profiles:
+        manage: "Gestionar los perfiles y sus permisos"
+      audit:
+        view: "Consultar el registro de auditoría"
+      providers:
+        manage: "Configurar los proveedores de identidad"
+    profiles:
+      admin: "Administrador"
+      accountant: "Contable"
+      accountant_guest: "Contable invitado (lectura)"
+      accountant_guest_description: "Acceso de solo lectura del contable externo: consulta, informes y transmisión de facturas, sin ningún registro."
+    roles:
+      member: "Usuario de la empresa"
+      accountant: "Contable"
+    levels:
+      enrollment: "Alta"
+      password: "Contraseña"
+      two_factor: "Contraseña y aplicación de autenticación"
+      passkey: "Llave de acceso (passkey)"
+    methods:
+      password: "Contraseña"
+      totp: "Aplicación de autenticación"
+      recovery_code: "Código de recuperación"
+      passkey: "Llave de acceso (passkey)"
+      federated: "Proveedor de identidad"
+      invitation: "Invitación"
+    missing:
+      totp: "Active una aplicación de autenticación para alcanzar el nivel 2."
+      passkey: "Registre una llave de acceso (passkey) para alcanzar el nivel 3."
+      recovery_codes: "Genere códigos de recuperación: le servirán si pierde su dispositivo."
+    provider_kinds:
+      saml: "SAML 2.0"
+      oidc: "OpenID Connect"
+    provider_settings:
+      idp_entity_id: "Identificador (entity ID) del proveedor"
+      idp_sso_service_url: "Dirección de inicio de sesión único (SSO) del proveedor"
+      idp_cert: "Certificado de firma del proveedor (PEM)"
+      sp_entity_id: "Identificador (entity ID) de este expediente"
+      assertion_consumer_service_url: "Dirección de retorno (ACS) de este expediente"
+      name_identifier_format: "Formato del NameID (opcional)"
+      issuer: "Emisor (issuer)"
+      authorization_endpoint: "Punto de autorización"
+      token_endpoint: "Punto de token"
+      jwks_uri: "Dirección de las claves públicas (JWKS)"
+      client_id: "Identificador del cliente"
+      client_secret: "Secreto del cliente"
+      redirect_uri: "Dirección de retorno de este expediente"
+      scopes: "Ámbitos (opcional, «openid email» por defecto)"
+      subject_claim: "Reclamación del identificador (opcional, «sub» por defecto)"
+    errors:
+      elevation_required: "Esta operación requiere una verificación adicional de su identidad."
+      password:
+        empty: "Introduzca una contraseña."
+        too_short: "La contraseña debe tener al menos %{minimum} caracteres."
+        too_long: "La contraseña no puede superar los %{maximum} caracteres."
+        too_many_bytes: "La contraseña es demasiado larga: %{max_bytes} bytes como máximo (las letras acentuadas cuentan doble)."
+        missing_uppercase: "La contraseña debe contener una mayúscula."
+        missing_lowercase: "La contraseña debe contener una minúscula."
+        missing_digit: "La contraseña debe contener una cifra."
+        missing_special: "La contraseña debe contener un carácter especial."
+        too_few_words: "La frase de contraseña no contiene suficientes palabras."
+        forbidden: "Esta contraseña es demasiado común; elija otra."
+        personal: "La contraseña no debe contener ni su nombre ni su dirección."
+        current_invalid: "La contraseña actual es incorrecta."
+      login:
+        method_disabled: "Este método de inicio de sesión no está autorizado en este expediente."
+        invalid_credentials: "Dirección o contraseña incorrecta."
+        access_denied: "Su acceso a este expediente está cerrado."
+        passkey_required: "Inicie sesión con su llave de acceso (passkey)."
+        use_connect: "Inicie sesión con su cuenta Partiduo."
+        expired: "La solicitud ha caducado; vuelva a iniciar sesión."
+        invalid_code: "Código incorrecto."
+        locked: "Cuenta bloqueada tras demasiados fallos. Solicite un enlace de desbloqueo o contacte con el administrador."
+        throttled:
+          one: "Demasiados intentos: vuelva a intentarlo dentro de %{count} segundo."
+          other: "Demasiados intentos: vuelva a intentarlo dentro de %{count} segundos."
+      passkey:
+        challenge: "La solicitud ha caducado; vuelva a empezar."
+        invalid: "No se ha podido verificar la llave de acceso."
+        already_registered: "Esta llave de acceso ya está registrada."
+        unknown: "Llave de acceso desconocida en este expediente."
+        cloned: "Esta llave de acceso parece haber sido copiada: se rechaza."
+        origin: "Dirección del sitio no reconocida para esta llave de acceso."
+      federated:
+        invalid: "La respuesta del proveedor de identidad no es válida."
+        signature: "La firma del proveedor de identidad no es válida."
+        unsupported: "Este tipo de proveedor de identidad no es compatible."
+        unknown_identity: "Esta identidad no tiene acceso a este expediente."
+        denied: "El proveedor de identidad ha rechazado el inicio de sesión."
+        invitation_email: "Esta cuenta Partiduo no tiene la dirección invitada: inicie sesión con la cuenta de la dirección que recibió la invitación."
+        already_linked: "Ya hay una cuenta Partiduo vinculada a este usuario."
+        unreachable: "El proveedor de identidad no responde; vuelva a intentarlo más tarde."
+        subject_required: "Introduzca el identificador de la persona en el proveedor."
+        subject_taken: "Esta identidad ya está vinculada a un usuario."
+      token:
+        invalid: "Este enlace ya no es válido."
+      user:
+        self: "No puede revocar su propio acceso."
+        email_required: "Introduzca la dirección de correo electrónico."
+        email_invalid: "Dirección de correo electrónico no válida."
+        email_taken: "Esta dirección ya está en uso."
+        role_invalid: "Rol desconocido."
+        nominative: "Una cuenta de contable es nominativa: el nombre y los apellidos son obligatorios."
+        too_long: "100 caracteres como máximo."
+        locale_invalid: "Idioma no disponible."
+        profile_unknown: "Perfil desconocido."
+        access_ends_on_past: "La fecha de fin de acceso ya ha pasado."
+      preferences:
+        interface_invalid: "Interfaz desconocida."
+      ledger:
+        access_invalid: "Permiso desconocido (W, R o X)."
+      profile:
+        in_use: "Este perfil está asignado a usuarios."
+        name_required: "Introduzca el nombre del perfil."
+        name_taken: "Ya existe un perfil con este nombre."
+        permission_unknown: "Permiso desconocido: %{permission}."
+      provider:
+        required: "Campo obligatorio."
+        certificate: "Certificado ilegible (se espera el formato PEM)."
+        unknown: "Proveedor de identidad desconocido."
+        code_invalid: "Código no válido (minúsculas, cifras, - y _)."
+        level_invalid: "Nivel no válido (1 a 3)."
+        kind_unsupported: "Tipo de proveedor no compatible."
+        kind_immutable: "El tipo de un proveedor existente no cambia."
+        url: "Se espera una dirección HTTPS (HTTP solo para localhost)."
+        openid_scope: "Los ámbitos deben incluir «openid»."

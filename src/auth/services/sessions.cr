@@ -11,7 +11,8 @@ module Partiduo
       record Opened, session : Session, token : String
 
       def self.open(user : User, level : Int32, method : String, ip : String = "",
-                    user_agent : String = "", now : Time = Time.utc, federated_sid : String? = nil) : Opened
+                    user_agent : String = "", now : Time = Time.utc, federated_sid : String? = nil,
+                    locale : String? = nil) : Opened
         token = Secrets.token
         session = Session.create!(
           user: user,
@@ -24,6 +25,7 @@ module Partiduo
           expires_at: now + Policy.current.session_minutes.minutes,
           strong_auth_at: strong?(user, level, method) ? now : nil,
           federated_sid: federated_sid.try(&.[0, 64]?),
+          locale: locale,
         )
         user.last_login_at = now
         user.save!

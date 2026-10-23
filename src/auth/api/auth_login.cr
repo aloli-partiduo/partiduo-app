@@ -223,10 +223,11 @@ module Partiduo
         # L'adresse vérifiée par connect suit la personne (ADR-012 D8) : le
         # lien reste le `sub`.
         refresh_email(user, provider, identity)
+        locale = connect_locale(user, provider, identity)
         link.last_used_at = Time.utc
         link.save!
         authenticated(user, federated_level(provider, identity), "federated", "login.federated", context, policy,
-          federated_sid: identity.attributes["sid"]?.try(&.first?))
+          federated_sid: identity.attributes["sid"]?.try(&.first?), locale: locale)
       end
 
       # Déconnexion par canal arrière (ADR-012 D8) : le fournisseur annonce la
@@ -266,6 +267,13 @@ module Partiduo
 
       def self.connect_configured? : Bool
         Partiduo::Auth::Connect.configured?
+      end
+
+      # Page du compte connect (langue d'affichage, moyens de connexion),
+      # `nil` si connect n'est pas réglé (D-UI-082).
+      def self.connect_account_url : String?
+        return unless Partiduo::Auth::Connect.configured?
+        Partiduo::Auth::Connect.url.try { |url| "#{url}/account" }
       end
 
       # Adresse de déconnexion chez connect, pour une session ouverte par lui
@@ -490,10 +498,10 @@ module Partiduo
 
       private def self.authenticated(user : Partiduo::Auth::User, level : Int32, method : String, action : String,
                                      context : LoginContext, policy = Partiduo::Auth::Policy.current,
-                                     federated_sid : String? = nil) : Result(LoginView)
+                                     federated_sid : String? = nil, locale : String? = nil) : Result(LoginView)
         Partiduo::Auth::Throttle.record_success(user) if level > Partiduo::Auth::Levels::ENROLLMENT
         opened = Partiduo::Auth::Sessions.open(user, level, method, context.ip, context.user_agent,
-          federated_sid: federated_sid)
+          federated_sid: federated_sid, locale: locale)
         required = Partiduo::Auth::Levels.required(user, policy)
         Partiduo::Auth::Audit.record(action, "SUCCESS", user: user, ip: context.ip, detail: "#{method}, niveau #{level}")
         Result(LoginView).success(LoginView.new(
@@ -593,6 +601,25 @@ module Partiduo
         Partiduo::Auth::Audit.record("user.email", "SUCCESS", user: user, detail: "connect : #{previous} → #{email}")
       end
 
+      # Langue tenue par connect (D-UI-082) : le claim `locale` du compte,
+      # ramené à sa langue de base (`de-DE` → `de`), devient celle de la
+      # session et de l'utilisateur (courriels) à chaque connexion ; chaîne
+      # vide si le compte connect n'en a pas, ou une langue non livrée (le
+      # navigateur décide alors). `nil` pour un autre fournisseur : la langue
+      # de l'utilisateur reste celle du dossier, comme avant.
+      private def self.connect_locale(user : Partiduo::Auth::User, provider : Partiduo::Auth::IdentityProvider,
+                                      identity : Partiduo::Auth::Federation::Identity) : String?
+        return unless Partiduo::Auth::Connect.provider?(provider)
+        claim = identity.attributes["locale"]?.try(&.first?).to_s
+        locale = claim.split(/[-_]/).first.downcase
+        return "" unless Partiduo::LOCALES.includes?(locale)
+        if user.locale != locale
+          user.locale = locale
+          user.save!
+        end
+        locale
+      end
+
       private def self.active_provider(code : String) : Partiduo::Auth::IdentityProvider
         # connect (ADR-012) : fournisseur créé à la première demande.
         Partiduo::Auth::Connect.provider if code == Partiduo::Auth::Connect::CODE
@@ -650,7 +677,8 @@ module Partiduo
           user_id: user.pk!.as(Int64),
           email: user.email.to_s,
           full_name: user.full_name,
-          locale: user.locale.to_s,
+          locale: session.locale || user.locale.to_s,
+          locale_from_connect: !session.locale.nil?,
           role: user.role.to_s,
           method: session.method.to_s,
           level: level,

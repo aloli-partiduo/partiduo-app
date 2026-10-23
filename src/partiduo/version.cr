@@ -38,8 +38,10 @@ module Partiduo
   # `Actor#strong_auth_at`, réglage `approval_mode` du dossier, D-AMD-027 à
   # D-AMD-029 ; 0.18.0 : `add_to_statement`, `date_basis` et `paid` de
   # `AuxiliaryBalanceQuery`, `read_fec` sans Comptabilité active,
-  # D-AMD-037).
-  API_VERSION = "0.18.0"
+  # D-AMD-037 ; 0.19.0 : langues de, es, it, pt dans `LOCALES`,
+  # `Core.default_locale` lu sans acteur, `SessionView#locale_from_connect`,
+  # `Auth.connect_account_url`, D-UI-080 et D-UI-082).
+  API_VERSION = "0.19.0"
 end
 
 module Partiduo

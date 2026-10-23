@@ -1,0 +1,476 @@
+it:
+  invoicing:
+    module:
+      name: "Fatturazione"
+    permissions:
+      invoice:
+        read: "Consultare preventivi e fatture"
+        write: "Creare e modificare le bozze"
+        issue: "Convalidare le fatture"
+        send: "Inviare i documenti per e-mail"
+      credit_note:
+        issue: "Convalidare le note di credito"
+      payment:
+        record: "Registrare i pagamenti"
+      reminder:
+        send: "Inviare i solleciti"
+      template:
+        manage: "Gestire i modelli di documento"
+      settings:
+        manage: "Gestire i parametri di fatturazione"
+      export:
+        read: "Trasmettere al contabile"
+      credit_limit:
+        override: "Derogare al fido massimo di un cliente"
+    menu:
+      inv_documents: "Preventivi e fatture"
+      inv_new_invoice: "Nuova fattura"
+      inv_payments: "Pagamenti"
+      inv_reminders: "Solleciti"
+      inv_export: "Trasmissione al contabile"
+      inv_to_invoice: "Documenti da fatturare"
+      inv_templates: "Modelli di documento"
+      inv_settings: "Parametri di fatturazione"
+    kinds:
+      quote: "Preventivo"
+      order: "Ordine"
+      delivery_note: "Documento di trasporto (DDT)"
+      invoice: "Fattura"
+      deposit_invoice: "Fattura di acconto"
+      credit_note: "Nota di credito"
+      return_note: "Documento di reso"
+    statuses:
+      draft: "Bozza"
+      sent: "Inviato"
+      accepted: "Accettato"
+      refused: "Rifiutato"
+      expired: "Scaduto"
+      confirmed: "Confermato"
+      cancelled: "Annullato con nota di credito"
+      issued: "Emesso"
+      partially_paid: "Parzialmente pagato"
+      paid: "Pagato"
+      overdue: "Scaduto"
+      invoiced: "Fatturato"
+      returned: "Reso"
+    channels:
+      none: "Non scelto"
+      platform: "Piattaforma accreditata"
+      email: "E-mail"
+      paper: "Carta"
+      public_portal: "Chorus Pro"
+    channel_reasons:
+      domestic_business: "Cliente professionale stabilito nel paese del dossier: fattura elettronica tramite la piattaforma accreditata"
+      foreign_business: "Cliente professionale estero: fuori piattaforma, e-reporting delle vendite internazionali"
+      private_customer: "Cliente privato: fuori piattaforma, e-reporting B2C"
+      public_customer: "Pubblica amministrazione: fattura tramite Chorus Pro, non tramite una piattaforma accreditata"
+      public_customer_manual: "Pubblica amministrazione: l'estensione Chorus Pro non è attiva, fattura da depositare personalmente sul portale Chorus Pro"
+    links:
+      from_quote: "Generato dal preventivo %{number}"
+      from_order: "Generato dall'ordine %{number}"
+      from_delivery_note: "Generato dal DDT %{number}"
+      from_invoice: "Generato dalla fattura %{number}"
+      from_deposit_invoice: "Generato dalla fattura di acconto %{number}"
+      from_credit_note: "Generato dalla nota di credito %{number}"
+      from_return_note: "Generato dal documento di reso %{number}"
+    delivery_notes:
+      group_title: "DDT %{number} del %{date}"
+    billing_rhythms:
+      per_delivery: "A ogni consegna"
+      monthly: "Riepilogativa mensile"
+    monthly_modes:
+      propose: "Preparare e proporre"
+      auto_send: "Emettere e inviare automaticamente"
+    dispatch:
+      emailed: "Fattura inviata per e-mail a %{to}"
+      email_missing: "Fattura emessa: il cliente non ha un indirizzo e-mail, la invii personalmente"
+      email_failed: "Fattura emessa, ma l'invio per e-mail non è riuscito"
+      send_denied: "Fattura emessa: l'invio per e-mail richiede l'autorizzazione all'invio"
+      platform: "Fattura emessa: trasmissione tramite la piattaforma accreditata"
+      to_print: "Fattura emessa: da stampare e consegnare, poi da contrassegnare come inviata"
+      public_portal: "Fattura emessa: da depositare sul portale pubblico, poi da contrassegnare come inviata"
+      already_sent: "Fattura già inviata"
+    deposit:
+      line: "Acconto del %{percent}% su %{number}"
+    mentions:
+      seller:
+        legal_form_capital: "%{legal_form} con capitale di %{capital} %{currency}"
+        legal_form: "%{legal_form}"
+        rcs:
+          fr: "%{rcs}"
+          be: "%{rcs}"
+        siren: "SIREN: %{siren}"
+        enterprise_number: "Numero d'impresa: %{number}"
+        vat_number: "Partita IVA intracomunitaria: %{vat_number}"
+      customer:
+        siren: "SIREN del cliente: %{siren}"
+        vat_number: "Partita IVA del cliente: %{vat_number}"
+      dates:
+        issue: "Data di emissione: %{date}"
+        delivery: "Data di consegna o di esecuzione della prestazione: %{date}"
+        due: "Data di scadenza: %{date}"
+        delivery_period: "Consegne dal %{from} al %{to}"
+        return: "Data di reso della merce: %{date}"
+      quote:
+        validity: "Preventivo valido fino al %{date}"
+      delivery_address: "Indirizzo di consegna: %{address}"
+      operation_category:
+        goods: "Categoria dell'operazione: cessione di beni"
+        services: "Categoria dell'operazione: prestazione di servizi"
+        mixed: "Categoria dell'operazione: cessione di beni e prestazione di servizi"
+      vat_on_debits: "Opzione per il pagamento dell'imposta in base agli addebiti"
+      special:
+        franchise:
+          fr: "IVA non applicabile, art. 293 B du CGI"
+          be: "Regime particolare di franchigia delle piccole imprese, IVA non applicabile"
+        reverse_charge:
+          fr: "Inversione contabile: IVA dovuta dal committente (art. 283-2 du CGI)"
+          be: "Inversione contabile: imposta dovuta dal cocontraente (art. 51, § 2, du Code de la TVA)"
+        intra_community:
+          fr: "Esenzione IVA, article 262 ter I du CGI (cessione intracomunitaria)"
+          be: "Cessione intracomunitaria esente da IVA (art. 39bis du Code de la TVA)"
+        export:
+          fr: "Esenzione IVA, article 262 I du CGI (esportazione)"
+          be: "Esportazione esente da IVA (art. 39 du Code de la TVA)"
+        exempt:
+          fr: "Operazione esente da IVA. %{reason}"
+          be: "Operazione esente da IVA. %{reason}"
+        not_subject:
+          fr: "Operazione non soggetta a IVA. %{reason}"
+          be: "Operazione non soggetta a IVA. %{reason}"
+        zero_rated:
+          fr: "IVA ad aliquota zero. %{reason}"
+          be: "IVA ad aliquota zero. %{reason}"
+      credit_note:
+        reference: "Nota di credito relativa alla fattura %{number} del %{date}"
+      deposit:
+        invoice: "Fattura di acconto"
+        deducted: "Acconto %{number} detratto: %{amount} %{currency}"
+      delivery_notes:
+        summary:
+          fr: "Fattura riepilogativa delle consegne (art. 289-I-3 du CGI): DDT %{numbers}"
+          be: "Fattura riepilogativa delle consegne: DDT %{numbers}"
+        offset: "Consegne imputate sui resi: DDT %{numbers}"
+      payment:
+        terms:
+          net: "Condizioni di pagamento: %{days} giorni netti dalla data della fattura"
+          end_of_month: "Condizioni di pagamento: %{days} giorni fine mese"
+          on_receipt: "Condizioni di pagamento: al ricevimento della fattura"
+        structured_reference: "Comunicazione strutturata: %{reference}"
+        bank: "Pagamento tramite bonifico: IBAN %{iban} — BIC %{bic}"
+        early_discount: "Sconto per pagamento anticipato: %{rate}% per un pagamento entro %{days} giorni"
+        no_early_discount: "Nessuno sconto per pagamento anticipato"
+        late_penalties: "Penali di mora: %{rate}% annuo"
+        late_penalties_legal:
+          fr: "In caso di ritardato pagamento, penali al tasso applicato dalla Banca centrale europea alla sua più recente operazione di rifinanziamento, maggiorato di 10 punti (art. L441-10 du Code de commerce)"
+          be: "In caso di ritardato pagamento, interessi di mora al tasso previsto dalla legge belga del 2 agosto 2002 relativa alla lotta contro i ritardi di pagamento nelle transazioni commerciali"
+        indemnity: "Indennità forfettaria per spese di recupero in caso di ritardato pagamento: %{amount} %{currency}"
+      return_note:
+        reason:
+          damaged: "Motivo del reso: merce danneggiata"
+          defective: "Motivo del reso: merce difettosa"
+          wrong_item: "Motivo del reso: errore di consegna"
+          excess: "Motivo del reso: quantità in eccesso o invenduta"
+          other: "Motivo del reso: vedere le note"
+      return_notes:
+        deducted: "Resi di merce detratti: documenti di reso %{numbers}"
+        credited: "Nota di credito per resi di merce: documenti di reso %{numbers}"
+    pdf:
+      draft: "Bozza"
+      number: "N."
+      issue_date: "Data"
+      due_date: "Scadenza"
+      validity_date: "Valido fino al"
+      customer: "CLIENTE"
+      customer_code: "Codice cliente"
+      delivery_address: "INDIRIZZO DI CONSEGNA"
+      buyer_reference: "Vostro riferimento"
+      order_reference: "Ordine"
+      columns:
+        description: "Descrizione"
+        quantity: "Q.tà"
+        unit: "Unità"
+        unit_price: "Prezzo unit. imp."
+        discount: "Sconto"
+        vat: "IVA"
+        total: "Totale imponibile"
+      subtotal: "Subtotale"
+      lines_total: "Totale imponibile delle righe"
+      global_discount: "Sconto globale"
+      discount: "Sconto"
+      total_net: "Totale imponibile"
+      total_vat: "IVA"
+      total_gross: "Totale IVA inclusa"
+      prepaid: "Acconti detratti"
+      payable: "Netto a pagare"
+      vat_summary:
+        rate: "ALIQUOTA"
+        base: "IMPONIBILE"
+        vat: "IVA"
+      mentions: "DICITURE"
+      page: "Pagina %{page}/%{pages}"
+    reminders:
+      subject:
+        level1: "Sollecito: fattura %{number} scaduta"
+        level2: "Secondo sollecito: fattura %{number} non pagata"
+        level3: "Diffida: fattura %{number}"
+      body:
+        level1: "Gentile cliente,\n\nSalvo errore da parte nostra, la fattura %{number} scaduta il %{due_date} risulta non pagata per %{balance}. La preghiamo di voler procedere al pagamento.\n\nCordiali saluti,\n%{seller}"
+        level2: "Gentile cliente,\n\nNonostante il nostro primo sollecito, la fattura %{number} scaduta il %{due_date} risulta non pagata per %{balance} (%{days} giorni di ritardo). La preghiamo di saldarla senza indugio.\n\nCordiali saluti,\n%{seller}"
+        level3: "Gentile Signora, Egregio Signore,\n\nLa fattura %{number} scaduta il %{due_date} risulta non pagata per %{balance} nonostante i nostri solleciti. Con la presente La diffidiamo a saldarla, per un totale di %{total}.\n\n%{seller}"
+      penalties: "Penali di mora: %{interest}; indennità forfettaria per spese di recupero: %{indemnity}; totale dovuto: %{total}."
+      rejected:
+        subject: "Pagamento respinto: fattura %{number}"
+        body: "Gentile cliente,\n\nIl Suo pagamento del %{paid_on} di %{amount} per la fattura %{number} ci è stato restituito insoluto dalla banca (%{reason}). La fattura resta dovuta per %{balance}. La preghiamo di volerla saldare nuovamente.\n\nCordiali saluti,\n%{seller}"
+    pdf_copy:
+      banner: "Copia — l'originale è la fattura elettronica trasmessa dalla piattaforma accreditata"
+      file_suffix: "copia"
+      subject: "Copia della fattura %{number} — %{seller}"
+      body: "Gentile cliente,\n\nTrova in allegato, a titolo informativo, una copia PDF della fattura %{number}. L'originale è la fattura elettronica trasmessa dalla piattaforma accreditata: la paghi una sola volta.\n\nCordiali saluti,\n%{seller}"
+    mail:
+      subject: "%{kind} %{number} — %{seller}"
+      body: "Gentile cliente,\n\nTrova in allegato il nostro documento %{number} dell'importo di %{amount}.\n\nCordiali saluti,\n%{seller}"
+    exports:
+      accounts:
+        customer: "Clienti"
+        sales: "Vendite"
+        vat: "IVA a debito"
+        bank: "Banca"
+      payment: "Pagamento"
+      deposit_deducted: "Acconto detratto"
+      sales_journal: "Giornale delle vendite"
+      csv_name: "giornale-vendite-incassi"
+      archive_name: "fatture"
+      payment_rejected: "Pagamento respinto"
+    errors:
+      settings:
+        days: "Indichi un numero di giorni tra 0 e %{max}"
+        rate: "Indichi un tasso tra 0 e 100 (al massimo quattro decimali)"
+        operation_category: "Categoria di operazione sconosciuta"
+        iban: "IBAN non valido"
+        bic: "BIC non valido"
+        email: "Indirizzo e-mail non valido"
+        reminder_days: "I termini dei tre solleciti devono essere crescenti, tra 1 e 365 giorni"
+        penalty_level: "Livello di sollecito tra 0 e 3"
+        journal_code: "Codice del giornale: lettere maiuscole e cifre, al massimo otto"
+        account: "Numero di conto: cifre e lettere maiuscole, al massimo venti"
+        pdf_copy_period: "La fine del periodo di copia PDF precede il suo inizio"
+        monthly_billing_mode: "Modalità di fatturazione mensile sconosciuta"
+      document:
+        kind:
+          immutable: "La natura di un documento non cambia"
+          invalid: "Natura di documento sconosciuta"
+        customer:
+          not_found: "Cliente non trovato"
+          not_customer: "Questa scheda non è un cliente"
+          disabled: "Questo cliente è disattivato"
+        currency:
+          unknown: "Valuta sconosciuta: %{value}"
+          decimals: "La valuta %{value} deve avere due decimali"
+        operation_category:
+          invalid: "Categoria di operazione sconosciuta"
+        locale:
+          invalid: "Lingua non supportata"
+        layout:
+          not_found: "Modello di impaginazione non trovato"
+        payment_terms:
+          invalid: "Condizioni di pagamento sconosciute"
+        payment_terms_days:
+          range: "Indichi un termine tra 0 e %{max} giorni"
+          on_receipt: "Un pagamento al ricevimento non ha termine"
+        due_date:
+          before_issue: "La scadenza precede la data di emissione"
+        validity_date:
+          quote_only: "Solo un preventivo ha una data di validità"
+        reference:
+          too_long: "Al massimo %{max} caratteri"
+        credited:
+          credit_note_only: "Solo una nota di credito fa riferimento a una fattura rettificata"
+          required: "Una nota di credito fa riferimento alla fattura che rettifica"
+          invalid: "La fattura rettificata deve essere una fattura emessa"
+          other_customer: "La fattura rettificata è quella di un altro cliente"
+          deposit_deducted: "Questo acconto è detratto da una fattura emessa: rettifichi la fattura finale con una nota di credito"
+        deposits:
+          invoice_only: "Solo una fattura detrae acconti"
+          duplicate: "Acconto citato due volte"
+          invalid: "Questo acconto non è una fattura di acconto emessa"
+          other_customer: "Questo acconto è quello di un altro cliente"
+          cancelled: "Questo acconto è stato annullato con nota di credito"
+          already_deducted: "Questo acconto è già detratto da un'altra fattura"
+          credited: "Questo acconto ha una nota di credito: non si detrae più"
+          exceed_total: "Gli acconti detratti superano il totale della fattura"
+        lines:
+          too_many: "Al massimo %{max} righe"
+        issue_channel:
+          invalid: "Canale di emissione sconosciuto: %{value}"
+          fiscal_only: "Solo una fattura, una fattura di acconto o una nota di credito hanno un canale di emissione"
+        global_discount:
+          exceeds: "Lo sconto globale supera il totale delle righe"
+        issued: "Documento emesso: non si modifica né si elimina; lo rettifichi con una nota di credito"
+        in_use: "Questa bozza è citata da un altro documento"
+        delivery_notes:
+          invoice_only: "Solo una fattura o una nota di credito riepilogativa riprendono DDT"
+          invalid: "Questo documento non è un DDT emesso"
+          other_customer: "Il DDT %{number} è quello di un altro cliente"
+          other_currency: "Il DDT %{number} è in un'altra valuta"
+          already_billed: "Il DDT %{number} è già fatturato"
+          in_draft: "Il DDT %{number} è già ripreso in una bozza di fattura"
+        return_reason:
+          return_note_only: "Solo un documento di reso ha un motivo di reso"
+          invalid: "Motivo di reso sconosciuto"
+        return_note:
+          origin_invalid: "Il documento d'origine del reso deve essere un DDT o una fattura emessi"
+        return_notes:
+          invoice_or_credit_only: "Solo una fattura o una nota di credito riprendono documenti di reso"
+          invalid: "Questo documento non è un documento di reso emesso"
+          other_customer: "Il documento di reso %{number} è quello di un altro cliente"
+          other_currency: "Il documento di reso %{number} è in un'altra valuta"
+          already_settled: "Il documento di reso %{number} è già ripreso"
+          in_draft: "Il documento di reso %{number} è già ripreso in una bozza"
+      discount:
+        kind: "Tipo di sconto sconosciuto"
+        negative: "Lo sconto non può essere negativo"
+        percent: "Percentuale tra 0 e 100 (al massimo quattro decimali)"
+        amount_scale: "Importo al centesimo (al massimo due decimali)"
+      line:
+        kind: "Tipo di riga sconosciuto"
+        description:
+          blank: "Indichi una descrizione"
+          too_long: "Al massimo %{max} caratteri"
+        item:
+          invalid: "Questa scheda non è un articolo"
+          disabled: "Questo articolo è disattivato"
+          required: "Scelga un articolo"
+          free_line: "Una riga libera non cita articoli"
+        quantity:
+          zero: "La quantità non può essere zero"
+          scale: "Al massimo quattro decimali"
+        unit_code: "Unità sconosciuta (codici UN/ECE)"
+        unit_price:
+          required: "Indichi un prezzo unitario"
+          negative: "Il prezzo unitario non può essere negativo"
+          scale: "Al massimo quattro decimali"
+        vat_rate:
+          not_found: "Aliquota IVA non trovata"
+          disabled: "Questa aliquota IVA è disattivata"
+          required: "Scelga un'aliquota IVA"
+        discount:
+          exceeds: "Lo sconto supera l'importo della riga"
+      delivery_notes:
+        empty: "Selezioni almeno un DDT"
+        duplicate: "DDT selezionato due volte"
+        several_customers: "I DDT selezionati appartengono a più clienti"
+        several_currencies: "I DDT selezionati sono in più valute"
+      customer_billing:
+        rhythm: "Frequenza di fatturazione sconosciuta"
+        credit_limit: "Fido massimo imponibile: importo positivo, al centesimo"
+      credit_limit:
+        exceeded: "Fido massimo imponibile di %{customer} superato: esposizione attuale %{exposure} %{currency}, documento %{amount} %{currency}, limite %{limit} %{currency}, superamento %{excess} %{currency}"
+        override_denied: "Fido massimo imponibile di %{customer} superato di %{excess} %{currency}: la deroga richiede l'autorizzazione a derogare al fido massimo"
+        reason_too_long: "Motivo della deroga: al massimo %{max} caratteri"
+      dispatch:
+        kind: "Solo una fattura, una fattura di acconto o una nota di credito di fine mese si emette e si invia con un clic"
+      issue:
+        already_issued: "Questo documento è già emesso"
+        no_line: "Aggiunga almeno una riga con importo"
+        total_not_positive: "Il totale IVA inclusa deve essere positivo"
+        company_incomplete: "Completi i dati identificativi della società prima di emettere"
+        before_last: "Data anteriore all'ultimo documento della serie (%{date})"
+        credit_exceeds: "La nota di credito supera l'importo residuo della fattura (%{remaining})"
+        credit_before_invoice: "Una nota di credito non precede la fattura che rettifica"
+        future: "La data di emissione non può superare la data odierna (%{date}): il numero assegnato è definitivo"
+        customer_siren_required: "Il cliente %{customer} è un professionista stabilito in Francia: indichi il suo SIREN nella sua scheda prima di emettere"
+        return_reason_required: "Indichi il motivo del reso prima di emettere"
+      pdf_copy:
+        not_platform: "Solo una fattura emessa tramite la piattaforma accreditata ha una copia PDF"
+        render_failed: "Copia PDF non prodotta (PDF/A-3 non conforme): %{detail}"
+        internal: "Errore interno durante l'invio della copia PDF: %{detail}"
+      channel:
+        not_fiscal: "Solo una fattura, una fattura di acconto o una nota di credito hanno un canale di emissione"
+        already_sent: "Documento già inviato: il suo canale di emissione non cambia più"
+        draft: "Emetta prima il documento"
+      transform:
+        source_draft: "Emetta prima il documento d'origine"
+        not_allowed: "Trasformazione impossibile da %{from} a %{to}"
+        source_status: "Il documento d'origine è %{status}"
+        deposit_percent: "Percentuale di acconto tra 0 e 100 (al massimo due decimali)"
+      quote:
+        not_sent: "Solo un preventivo inviato riceve una decisione"
+        decision: "Decisione sconosciuta"
+      payment:
+        accounting_active: "La Contabilità è attiva: registri l'incasso in banca e poi lo abbini"
+        document:
+          invalid: "Solo una fattura emessa riceve un pagamento"
+          cancelled: "Questa fattura è annullata con nota di credito"
+        amount:
+          not_positive: "L'importo deve essere positivo"
+          scale: "Importo al centesimo"
+          exceeds: "L'importo supera il saldo della fattura (%{balance})"
+        method: "Modalità di pagamento sconosciuta"
+        reference:
+          too_long: "Al massimo %{max} caratteri"
+      reminder:
+        not_proposed: "Questo sollecito non è più da trattare"
+        in_progress: "Questo sollecito è in corso di invio"
+      export:
+        currency_rate: "Nessun cambio di %{code} al %{date}: il documento %{number} non può essere convertito per il FEC"
+      mail:
+        draft: "Una bozza non si invia"
+        no_recipient: "Indichi un destinatario"
+        invalid_address: "Indirizzo e-mail non valido"
+        no_sender: "Indichi l'indirizzo mittente nei parametri"
+        not_configured: "L'invio di e-mail non è configurato"
+        delivery_failed: "Invio non riuscito: %{error}"
+      layout:
+        name:
+          blank: "Indichi un nome"
+          too_long: "Al massimo %{max} caratteri"
+          taken: "Questo nome è già utilizzato"
+        color: "Colore nel formato #rrggbb"
+        text:
+          too_long: "Al massimo %{max} caratteri"
+        logo:
+          type: "Il logo deve essere un'immagine PNG o JPEG"
+          not_found: "Logo non trovato"
+        in_use: "Questo modello è utilizzato da alcuni documenti"
+      return_note:
+        quantity_negative: "Un documento di reso riporta quantità positive"
+        exceeds_origin: "«%{description}»: reso oltre la quantità di %{origin} (%{delivered}, già reso: %{returned})"
+      return_notes:
+        no_invoice_to_credit: "Nessuna fattura di questo cliente può essere accreditata di questi resi: scelga la fattura da accreditare"
+      payment_rejection:
+        already_rejected: "Questo pagamento è già respinto"
+        document:
+          invalid: "Si può respingere solo il pagamento di una fattura emessa"
+        date:
+          before_payment: "Il respingimento non precede il pagamento (%{date})"
+          future: "La data del respingimento non può superare la data odierna"
+        reason:
+          invalid: "Motivo di respingimento sconosciuto"
+        reason_text:
+          required: "Specifichi il motivo"
+          too_long: "Al massimo %{max} caratteri"
+        fees:
+          negative: "Le spese non possono essere negative"
+          scale: "Importo al centesimo"
+          required: "Indichi le spese da rifatturare"
+        fees_vat_rate:
+          required: "Scelga l'aliquota IVA della fattura delle spese"
+          invalid: "Aliquota IVA non trovata o disattivata"
+    return_notes:
+      group_title: "Documento di reso %{number} del %{date}"
+    return_reasons:
+      damaged: "Merce danneggiata"
+      defective: "Merce difettosa"
+      wrong_item: "Errore di consegna"
+      excess: "Quantità in eccesso o invenduta"
+      other: "Altro motivo"
+    rejection_reasons:
+      insufficient_funds: "Fondi insufficienti"
+      account_closed: "Conto chiuso"
+      stopped: "Opposizione o revoca"
+      disputed: "Contestazione del debitore"
+      invalid_details: "Coordinate bancarie errate"
+      other: "Altro motivo"
+    payment_rejections:
+      fees_line: "Spese bancarie per il respingimento del pagamento del %{date} (fattura %{number}, %{reason})"

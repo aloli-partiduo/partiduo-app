@@ -1,0 +1,360 @@
+de:
+  core:
+    module:
+      name: "Basis"
+    permissions:
+      settings:
+        manage: "Einstellungen des Mandanten verwalten"
+      users:
+        manage: "Benutzer und Profile verwalten"
+      modules:
+        manage: "Module aktivieren und deaktivieren"
+      fiscal_year:
+        write: "Geschäftsjahre und Perioden anlegen und löschen"
+      period:
+        close: "Perioden und Geschäftsjahre abschließen"
+        reopen: "Abgeschlossene Periode wieder öffnen"
+      currency:
+        write: "Währungen und ihre Kurse verwalten"
+      attachment:
+        read: "Anhänge ansehen"
+        write: "Anhänge hochladen und löschen"
+    menu:
+      dashboard: "Übersicht"
+      billing: "Fakturierung"
+      follow_up: "Nachverfolgung"
+      entry: "Erfassung"
+      consult: "Abfrage"
+      reference: "Stammdaten"
+      reports: "Auswertungen"
+      vat: "USt."
+      analytic: "Kostenrechnung"
+      settings: "Einstellungen"
+      extension: "Erweiterungen"
+      core_company: "Unternehmen"
+      core_fiscal_years: "Geschäftsjahre und Perioden"
+      core_users: "Benutzer und Profile"
+      core_modules: "Module"
+      core_currencies: "Währungen"
+    settings:
+      name: "Unternehmen"
+      fields:
+        company_name: "Firmenname"
+        legal_form: "Rechtsform"
+        share_capital: "Stammkapital"
+        rcs: "Registereintrag (RCS, RPM)"
+        siren: "SIREN"
+        vat_number: "USt-IdNr."
+        street: "Straße"
+        street_number: "Hausnummer"
+        postcode: "Postleitzahl"
+        city: "Ort"
+        country_code: "Land"
+        phone: "Telefon"
+        email: "E-Mail-Adresse"
+        tax_regime: "Steuerregime"
+        default_locale: "Standardsprache"
+        domain: "Adresse des Mandanten"
+        auth_methods: "Zulässige Anmeldemethoden"
+        auth_minimum_level: "Mindest-Authentifizierungsstufe"
+        session_duration_minutes: "Sitzungsdauer (Minuten)"
+        creditor_identifier: "SEPA-Gläubiger-Identifikationsnummer (ICS)"
+        approval_mode: "Freigabe sensibler Vorgänge"
+        approval_reauth_minutes: "Gültigkeit der starken Authentifizierung für Freigaben (Minuten)"
+      tax_regimes:
+        fr: "Frankreich"
+        be: "Belgien"
+      locales:
+        fr: "Französisch"
+        en: "Englisch"
+        nl: "Niederländisch"
+        de: "Deutsch"
+        es: "Spanisch"
+        it: "Italienisch"
+        pt: "Portugiesisch"
+      auth_methods:
+        password: "Passwort (TOTP als zweiter Faktor)"
+        passkey: "Passkey"
+        federated: "Föderierte Identität (SSO)"
+      auth_levels:
+        level_1: "Stufe 1 — nur Passwort"
+        level_2: "Stufe 2 — Passwort und TOTP"
+        level_3: "Stufe 3 — Passkey"
+      session_duration:
+        one: "%{count} Minute"
+        other: "%{count} Minuten"
+      approval_modes:
+        single: "Eine Person (die einreichende Person kann nach starker Authentifizierung freigeben)"
+        dual: "Zwei Personen (eine andere Person gibt frei)"
+    currencies:
+      eur: "Euro"
+    exports:
+      page: "Seite %{page} von %{count}"
+    imports:
+      actions:
+        create: "Anlage"
+        update: "Aktualisierung"
+        refused: "Abgelehnt"
+    errors:
+      import:
+        separator: "Trennzeichen nicht erkannt: Semikolon, Komma, Tabulator oder senkrechter Strich."
+        quote: "Textbegrenzer nicht erkannt: Anführungszeichen oder Apostroph."
+        encoding_unknown: "Kodierung nicht erkannt: UTF-8 oder Windows-1252."
+        skip_rows: "Die Anzahl der zu überspringenden Zeilen muss zwischen 0 und 1000 liegen."
+        too_large: "Die Datei ist größer als %{max} MB."
+        too_many_rows: "Die Datei hat mehr als %{max} Zeilen."
+        encoding: "Die Datei ist nicht in UTF-8: Wählen Sie die Kodierung Windows-1252."
+        malformed: "CSV-Datei ab Datensatz %{line} nicht lesbar (Textbegrenzer nicht geschlossen?)."
+        empty: "Die Datei enthält keine Zeile."
+        column_unknown: "Spalte %{column}: unbekanntes Feld (%{key})."
+        column_duplicate: "Das Feld „%{field}“ ist mehreren Spalten zugeordnet."
+        column_missing: "Keine Spalte ist dem Pflichtfeld „%{field}“ zugeordnet."
+        decimal: "„%{value}“ ist keine Zahl."
+        date: "„%{value}“ ist kein Datum (JJJJ-MM-TT oder TT/MM/JJJJ)."
+        boolean: "„%{value}“ ist weder ja noch nein."
+        has_refused:
+          one: "%{count} Zeile wird abgelehnt: Korrigieren Sie die Datei oder bestätigen Sie den Import nur der akzeptierten Zeilen."
+          other: "%{count} Zeilen werden abgelehnt: Korrigieren Sie die Datei oder bestätigen Sie den Import nur der akzeptierten Zeilen."
+        nothing: "Keine Zeile zu importieren."
+      table:
+        title:
+          blank: "Die exportierte Tabelle muss einen Titel haben."
+        columns:
+          count: "Die exportierte Tabelle muss zwischen 1 und %{max} Spalten haben."
+          column: "Spalte der exportierten Tabelle nicht erkannt."
+        rows:
+          count: "Die exportierte Tabelle darf höchstens %{max} Zeilen haben."
+          row: "Zeile der exportierten Tabelle nicht erkannt."
+      settings:
+        company_name:
+          blank: "Der Firmenname ist ein Pflichtfeld."
+          too_long: "Der Firmenname darf höchstens %{max} Zeichen haben."
+        legal_form:
+          too_long: "Die Rechtsform darf höchstens %{max} Zeichen haben."
+        share_capital:
+          negative: "Das Stammkapital darf nicht negativ sein."
+          too_precise: "Das Stammkapital darf höchstens %{decimals} Dezimalstellen haben."
+          too_large: "Das Stammkapital ist zu hoch."
+        rcs:
+          too_long: "Der Registereintrag darf höchstens %{max} Zeichen haben."
+        siren:
+          invalid: "Die SIREN „%{value}“ ist ungültig (9 Ziffern, Prüfziffer)."
+          not_applicable: "Die SIREN betrifft nur das französische Steuerregime."
+        vat_number:
+          invalid: "Die USt-IdNr. „%{value}“ ist ungültig."
+          country_mismatch: "Die USt-IdNr. muss mit %{prefix} beginnen, dem Präfix des Landes des Unternehmens."
+          siren_mismatch: "Die USt-IdNr. entspricht nicht der SIREN %{siren}."
+        street:
+          too_long: "Die Straße darf höchstens %{max} Zeichen haben."
+        street_number:
+          too_long: "Die Hausnummer darf höchstens %{max} Zeichen haben."
+        postcode:
+          too_long: "Die Postleitzahl darf höchstens %{max} Zeichen haben."
+        city:
+          too_long: "Der Ort darf höchstens %{max} Zeichen haben."
+        country_code:
+          invalid: "Der Ländercode „%{value}“ ist ungültig (zwei Buchstaben, ISO 3166-1)."
+          regime_mismatch: "Das Land %{country} ist mit dem Steuerregime %{regime} nicht vereinbar."
+        phone:
+          too_long: "Die Telefonnummer darf höchstens %{max} Zeichen haben."
+        email:
+          invalid: "Die E-Mail-Adresse ist ungültig."
+          too_long: "Die E-Mail-Adresse darf höchstens %{max} Zeichen haben."
+        tax_regime:
+          blank: "Das Steuerregime ist ein Pflichtfeld."
+          invalid: "Das Steuerregime „%{value}“ ist unbekannt (fr oder be)."
+          immutable: "Das Steuerregime kann nach dem Anlegen des Mandanten nicht mehr geändert werden."
+        default_locale:
+          invalid: "Die Sprache „%{value}“ ist nicht verfügbar."
+        domain:
+          blank: "Die Adresse des Mandanten ist ein Pflichtfeld."
+          invalid: "Die Adresse des Mandanten „%{value}“ ist kein gültiger Hostname."
+          too_long: "Die Adresse des Mandanten darf höchstens %{max} Zeichen haben."
+        auth_methods:
+          blank: "Mindestens eine Anmeldemethode muss zugelassen sein."
+          unknown: "Unbekannte Anmeldemethode: %{methods}."
+        auth_minimum_level:
+          out_of_range: "Die Authentifizierungsstufe muss zwischen %{min} und %{max} liegen."
+          unreachable: "Keine zugelassene Methode erreicht die Stufe %{level}."
+        session_duration_minutes:
+          out_of_range: "Die Sitzungsdauer muss zwischen %{min} und %{max} Minuten liegen."
+        creditor_identifier:
+          invalid: "Die SEPA-Gläubiger-ID „%{value}“ ist ungültig (Land, Prüfziffer, Geschäftsbereichskennung, nationale Kennung)."
+        approval_mode:
+          invalid: "Unbekannter Freigabemodus: %{value} (eine oder zwei Personen)."
+        approval_reauth_minutes:
+          out_of_range: "Die Gültigkeit der starken Authentifizierung muss zwischen %{min} und %{max} Minuten liegen."
+      mail:
+        to:
+          blank: "Geben Sie mindestens einen Empfänger an."
+          invalid: "Ungültige E-Mail-Adresse: %{address}."
+          too_many: "Eine Nachricht hat höchstens %{max} Empfänger."
+        subject:
+          blank: "Geben Sie den Betreff der Nachricht ein."
+          too_long: "Der Betreff hat höchstens %{max} Zeichen."
+        body:
+          too_long: "Die Nachricht hat höchstens %{max} Zeichen."
+        attachments:
+          too_large: "Die Anhänge einer Nachricht umfassen insgesamt höchstens %{max} MB."
+          filename: "Ein Anhang hat keinen Namen."
+        no_sender: "Keine Absenderadresse: Geben Sie die E-Mail-Adresse des Unternehmens an."
+        not_configured: "Der E-Mail-Versand ist auf dieser Instanz nicht eingerichtet."
+      approval:
+        person_required: "Eine Freigabe ist die Handlung einer angemeldeten Person."
+        not_pending: "Diese Anfrage steht nicht mehr aus: Über sie wurde bereits entschieden."
+        same_person: "Vier-Augen-Prinzip: Eine andere Person als die einreichende muss die Anfrage freigeben."
+        reauthentication_required: "Bestätigen Sie Ihre Identität (Authenticator-App oder Passkey): Die Freigabe erfordert eine starke Authentifizierung, die weniger als %{minutes} Minuten zurückliegt."
+        forbidden: "Sie sind nicht berechtigt, über diese Anfrage zu entscheiden."
+        pending_exists: "Für dieses Objekt wartet bereits eine Anfrage auf Freigabe."
+        not_approved: "Dieser Vorgang wurde nicht freigegeben."
+        already_consumed: "Diese Freigabe wurde bereits verwendet."
+        subject_mismatch: "Diese Freigabe betrifft ein anderes Objekt."
+        digest_mismatch: "Der Inhalt hat sich seit der Anfrage geändert: Reichen Sie ihn erneut ein."
+        kind:
+          invalid: "Ungültige Art der Anfrage: %{value}."
+        subject:
+          blank: "Geben Sie den Gegenstand der Anfrage an."
+          too_long: "Der Gegenstand der Anfrage hat höchstens %{max} Zeichen."
+        summary:
+          blank: "Geben Sie die Zusammenfassung der Anfrage an."
+        digest:
+          blank: "Der Fingerabdruck des eingereichten Inhalts fehlt oder ist zu lang."
+      provision:
+        already_provisioned: "Dieser Mandant ist bereits angelegt."
+        admin_email:
+          invalid: "Die Adresse des Administrators ist ungültig."
+        modules:
+          unknown: "Unbekanntes Modul: %{code}."
+          wrong_kind: "%{code} ist kein Modul (siehe --with für Erweiterungen)."
+          inactive: "Das Modul %{code} ist in der Konfiguration der Instanz nicht aktiv."
+        extensions:
+          unknown: "Unbekannte Erweiterung: %{code}."
+          wrong_kind: "%{code} ist keine Erweiterung (siehe --modules)."
+          inactive: "Die Erweiterung %{code} ist in der Konfiguration der Instanz nicht aktiv."
+        kind:
+          unknown: "Unbekannter Mandantentyp: %{kind} (mögliche Typen: %{kinds})."
+          inactive: "Der Mandantentyp %{kind} erfordert %{code}, das nicht aktiv ist."
+          required: "Ein Mandant vom Typ %{kind} erfordert das Modul %{code}."
+          excluded: "Das Modul %{code} ist in einem Mandanten vom Typ %{kind} nicht zulässig."
+      fiscal_year:
+        year:
+          out_of_range: "Das Geschäftsjahr muss zwischen %{min} und %{max} liegen."
+          taken: "Das Geschäftsjahr %{year} existiert bereits."
+        start_year:
+          out_of_range: "Das Anfangsjahr muss zwischen %{min} und %{max} liegen."
+        start_month:
+          invalid: "Der Anfangsmonat existiert nicht."
+        months:
+          out_of_range: "Die Anzahl der Monate muss zwischen %{min} und %{max} liegen."
+        label:
+          too_long: "Die Bezeichnung darf höchstens %{max} Zeichen haben."
+          taken: "Die Bezeichnung „%{label}“ bezeichnet bereits ein anderes Geschäftsjahr."
+        closed: "Dieses Geschäftsjahr ist abgeschlossen."
+        in_use: "Dieses Geschäftsjahr kann nicht gelöscht werden: Es enthält erfasste Vorgänge."
+        already_closed: "Dieses Geschäftsjahr ist bereits abgeschlossen."
+        no_period: "Dieses Geschäftsjahr hat keine Periode."
+      period:
+        overlap: "Die Periode überschneidet sich mit der Periode vom %{starts_on} bis %{ends_on}."
+        fiscal_year_closed: "Das Geschäftsjahr dieser Periode ist abgeschlossen."
+        ends_on:
+          before_start: "Das Ende der Periode liegt vor ihrem Beginn."
+        starts_on:
+          out_of_range: "Die Daten müssen zwischen %{min} und %{max} liegen."
+        closed: "Diese Periode ist abgeschlossen."
+        in_use: "Diese Periode kann nicht gelöscht werden: Sie enthält erfasste Vorgänge."
+        already_closed: "Diese Periode ist bereits abgeschlossen."
+        not_closed: "Diese Periode ist nicht abgeschlossen."
+      currency:
+        code:
+          base_immutable: "Die Buchungswährung des Mandanten kann nicht geändert werden."
+          invalid: "Der Code „%{value}“ ist kein ISO-4217-Code (drei Buchstaben)."
+          taken: "Die Währung %{value} existiert bereits."
+          in_use: "Diese Währung wird verwendet und kann nicht gelöscht werden."
+        name:
+          blank: "Der Name der Währung ist ein Pflichtfeld."
+          too_long: "Der Name darf höchstens %{max} Zeichen haben."
+        decimals:
+          out_of_range: "Die Anzahl der Dezimalstellen muss zwischen %{min} und %{max} liegen."
+        rate:
+          blank: "Ein erster Kurs ist erforderlich."
+          not_positive: "Der Kurs muss größer als null sein."
+          too_precise: "Der Kurs darf höchstens %{decimals} Dezimalstellen haben."
+          too_large: "Der Kurs ist zu hoch."
+        valid_from:
+          blank: "Das Datum des ersten Kurses ist ein Pflichtfeld."
+          not_after_last: "Das Datum muss nach dem letzten Kurs liegen (%{date})."
+      attachment:
+        filename:
+          blank: "Der Dateiname ist ein Pflichtfeld."
+          too_long: "Der Dateiname darf höchstens %{max} Zeichen haben."
+        content:
+          empty: "Die Datei ist leer."
+          too_large: "Die Datei ist größer als %{max} MiB."
+        content_type:
+          unsupported: "Dieser Dateityp (%{value}) wird nicht akzeptiert."
+          mismatch: "Der Inhalt der Datei entspricht nicht ihrem Typ (%{value})."
+        in_use: "Dieser Anhang ist noch zugeordnet und kann nicht gelöscht werden."
+        corrupted: "Dieser Anhang wurde verändert: Sein Fingerabdruck stimmt nicht mehr überein."
+    provision:
+      done: "Mandant „%{name}“ angelegt: %{domain}."
+      regime: "Steuerregime: %{regime}."
+      kind: "Mandantentyp: %{kind}."
+      modules:
+        one: "%{count} Modul aktiviert: %{codes}."
+        other: "%{count} Module aktiviert: %{codes}."
+      loaders:
+        zero: "Kein Anfangsdatensatz zu laden."
+        one: "%{count} Anfangsdatensatz geladen: %{names}."
+        other: "%{count} Anfangsdatensätze geladen: %{names}."
+      failed:
+        one: "Anlegen des Mandanten abgelehnt: %{count} Fehler."
+        other: "Anlegen des Mandanten abgelehnt: %{count} Fehler."
+      invalid_number: "Zahlenwert nicht lesbar (Kapital, Stufe oder Sitzungsdauer)."
+      invitation: "Einladung des Administrators %{email}, gültig bis %{expires}, an ihn weiterzugeben: %{url}"
+      signup_code: "Code zum Anlegen des Partiduo-Kontos von %{email}, über einen anderen Kanal als den Link weiterzugeben (mündlich, telefonisch): %{code}"
+    instance_cli:
+      errors:
+        option: "Option nicht erkannt oder ohne Wert: %{option}."
+        database_unavailable: "Datenbank der Instanz nicht erreichbar: %{detail}"
+        read_only: "Die Instanz ist schreibgeschützt: Heben Sie zuerst den Schreibschutz auf (read-only off)."
+        action_missing: "Aktion fehlt; mögliche Aktionen: %{actions}."
+        action_unknown: "Unbekannte Aktion: %{action}; mögliche Aktionen: %{actions}."
+        argument_missing: "Argument für die Aktion %{action} fehlt."
+        argument_extra: "Überzähliges Argument: %{argument}."
+        migrations_pending:
+          one: "%{count} Migration ist noch anzuwenden (migrate)."
+          other: "%{count} Migrationen sind noch anzuwenden (migrate)."
+        migration_failed: "Migration fehlgeschlagen nach %{applied} angewendeten Migration(en): %{detail}"
+        module_unknown: "Modul oder Erweiterung in dieser Version unbekannt: %{code}."
+        reason_missing: "Der Grund ist erforderlich (--reason)."
+        read_only_mode: "Unbekannter Schreibschutzmodus: %{mode} (on, off oder status)."
+        approval_missing: "Die Referenz der doppelten Freigabe ist erforderlich (--approval-ref)."
+        approvers: "Zwei verschiedene Personen müssen freigegeben haben (--approvers a,b)."
+        approvers_single: "Freigabe durch eine Person: Es wird nur ein Name erwartet (--approval-mode single --approvers a)."
+        approval_mode: "Unbekannter Freigabemodus: %{mode} (single oder dual)."
+        not_provisioned: "Die Instanz ist nicht bereitgestellt (kein Unternehmen)."
+        not_admin: "%{email} hat ein Konto ohne Administratorprofil: Nur das Unternehmen kann ihm diese Rechte geben."
+        revoked: "Der Zugang von %{email} wurde vom Unternehmen widerrufen: Die Plattform öffnet ihn nicht wieder."
+        unknown: "Kein Konto für %{email}: Die Plattform legt keinen Administrator an; nur ein bestehender Administrator erhält eine neue Einladung."
+        host_unknown: "Host der Instanz unbekannt (Unternehmen ohne Domain, weder PARTIDUO_HOST noch MARTEN_ALLOWED_HOSTS): Einladungslink nicht möglich."
+        internal: "Interner Fehler: %{detail}"
+    approvals:
+      statuses:
+        pending: "Ausstehend"
+        approved: "Freigegeben"
+        rejected: "Abgelehnt"
+        cancelled: "Zurückgezogen"
+      actions:
+        submitted: "Eingereicht"
+        approved: "Freigegeben"
+        rejected: "Abgelehnt"
+        cancelled: "Zurückgezogen"
+        consumed: "Ausgeführt"
+        refused: "Versuch abgelehnt"
+        policy_changed: "Regel geändert"
+  partiduo:
+    api:
+      errors:
+        module_disabled: "Dieses Modul ist für diesen Mandanten nicht aktiviert."
+        forbidden: "Sie sind nicht berechtigt, diesen Vorgang auszuführen."
+        not_found: "Das angeforderte Element wurde nicht gefunden."

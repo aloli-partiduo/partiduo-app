@@ -1,0 +1,476 @@
+pt:
+  invoicing:
+    module:
+      name: "Faturação"
+    permissions:
+      invoice:
+        read: "Consultar os orçamentos e faturas"
+        write: "Criar e editar os rascunhos"
+        issue: "Validar as faturas"
+        send: "Enviar os documentos por e-mail"
+      credit_note:
+        issue: "Validar as notas de crédito"
+      payment:
+        record: "Registar os pagamentos"
+      reminder:
+        send: "Enviar os lembretes"
+      template:
+        manage: "Gerir os modelos de documentos"
+      settings:
+        manage: "Gerir os parâmetros de faturação"
+      export:
+        read: "Transmitir ao contabilista"
+      credit_limit:
+        override: "Derrogar o limite de crédito de um cliente"
+    menu:
+      inv_documents: "Orçamentos e faturas"
+      inv_new_invoice: "Nova fatura"
+      inv_payments: "Pagamentos"
+      inv_reminders: "Lembretes"
+      inv_export: "Transmissão ao contabilista"
+      inv_to_invoice: "Documentos a faturar"
+      inv_templates: "Modelos de documentos"
+      inv_settings: "Parâmetros de faturação"
+    kinds:
+      quote: "Orçamento"
+      order: "Nota de encomenda"
+      delivery_note: "Guia de remessa"
+      invoice: "Fatura"
+      deposit_invoice: "Fatura de adiantamento"
+      credit_note: "Nota de crédito"
+      return_note: "Guia de devolução"
+    statuses:
+      draft: "Rascunho"
+      sent: "Enviado"
+      accepted: "Aceite"
+      refused: "Recusado"
+      expired: "Expirado"
+      confirmed: "Confirmado"
+      cancelled: "Anulado por nota de crédito"
+      issued: "Emitido"
+      partially_paid: "Parcialmente pago"
+      paid: "Pago"
+      overdue: "Vencido"
+      invoiced: "Faturado"
+      returned: "Devolvido"
+    channels:
+      none: "Não escolhido"
+      platform: "Plataforma acreditada"
+      email: "E-mail"
+      paper: "Papel"
+      public_portal: "Chorus Pro"
+    channel_reasons:
+      domestic_business: "Cliente profissional estabelecido no país do dossier: fatura eletrónica através da plataforma acreditada"
+      foreign_business: "Cliente profissional estrangeiro: fora da plataforma, e-reporting das vendas internacionais"
+      private_customer: "Cliente particular: fora da plataforma, e-reporting B2C"
+      public_customer: "Administração pública: fatura através do Chorus Pro, não através de uma plataforma acreditada"
+      public_customer_manual: "Administração pública: a extensão Chorus Pro não está ativa, a fatura deve ser depositada manualmente no portal Chorus Pro"
+    links:
+      from_quote: "Gerado a partir do orçamento %{number}"
+      from_order: "Gerado a partir da encomenda %{number}"
+      from_delivery_note: "Gerado a partir da guia de remessa %{number}"
+      from_invoice: "Gerado a partir da fatura %{number}"
+      from_deposit_invoice: "Gerado a partir da fatura de adiantamento %{number}"
+      from_credit_note: "Gerado a partir da nota de crédito %{number}"
+      from_return_note: "Gerado a partir da guia de devolução %{number}"
+    delivery_notes:
+      group_title: "Guia de remessa %{number} de %{date}"
+    billing_rhythms:
+      per_delivery: "A cada entrega"
+      monthly: "Resumo mensal"
+    monthly_modes:
+      propose: "Preparar e propor"
+      auto_send: "Emitir e enviar automaticamente"
+    dispatch:
+      emailed: "Fatura enviada por e-mail para %{to}"
+      email_missing: "Fatura emitida: o cliente não tem endereço de e-mail, envie-a manualmente"
+      email_failed: "Fatura emitida, mas o envio por e-mail falhou"
+      send_denied: "Fatura emitida: o envio por e-mail exige a permissão de envio"
+      platform: "Fatura emitida: transmissão através da plataforma acreditada"
+      to_print: "Fatura emitida: a imprimir e entregar, depois a marcar como enviada"
+      public_portal: "Fatura emitida: a depositar no portal público, depois a marcar como enviada"
+      already_sent: "Fatura já enviada"
+    deposit:
+      line: "Adiantamento de %{percent}% sobre %{number}"
+    mentions:
+      seller:
+        legal_form_capital: "%{legal_form} com capital social de %{capital} %{currency}"
+        legal_form: "%{legal_form}"
+        rcs:
+          fr: "%{rcs}"
+          be: "%{rcs}"
+        siren: "SIREN: %{siren}"
+        enterprise_number: "Número de empresa: %{number}"
+        vat_number: "N.º de IVA intracomunitário: %{vat_number}"
+      customer:
+        siren: "SIREN do cliente: %{siren}"
+        vat_number: "N.º de IVA do cliente: %{vat_number}"
+      dates:
+        issue: "Data de emissão: %{date}"
+        delivery: "Data de entrega ou de execução da prestação: %{date}"
+        due: "Data de vencimento: %{date}"
+        delivery_period: "Entregas de %{from} a %{to}"
+        return: "Data de devolução da mercadoria: %{date}"
+      quote:
+        validity: "Orçamento válido até %{date}"
+      delivery_address: "Morada de entrega: %{address}"
+      operation_category:
+        goods: "Categoria da operação: entrega de bens"
+        services: "Categoria da operação: prestação de serviços"
+        mixed: "Categoria da operação: entrega de bens e prestação de serviços"
+      vat_on_debits: "Opção pelo pagamento do imposto segundo os débitos"
+      special:
+        franchise:
+          fr: "IVA não aplicável, art. 293 B du CGI"
+          be: "Regime especial de franquia das pequenas empresas, IVA não aplicável"
+        reverse_charge:
+          fr: "Autoliquidação: IVA devido pelo adquirente (art. 283-2 du CGI)"
+          be: "Autoliquidação: imposto devido pelo cocontratante (art. 51, § 2, du Code de la TVA)"
+        intra_community:
+          fr: "Isenção de IVA, article 262 ter I du CGI (entrega intracomunitária)"
+          be: "Entrega intracomunitária isenta de IVA (art. 39bis du Code de la TVA)"
+        export:
+          fr: "Isenção de IVA, article 262 I du CGI (exportação)"
+          be: "Exportação isenta de IVA (art. 39 du Code de la TVA)"
+        exempt:
+          fr: "Operação isenta de IVA. %{reason}"
+          be: "Operação isenta de IVA. %{reason}"
+        not_subject:
+          fr: "Operação não sujeita a IVA. %{reason}"
+          be: "Operação não sujeita a IVA. %{reason}"
+        zero_rated:
+          fr: "IVA à taxa zero. %{reason}"
+          be: "IVA à taxa zero. %{reason}"
+      credit_note:
+        reference: "Nota de crédito relativa à fatura %{number} de %{date}"
+      deposit:
+        invoice: "Fatura de adiantamento"
+        deducted: "Adiantamento %{number} deduzido: %{amount} %{currency}"
+      delivery_notes:
+        summary:
+          fr: "Fatura-resumo das entregas (art. 289-I-3 du CGI): guias de remessa %{numbers}"
+          be: "Fatura-resumo das entregas: guias de remessa %{numbers}"
+        offset: "Entregas imputadas às devoluções: guias de remessa %{numbers}"
+      payment:
+        terms:
+          net: "Condições de pagamento: %{days} dias líquidos a contar da data da fatura"
+          end_of_month: "Condições de pagamento: %{days} dias fim do mês"
+          on_receipt: "Condições de pagamento: a pronto, na receção da fatura"
+        structured_reference: "Comunicação estruturada: %{reference}"
+        bank: "Pagamento por transferência: IBAN %{iban} — BIC %{bic}"
+        early_discount: "Desconto de pronto pagamento: %{rate}% para pagamento no prazo de %{days} dias"
+        no_early_discount: "Sem desconto de pronto pagamento"
+        late_penalties: "Penalizações por atraso: %{rate}% ao ano"
+        late_penalties_legal:
+          fr: "Em caso de atraso de pagamento, penalizações à taxa aplicada pelo Banco Central Europeu na sua operação de refinanciamento mais recente, acrescida de 10 pontos (art. L441-10 du Code de commerce)"
+          be: "Em caso de atraso de pagamento, juros de mora à taxa prevista pela lei belga de 2 de agosto de 2002 relativa à luta contra os atrasos de pagamento nas transações comerciais"
+        indemnity: "Indemnização fixa por custos de cobrança em caso de atraso de pagamento: %{amount} %{currency}"
+      return_note:
+        reason:
+          damaged: "Motivo da devolução: mercadoria danificada"
+          defective: "Motivo da devolução: mercadoria defeituosa"
+          wrong_item: "Motivo da devolução: erro de entrega"
+          excess: "Motivo da devolução: quantidade em excesso ou não vendida"
+          other: "Motivo da devolução: ver as notas"
+      return_notes:
+        deducted: "Devoluções de mercadorias deduzidas: guias de devolução %{numbers}"
+        credited: "Nota de crédito das devoluções de mercadorias: guias de devolução %{numbers}"
+    pdf:
+      draft: "Rascunho"
+      number: "N.º"
+      issue_date: "Data"
+      due_date: "Vencimento"
+      validity_date: "Válido até"
+      customer: "CLIENTE"
+      customer_code: "Código de cliente"
+      delivery_address: "MORADA DE ENTREGA"
+      buyer_reference: "Sua referência"
+      order_reference: "Encomenda"
+      columns:
+        description: "Designação"
+        quantity: "Qtd."
+        unit: "Unidade"
+        unit_price: "P. unit. s/ IVA"
+        discount: "Desconto"
+        vat: "IVA"
+        total: "Total s/ IVA"
+      subtotal: "Subtotal"
+      lines_total: "Total das linhas s/ IVA"
+      global_discount: "Desconto global"
+      discount: "Desconto"
+      total_net: "Total s/ IVA"
+      total_vat: "IVA"
+      total_gross: "Total c/ IVA"
+      prepaid: "Adiantamentos deduzidos"
+      payable: "Total a pagar"
+      vat_summary:
+        rate: "TAXA"
+        base: "BASE S/ IVA"
+        vat: "IVA"
+      mentions: "MENÇÕES"
+      page: "Página %{page}/%{pages}"
+    reminders:
+      subject:
+        level1: "Lembrete: fatura %{number} vencida"
+        level2: "Segundo lembrete: fatura %{number} por pagar"
+        level3: "Interpelação para pagamento: fatura %{number}"
+      body:
+        level1: "Bom dia,\n\nSalvo erro da nossa parte, a fatura %{number} vencida em %{due_date} continua por pagar no montante de %{balance}. Agradecemos que proceda ao respetivo pagamento.\n\nCom os melhores cumprimentos,\n%{seller}"
+        level2: "Bom dia,\n\nApesar do nosso primeiro lembrete, a fatura %{number} vencida em %{due_date} continua por pagar no montante de %{balance} (%{days} dias de atraso). Agradecemos que a liquide sem demora.\n\nCom os melhores cumprimentos,\n%{seller}"
+        level3: "Exmo.(a) Senhor(a),\n\nA fatura %{number} vencida em %{due_date} continua por pagar no montante de %{balance}, apesar dos nossos lembretes. Pela presente, fica interpelado(a) para a liquidar, num total de %{total}.\n\n%{seller}"
+      penalties: "Penalizações por atraso: %{interest}; indemnização fixa por custos de cobrança: %{indemnity}; total devido: %{total}."
+      rejected:
+        subject: "Pagamento rejeitado: fatura %{number}"
+        body: "Bom dia,\n\nO pagamento de %{paid_on} no montante de %{amount} relativo à fatura %{number} foi-nos devolvido por pagar pelo banco (%{reason}). A fatura continua em dívida no montante de %{balance}. Agradecemos que proceda novamente ao respetivo pagamento.\n\nCom os melhores cumprimentos,\n%{seller}"
+    pdf_copy:
+      banner: "Cópia — o original é a fatura eletrónica transmitida pela plataforma acreditada"
+      file_suffix: "copia"
+      subject: "Cópia da fatura %{number} — %{seller}"
+      body: "Bom dia,\n\nSegue em anexo, a título informativo, uma cópia em PDF da fatura %{number}. O original é a fatura eletrónica transmitida pela plataforma acreditada: pague-a apenas uma vez.\n\nCom os melhores cumprimentos,\n%{seller}"
+    mail:
+      subject: "%{kind} %{number} — %{seller}"
+      body: "Bom dia,\n\nSegue em anexo o nosso documento %{number} no montante de %{amount}.\n\nCom os melhores cumprimentos,\n%{seller}"
+    exports:
+      accounts:
+        customer: "Clientes"
+        sales: "Vendas"
+        vat: "IVA liquidado"
+        bank: "Banco"
+      payment: "Pagamento"
+      deposit_deducted: "Adiantamento deduzido"
+      sales_journal: "Diário de vendas"
+      csv_name: "diario-vendas-recebimentos"
+      archive_name: "faturas"
+      payment_rejected: "Rejeição do pagamento"
+    errors:
+      settings:
+        days: "Indique um número de dias entre 0 e %{max}"
+        rate: "Indique uma taxa entre 0 e 100 (no máximo quatro casas decimais)"
+        operation_category: "Categoria de operação desconhecida"
+        iban: "IBAN inválido"
+        bic: "BIC inválido"
+        email: "Endereço de e-mail inválido"
+        reminder_days: "Os prazos dos três lembretes devem ser crescentes, entre 1 e 365 dias"
+        penalty_level: "Nível de lembrete entre 0 e 3"
+        journal_code: "Código do diário: letras maiúsculas e algarismos, no máximo oito"
+        account: "Número de conta: algarismos e letras maiúsculas, no máximo vinte"
+        pdf_copy_period: "O fim do período de cópia em PDF é anterior ao seu início"
+        monthly_billing_mode: "Modo de faturação mensal desconhecido"
+      document:
+        kind:
+          immutable: "A natureza de um documento não pode ser alterada"
+          invalid: "Natureza de documento desconhecida"
+        customer:
+          not_found: "Cliente não encontrado"
+          not_customer: "Esta ficha não é um cliente"
+          disabled: "Este cliente está desativado"
+        currency:
+          unknown: "Moeda desconhecida: %{value}"
+          decimals: "A moeda %{value} deve ter duas casas decimais"
+        operation_category:
+          invalid: "Categoria de operação desconhecida"
+        locale:
+          invalid: "Idioma não suportado"
+        layout:
+          not_found: "Modelo de paginação não encontrado"
+        payment_terms:
+          invalid: "Condições de pagamento desconhecidas"
+        payment_terms_days:
+          range: "Indique um prazo entre 0 e %{max} dias"
+          on_receipt: "Um pagamento na receção não tem prazo"
+        due_date:
+          before_issue: "O vencimento é anterior à data de emissão"
+        validity_date:
+          quote_only: "Só um orçamento tem data de validade"
+        reference:
+          too_long: "No máximo %{max} caracteres"
+        credited:
+          credit_note_only: "Só uma nota de crédito referencia uma fatura corrigida"
+          required: "Uma nota de crédito referencia a fatura que corrige"
+          invalid: "A fatura corrigida deve ser uma fatura emitida"
+          other_customer: "A fatura corrigida pertence a outro cliente"
+          deposit_deducted: "Este adiantamento foi deduzido de uma fatura emitida: corrija a fatura final com uma nota de crédito"
+        deposits:
+          invoice_only: "Só uma fatura deduz adiantamentos"
+          duplicate: "Adiantamento indicado duas vezes"
+          invalid: "Este adiantamento não é uma fatura de adiantamento emitida"
+          other_customer: "Este adiantamento pertence a outro cliente"
+          cancelled: "Este adiantamento foi anulado por nota de crédito"
+          already_deducted: "Este adiantamento já foi deduzido de outra fatura"
+          credited: "Este adiantamento tem uma nota de crédito: já não pode ser deduzido"
+          exceed_total: "Os adiantamentos deduzidos excedem o total da fatura"
+        lines:
+          too_many: "No máximo %{max} linhas"
+        issue_channel:
+          invalid: "Canal de emissão desconhecido: %{value}"
+          fiscal_only: "Só uma fatura, uma fatura de adiantamento ou uma nota de crédito têm canal de emissão"
+        global_discount:
+          exceeds: "O desconto global excede o total das linhas"
+        issued: "Documento emitido: não pode ser editado nem eliminado; corrija-o com uma nota de crédito"
+        in_use: "Este rascunho é referido por outro documento"
+        delivery_notes:
+          invoice_only: "Só uma fatura ou uma nota de crédito resumo incluem guias de remessa"
+          invalid: "Este documento não é uma guia de remessa emitida"
+          other_customer: "A guia de remessa %{number} pertence a outro cliente"
+          other_currency: "A guia de remessa %{number} está noutra moeda"
+          already_billed: "A guia de remessa %{number} já foi faturada"
+          in_draft: "A guia de remessa %{number} já está incluída num rascunho de fatura"
+        return_reason:
+          return_note_only: "Só uma guia de devolução tem motivo de devolução"
+          invalid: "Motivo de devolução desconhecido"
+        return_note:
+          origin_invalid: "O documento de origem da devolução deve ser uma guia de remessa ou uma fatura emitidas"
+        return_notes:
+          invoice_or_credit_only: "Só uma fatura ou uma nota de crédito incluem guias de devolução"
+          invalid: "Este documento não é uma guia de devolução emitida"
+          other_customer: "A guia de devolução %{number} pertence a outro cliente"
+          other_currency: "A guia de devolução %{number} está noutra moeda"
+          already_settled: "A guia de devolução %{number} já foi incluída"
+          in_draft: "A guia de devolução %{number} já está incluída num rascunho"
+      discount:
+        kind: "Tipo de desconto desconhecido"
+        negative: "O desconto não pode ser negativo"
+        percent: "Percentagem entre 0 e 100 (no máximo quatro casas decimais)"
+        amount_scale: "Montante ao cêntimo (no máximo duas casas decimais)"
+      line:
+        kind: "Tipo de linha desconhecido"
+        description:
+          blank: "Indique uma designação"
+          too_long: "No máximo %{max} caracteres"
+        item:
+          invalid: "Esta ficha não é um artigo"
+          disabled: "Este artigo está desativado"
+          required: "Escolha um artigo"
+          free_line: "Uma linha livre não refere nenhum artigo"
+        quantity:
+          zero: "A quantidade não pode ser nula"
+          scale: "No máximo quatro casas decimais"
+        unit_code: "Unidade desconhecida (códigos UN/ECE)"
+        unit_price:
+          required: "Indique um preço unitário"
+          negative: "O preço unitário não pode ser negativo"
+          scale: "No máximo quatro casas decimais"
+        vat_rate:
+          not_found: "Taxa de IVA não encontrada"
+          disabled: "Esta taxa de IVA está desativada"
+          required: "Escolha uma taxa de IVA"
+        discount:
+          exceeds: "O desconto excede o montante da linha"
+      delivery_notes:
+        empty: "Selecione pelo menos uma guia de remessa"
+        duplicate: "Guia de remessa selecionada duas vezes"
+        several_customers: "As guias de remessa selecionadas pertencem a vários clientes"
+        several_currencies: "As guias de remessa selecionadas estão em várias moedas"
+      customer_billing:
+        rhythm: "Ritmo de faturação desconhecido"
+        credit_limit: "Limite de crédito s/ IVA: montante positivo, ao cêntimo"
+      credit_limit:
+        exceeded: "Limite de crédito s/ IVA de %{customer} ultrapassado: exposição atual %{exposure} %{currency}, documento %{amount} %{currency}, limite %{limit} %{currency}, excesso %{excess} %{currency}"
+        override_denied: "Limite de crédito s/ IVA de %{customer} ultrapassado em %{excess} %{currency}: a derrogação exige a permissão para derrogar o limite de crédito"
+        reason_too_long: "Motivo da derrogação: no máximo %{max} caracteres"
+      dispatch:
+        kind: "Só uma fatura, uma fatura de adiantamento ou uma nota de crédito de fim de mês se emite e envia com um clique"
+      issue:
+        already_issued: "Este documento já foi emitido"
+        no_line: "Adicione pelo menos uma linha com valor"
+        total_not_positive: "O total c/ IVA deve ser positivo"
+        company_incomplete: "Complete a identificação da empresa antes de emitir"
+        before_last: "Data anterior ao último documento da série (%{date})"
+        credit_exceeds: "A nota de crédito excede o montante restante da fatura (%{remaining})"
+        credit_before_invoice: "Uma nota de crédito não pode ser anterior à fatura que corrige"
+        future: "A data de emissão não pode ser posterior à data de hoje (%{date}): o número atribuído é definitivo"
+        customer_siren_required: "O cliente %{customer} é um profissional estabelecido em França: indique o respetivo SIREN na ficha antes de emitir"
+        return_reason_required: "Indique o motivo da devolução antes de emitir"
+      pdf_copy:
+        not_platform: "Só uma fatura emitida através da plataforma acreditada tem cópia em PDF"
+        render_failed: "Cópia em PDF não produzida (PDF/A-3 não conforme): %{detail}"
+        internal: "Erro interno durante o envio da cópia em PDF: %{detail}"
+      channel:
+        not_fiscal: "Só uma fatura, uma fatura de adiantamento ou uma nota de crédito têm canal de emissão"
+        already_sent: "Documento já enviado: o seu canal de emissão já não pode ser alterado"
+        draft: "Emita primeiro o documento"
+      transform:
+        source_draft: "Emita primeiro o documento de origem"
+        not_allowed: "Transformação impossível de %{from} em %{to}"
+        source_status: "O documento de origem está %{status}"
+        deposit_percent: "Percentagem de adiantamento entre 0 e 100 (no máximo duas casas decimais)"
+      quote:
+        not_sent: "Só um orçamento enviado recebe uma decisão"
+        decision: "Decisão desconhecida"
+      payment:
+        accounting_active: "A Contabilidade está ativa: registe o recebimento no banco e depois concilie-o"
+        document:
+          invalid: "Só uma fatura emitida recebe um pagamento"
+          cancelled: "Esta fatura foi anulada por nota de crédito"
+        amount:
+          not_positive: "O montante deve ser positivo"
+          scale: "Montante ao cêntimo"
+          exceeds: "O montante excede o saldo da fatura (%{balance})"
+        method: "Modo de pagamento desconhecido"
+        reference:
+          too_long: "No máximo %{max} caracteres"
+      reminder:
+        not_proposed: "Este lembrete já não está por tratar"
+        in_progress: "Este lembrete está a ser enviado"
+      export:
+        currency_rate: "Nenhuma cotação de %{code} em %{date}: o documento %{number} não pode ser convertido para o FEC"
+      mail:
+        draft: "Um rascunho não pode ser enviado"
+        no_recipient: "Indique um destinatário"
+        invalid_address: "Endereço de e-mail inválido"
+        no_sender: "Indique o endereço de envio nos parâmetros"
+        not_configured: "O envio de e-mails não está configurado"
+        delivery_failed: "Falha no envio: %{error}"
+      layout:
+        name:
+          blank: "Indique um nome"
+          too_long: "No máximo %{max} caracteres"
+          taken: "Este nome já está a ser utilizado"
+        color: "Cor no formato #rrggbb"
+        text:
+          too_long: "No máximo %{max} caracteres"
+        logo:
+          type: "O logótipo deve ser uma imagem PNG ou JPEG"
+          not_found: "Logótipo não encontrado"
+        in_use: "Este modelo é utilizado por documentos"
+      return_note:
+        quantity_negative: "Uma guia de devolução indica quantidades positivas"
+        exceeds_origin: "«%{description}»: devolução acima da quantidade de %{origin} (%{delivered}, já devolvido: %{returned})"
+      return_notes:
+        no_invoice_to_credit: "Nenhuma fatura deste cliente pode ser creditada com estas devoluções: escolha a fatura a creditar"
+      payment_rejection:
+        already_rejected: "Este pagamento já foi rejeitado"
+        document:
+          invalid: "Só se pode rejeitar o pagamento de uma fatura emitida"
+        date:
+          before_payment: "A rejeição não pode ser anterior ao pagamento (%{date})"
+          future: "A data da rejeição não pode ser posterior à data de hoje"
+        reason:
+          invalid: "Motivo de rejeição desconhecido"
+        reason_text:
+          required: "Especifique o motivo"
+          too_long: "No máximo %{max} caracteres"
+        fees:
+          negative: "As despesas não podem ser negativas"
+          scale: "Montante ao cêntimo"
+          required: "Indique as despesas a refaturar"
+        fees_vat_rate:
+          required: "Escolha a taxa de IVA da fatura de despesas"
+          invalid: "Taxa de IVA não encontrada ou desativada"
+    return_notes:
+      group_title: "Guia de devolução %{number} de %{date}"
+    return_reasons:
+      damaged: "Mercadoria danificada"
+      defective: "Mercadoria defeituosa"
+      wrong_item: "Erro de entrega"
+      excess: "Quantidade em excesso ou não vendida"
+      other: "Outro motivo"
+    rejection_reasons:
+      insufficient_funds: "Saldo insuficiente"
+      account_closed: "Conta encerrada"
+      stopped: "Oposição ou revogação"
+      disputed: "Contestação do devedor"
+      invalid_details: "Dados bancários errados"
+      other: "Outro motivo"
+    payment_rejections:
+      fees_line: "Despesas bancárias de rejeição do pagamento de %{date} (fatura %{number}, %{reason})"

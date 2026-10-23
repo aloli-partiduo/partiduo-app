@@ -16462,3 +16462,98 @@ listait les catégories d'articles, absents d'un foyer.
 Libellés `ui.household.*` en fr, en, nl. Les dossiers d'entreprise, de
 micro-entreprise et de profession libérale ne changent pas. Specs :
 `spec/ui/household_spec.cr`.
+
+== Quatre langues de plus (23 octobre 2026)
+
+=== D-UI-080 — Langue du dossier pour un visiteur sans langue livrée (partiduo-app, partiduo-ui-bulma)
+
+*Constat.* Un visiteur non connecté dont le navigateur ne demande aucune
+langue livrée (ou n'envoie pas d'en-tête `Accept-Language`) recevait les
+pages d'accès en français, langue par défaut de Marten, même pour un dossier
+configuré en néerlandais ou en allemand.
+
+*Choix.* Ordre de la langue d'une page (`PartiduoUi::Locale.activate_for`) :
+
+. cookie de langue d'une langue livrée (choix explicite dans la barre
+  supérieure ou la page de connexion) ;
+. langue de l'utilisateur connecté ;
+. première langue livrée que demande le navigateur, par priorité, langue de
+  base comprise (`de-DE` → `de`, `pt-BR` → `pt`), arrêt au joker `*` (règles
+  du middleware I18n de Marten, `Locale.browser_locale?`) ;
+. sinon, langue configurée du dossier (`default_locale` de la configuration
+  société), lue sans acteur par `Api::Core.default_locale` (contrat
+  0.19.0) ; français si l'instance n'est pas provisionnée.
+
+Un cookie de langue non livrée est ignoré. La console d'administration n'a
+pas de langue de dossier : elle garde la négociation de Marten. Specs :
+`spec/core/settings_spec.cr`, `spec/ui/locale_negotiation_spec.cr`
+(partiduo-ui-bulma).
+
+=== D-UI-081 — Allemand, espagnol, italien, portugais (tous les dépôts)
+
+*Constat.* ADR-005 D7 prévoit les 24 langues de l'Union européenne ; seules
+fr, en et nl étaient livrées.
+
+*Choix.* `Partiduo::LOCALES` = fr, en, nl, de, es, it, pt (contrat 0.19.0).
+Interface seulement : les règles fiscales restent celles des régimes `fr` et
+`be`, et les noms officiels des formulaires (CA3, 2035, liasse fiscale,
+FEC…) restent en français, avec une glose au besoin. Terminologie et forme
+d'adresse (Sie, usted, Lei ou impersonnel, portugais européen impersonnel)
+dans le glossaire commun (`partiduo-docs/travail/glossaire-interface.adoc`).
+
+* *Locales* : `de.yml`, `es.yml`, `it.yml`, `pt.yml` à côté de chaque
+  `fr.yml`, mêmes clés et interpolations (contrôle de parité étendu à
+  toutes les langues livrées) ; pluriels `one`/`other` (règle `OneOther` de
+  crystal-i18n pour les quatre langues).
+* *Messages de Marten* (`src/core/locales/marten/`) : jeux complets en es,
+  it, pt (Marten ne les livre pas), complément de en allemand (nombres
+  décimaux et images, absents du `de.yml` de Marten).
+* *Sorties du cœur* (PDF, CSV) : `Partiduo::LocaleFormats` remplace les
+  quatre copies des séparateurs et du motif de date (`1.234,56` et
+  `07.09.2026` en allemand ; `1.234,56` et `07/09/2026` en espagnol et en
+  italien ; `1 234,56` et `07/09/2026` en portugais) ; une langue inconnue
+  suit le français. L'interface a les mêmes règles dans `PartiduoUi::Format`
+  (pourcentage `20 %` en allemand et en espagnol, `20%` en italien et en
+  portugais ; `pt-BR` groupe par points).
+* *Specs* : parité des clés et clés citées dans chaque langue livrée,
+  pluriels, conventions de sortie (`spec/core/locale_formats_spec.cr`) ;
+  dans l'interface, parcours de toutes les pages et envois de formulaires
+  dans les sept langues (`PartiduoUi::Translations`, sonde comprise).
+
+=== D-UI-082 — Langue d'affichage tenue par connect (partiduo-app, partiduo-ui-bulma)
+
+*Constat.* La personne est la même pour chaque dossier et pour la console
+d'administration (ADR-012) ; une langue choisie dans un dossier (cookie,
+langue de l'utilisateur du dossier) ne la suivait pas ailleurs.
+
+*Choix.* La langue d'affichage se règle dans connect, sur la page du compte
+(sept langues, ou « langue du navigateur ») ; connect la transmet par le
+claim OpenID standard `locale` de l'id_token (et de userinfo), seulement si
+le compte en a une (partiduo-admin, D-ADM-015).
+
+* *Cœur* : le client OpenID Connect garde le claim `locale`
+  (`Federation::Identity#attributes`) ; à chaque connexion par connect,
+  sa langue de base (`de-DE` → `de`), si elle est livrée, devient celle de
+  la session (`auth_session.locale`, migration `0006_session_locale`) et
+  celle de l'utilisateur du dossier (courriels) ; chaîne vide si le compte
+  n'en a pas ou une langue non livrée. `SessionView#locale_from_connect`
+  (contrat 0.19.0) dit que la langue vient de connect ;
+  `Api::Auth.connect_account_url` donne la page du compte connect.
+* *Ordre, session ouverte par connect* : langue de connect ; sinon langue du
+  navigateur, puis langue du dossier (D-UI-080), puis français. Ni le cookie
+  de langue ni la langue enregistrée dans le dossier ne la contredisent ; un
+  changement fait dans connect est repris à la connexion suivante.
+* *Sélecteur* des écrans connectés : pour une session connect, un lien vers
+  la page du compte connect remplace la liste. Écrire la langue chez connect
+  depuis le dossier demanderait une API d'écriture et un jeton de plus entre
+  les deux services ; le lien garde un seul endroit où la langue se règle,
+  sans aucune écriture d'un service chez l'autre.
+* *Inchangé* : pages d'accès (visiteur : cookie de la visite, navigateur,
+  langue du dossier, français, D-UI-080) ; sessions ouvertes sans connect
+  (mot de passe local, autre fournisseur) : cookie, langue de l'utilisateur,
+  navigateur, langue du dossier.
+
+Specs : `spec/auth/connect_spec.cr` ; `spec/ui/connect_locale_spec.cr`
+(partiduo-ui-bulma : compte connect en `de` → application en allemand,
+changement repris à la connexion suivante, compte sans langue → navigateur
+puis dossier).

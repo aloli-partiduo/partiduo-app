@@ -1,0 +1,276 @@
+pt:
+  liberal:
+    module:
+      name: "Profissão liberal (2035)"
+    permissions:
+      register:
+        read: "Consultar o livro-diário, os imobilizados e a 2035"
+        write: "Lançar, editar e eliminar num exercício aberto, estornar receitas, despesas e imobilizados, registar acréscimos e deduções"
+      settings:
+        write: "Configurar a profissão liberal (naturezas, linhas da 2035)"
+    menu:
+      liberal_journal: "Livro-diário"
+      liberal_assets: "Imobilizados"
+      liberal_tax_return: "Declaração 2035"
+      liberal_settings: "Profissão liberal"
+    kinds:
+      receipt: "Receita"
+      expense: "Despesa"
+    headings:
+      receipts: "Receitas recebidas"
+      financial_income: "Rendimentos financeiros"
+      other_gains: "Ganhos diversos"
+      contribution: "Entrada pessoal (fora da 2035)"
+      loan_received: "Empréstimo recebido (fora da 2035)"
+      disbursements: "Despesas pagas por conta dos clientes"
+      fees_retroceded: "Honorários retrocedidos"
+      purchases: "Compras"
+      salaries: "Salários líquidos e benefícios em espécie"
+      staff_social_charges: "Encargos sociais sobre salários"
+      vat_paid: "IVA pago"
+      cet: "Contribution économique territoriale (imposto local francês)"
+      other_taxes: "Outros impostos"
+      deductible_csg: "CSG dedutível"
+      rent: "Rendas e encargos locativos"
+      equipment_rental: "Aluguer de equipamento e mobiliário"
+      maintenance: "Manutenção e reparações"
+      temporary_staff: "Pessoal temporário"
+      small_tools: "Pequenas ferramentas"
+      utilities: "Aquecimento, água, gás, eletricidade"
+      fees: "Honorários que não constituem retrocessões"
+      insurance: "Prémios de seguro"
+      vehicle: "Despesas com veículos"
+      travel: "Outras despesas de deslocação"
+      personal_social_mandatory: "Contribuições sociais pessoais obrigatórias"
+      personal_social_optional: "Contribuições sociais pessoais facultativas"
+      reception: "Despesas de receção, de representação e de congressos"
+      office: "Material de escritório, documentação, correspondência e telefone"
+      legal_costs: "Despesas com atos e contencioso"
+      professional_dues: "Quotas sindicais e profissionais"
+      other_management: "Outras despesas diversas de gestão"
+      financial_costs: "Gastos financeiros"
+      other_losses: "Perdas diversas"
+      withdrawal: "Levantamento pessoal (fora da 2035)"
+      loan_repayment: "Reembolso do capital de um empréstimo (fora da 2035)"
+    items:
+      net_receipts: "Montante líquido das receitas"
+      total_receipts: "Total das receitas"
+      works_total: "Total de trabalhos, fornecimentos e serviços externos"
+      transport_total: "Total de transportes e deslocações"
+      personal_social_total: "Contribuições sociais pessoais"
+      management_total: "Total de despesas diversas de gestão"
+      total_expenses: "Total das despesas"
+      excess: "Excedente"
+      short_term_gains: "Mais-valias de curto prazo"
+      reintegrations: "Diversos a acrescer"
+      scm_profit: "Lucro de SCM ou de SCP"
+      total_additions: "Total das linhas a acrescer"
+      shortfall: "Insuficiência"
+      establishment_costs: "Despesas de constituição"
+      depreciation: "Dotação para amortizações"
+      provision: "Provisões"
+      short_term_losses: "Menos-valias de curto prazo"
+      deductions: "Diversos a deduzir"
+      scm_loss: "Prejuízo de SCM ou de SCP"
+      total_subtractions: "Total das linhas a deduzir"
+      profit: "Lucro"
+      loss: "Prejuízo"
+      assets_cost: "Imobilizados: valor de aquisição"
+      assets_prior_depreciation: "Amortizações anteriores"
+      assets_year_depreciation: "Amortizações do ano"
+      disposals_price: "Preço de alienação dos imobilizados"
+      long_term_gains: "Mais-valias de longo prazo"
+      long_term_losses: "Menos-valias de longo prazo"
+    asset_categories:
+      intangible: "Imobilizado incorpóreo"
+      goodwill: "Clientela, direito de apresentação"
+      land: "Terreno"
+      building: "Construção"
+      fittings: "Arranjos e instalações"
+      equipment: "Equipamento profissional"
+      vehicle: "Veículo"
+      office: "Equipamento de escritório e informático"
+      furniture: "Mobiliário"
+      other: "Outro imobilizado"
+    adjustment_kinds:
+      reintegration: "Diversos a acrescer"
+      deduction: "Diversos a deduzir"
+      scm_profit: "Lucro de SCM ou de SCP"
+      scm_loss: "Prejuízo de SCM ou de SCP"
+      establishment_costs: "Despesas de constituição"
+      provision: "Provisão"
+    methods:
+      transfer: "Transferência"
+      card: "Cartão bancário"
+      cheque: "Cheque"
+      cash: "Numerário"
+      direct_debit: "Débito direto"
+      other: "Outro"
+    severities:
+      error: "Bloqueante"
+      warning: "A verificar"
+    controls:
+      siren_missing: "O SIREN da empresa está em falta ou mal formado: a 2035 não pode ser transmitida"
+      profession_missing: "Profissão exercida não preenchida"
+      mapping_missing: "«%{item}» não tem linha na tabela do ano %{year}"
+      box_missing: "«%{item}» não tem campo na tabela do ano %{year}: não seria transmitido"
+      box_manual: "«%{item}» (%{year}) não tem campo transmitido: a transcrever à mão no quadro %{line} da 2035"
+      heading_negative: "A rubrica «%{heading}» é negativa"
+      box_duplicate: "As rubricas %{items} são transcritas no mesmo campo %{box} do formulário %{form}: só uma seria transmitida"
+      vehicle_depreciation_ceiling: "Veículo %{number}: a sua base excede %{ceiling} €, o mais baixo dos limites de amortização dos veículos de passageiros (9 900 a 30 000 € consoante as emissões de CO2). Acresça a parte excedente através de um ajustamento"
+      asset_over_depreciated: "Imobilizado %{number} amortizado para além da sua base"
+      no_receipts: "Nenhuma linha no livro-diário para o ano"
+      no_fiscal_year: "Nenhum exercício do dossier abrange %{year}"
+      year_open: "O exercício %{year} não está encerrado: a 2035 ainda pode mudar; encerrá-lo antes de a transmitir"
+      frozen_changed: "A 2035 de %{year} mudou desde que o exercício foi fixado (identificação alterada?): verificar antes de qualquer entrega"
+      asset_register_ignored: "Os imobilizados da 2035 provêm de %{source}: as %{lines} linhas do registo do módulo não são incluídas"
+    reversal_label: "Anulação de %{number}"
+    export:
+      filename:
+        journal: "livro-diario"
+        tax_return: "2035-controlo-%{year}"
+    columns:
+      number: "N.º"
+      date: "Data"
+      kind: "Sentido"
+      party: "Cliente ou fornecedor"
+      label: "Designação"
+      heading: "Rubrica"
+      method: "Pagamento"
+      reference: "Documento"
+      amount: "Montante"
+      nondeductible: "Não dedutível"
+      form: "Formulário"
+      line: "Linha"
+      box: "Campo"
+      item: "Rubrica"
+      category: "Categoria"
+      acquired_on: "Aquisição"
+      service_on: "Entrada em funcionamento"
+      rate: "Taxa %"
+      prior: "Amort. anteriores"
+      year_amount: "Dotação"
+      net_value: "Valor residual"
+      price: "Preço de alienação"
+      gain: "Mais ou menos-valia"
+      short_term: "Curto prazo"
+      long_term: "Longo prazo"
+      severity: "Nível"
+      control: "Controlo"
+    reports:
+      journal: "Livro-diário de receitas e despesas"
+      tax_return: "Declaração 2035 dos rendimentos de %{year} — relatório de controlo"
+      period: "De %{from} a %{to}"
+      total: "Total"
+      total_receipts: "Total das receitas"
+      total_expenses: "Total das despesas"
+      balance: "Saldo"
+      identity: "%{name} — SIREN %{siren}"
+      profession: "Profissão: %{profession}"
+      fingerprint: "Impressão digital: %{fingerprint}"
+      form: "Formulário %{form}"
+      assets: "Imobilizados e amortizações"
+      disposals: "Mais e menos-valias"
+      adjustments: "Acréscimos e deduções"
+      controls: "Controlos de coerência"
+      no_control: "Nenhuma anomalia"
+      page: "Página %{page} de %{count}"
+    errors:
+      year:
+        invalid: "Ano inválido"
+        close:
+          future: "O exercício %{year} ainda não começou: não pode ser encerrado"
+          already: "O exercício %{year} já está encerrado"
+          locked: "A 2035 de %{year} foi transmitida: o exercício está bloqueado"
+        reopen:
+          locked: "A 2035 de %{year} foi transmitida: o exercício está bloqueado e já não pode ser reaberto; corrigir com um estorno num exercício aberto"
+          core_closed: "O exercício %{year} está encerrado com o exercício do dossier (períodos encerrados): não pode ser reaberto aqui"
+          open: "O exercício %{year} está aberto: nada a reabrir"
+      line:
+        nature:
+          unknown: "Natureza desconhecida"
+          disabled: "Esta natureza já não é utilizada"
+        amount:
+          not_positive: "O montante deve ser positivo"
+          scale: "O montante exprime-se ao cêntimo"
+        nondeductible:
+          receipt: "Uma receita não tem parte não dedutível"
+          invalid: "Parte não dedutível inválida (positiva, ao cêntimo)"
+          exceeds: "A parte não dedutível não pode exceder o montante"
+          excluded: "Uma rubrica fora da 2035 não tem parte não dedutível"
+        method:
+          invalid: "Modo de pagamento desconhecido"
+        card:
+          unknown: "Ficha desconhecida"
+        attachment:
+          unknown: "Anexo desconhecido"
+        date:
+          future: "Data futura: registar apenas uma operação realizada"
+          closed_period: "O período desta data está encerrado: corrigir com um estorno num período aberto"
+          transmitted: "A 2035 de %{year} foi transmitida, o exercício está fixado: corrigir com um estorno num exercício aberto"
+          year_closed: "O exercício %{year} está encerrado: reabri-lo para registar uma linha, ou datar a linha num exercício aberto"
+        reversal:
+          is_reversal: "Um estorno não pode ser estornado"
+          already: "Esta linha já foi estornada"
+          before_line: "O estorno não pode ser anterior à linha"
+        change:
+          from_invoicing: "Receita proveniente de uma fatura recebida: corrigi-la na Faturação, ou estorná-la"
+          is_reversal: "Um estorno não pode ser editado: eliminá-lo e depois lançar a linha correta"
+          reversed: "Linha estornada: eliminar primeiro o respetivo estorno"
+          closed_period: "Exercício encerrado ou período encerrado: a linha é intangível, corrigi-la com um estorno"
+          transmitted: "A 2035 de %{year} foi transmitida: a linha é intangível, corrigi-la com um estorno"
+          year_closed: "O exercício %{year} está encerrado: reabri-lo para editar a linha, ou corrigi-la com um estorno"
+        too_long: "No máximo %{max} caracteres"
+      nature:
+        in_use: "Natureza já utilizada: só a descrição e a ativação podem mudar"
+        code:
+          invalid: "Código em maiúsculas, algarismos e _, no máximo 32 caracteres"
+          taken: "Código já utilizado"
+        label:
+          blank: "Indicar uma descrição"
+        kind:
+          invalid: "Sentido desconhecido"
+        heading:
+          invalid: "Rubrica incompatível com o sentido"
+      asset:
+        label:
+          blank: "Indicar uma designação"
+        category:
+          invalid: "Categoria de imobilizado desconhecida"
+        service_before_acquisition: "A entrada em funcionamento não pode ser anterior à aquisição"
+        duration:
+          invalid: "Duração de amortização de 0 a 50 anos"
+          not_depreciable: "Esta categoria não é amortizável: duração 0"
+        reversal:
+          disposed: "Imobilizado alienado: já não pode ser estornado"
+          other_year: "Um imobilizado só pode ser estornado no ano da sua aquisição; depois, aliená-lo"
+        change:
+          disposed: "Imobilizado alienado: eliminar primeiro a alienação"
+          later_year_frozen: "Um ano fixado posterior inclui este imobilizado na sua 2035: já não pode ser alterado"
+      disposal:
+        none: "Este imobilizado não foi alienado"
+        asset:
+          unknown: "Imobilizado desconhecido ou anulado"
+          already: "Imobilizado já alienado"
+        before_acquisition: "A alienação não pode ser anterior à aquisição"
+        price:
+          invalid: "Preço inválido (positivo ou nulo, ao cêntimo)"
+      adjustment:
+        year:
+          invalid: "Ano inválido"
+          closed: "Este ano está encerrado, bloqueado ou inclui um período encerrado"
+        kind:
+          invalid: "Tipo desconhecido"
+        label:
+          blank: "Indicar uma descrição"
+      form_line:
+        year:
+          closed: "Ano de formulário fixado: um ano encerrado utiliza-o; acrescente uma linha ao ano seguinte"
+        box:
+          taken: "Campo já ocupado por «%{item}» neste formulário"
+        item:
+          unknown: "Rubrica desconhecida"
+        form:
+          unknown: "Formulário desconhecido (2035, 2035-A, 2035-B)"
+        millesime:
+          invalid: "Ano de formulário inválido"

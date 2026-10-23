@@ -1,0 +1,76 @@
+es:
+  stock:
+    module:
+      name: "Existencias"
+    permissions:
+      movement:
+        read: "Consultar las existencias"
+        write: "Registrar los movimientos manuales y los inventarios"
+      settings:
+        write: "Configurar los almacenes y los artículos controlados"
+    menu:
+      stock_changes: "Movimientos de existencias"
+      stock_inventory: "Inventario"
+      stock_state: "Estado de existencias"
+      stock_history: "Historial de existencias"
+      stock_valuation: "Valoración de existencias"
+      stock_repositories: "Almacenes"
+      stock_items: "Artículos con control de existencias"
+    directions:
+      in: "Entrada"
+      out: "Salida"
+    change_kinds:
+      change: "Movimiento manual"
+      inventory: "Inventario"
+    columns:
+      date: "Fecha"
+      repository: "Almacén"
+      stock_code: "Código de existencias"
+      card: "Ficha"
+      card_name: "Artículo"
+      direction: "Sentido"
+      quantity: "Cantidad"
+      unit_cost: "Coste unitario"
+      source: "Origen"
+      comment: "Comentario"
+      opening: "Existencias iniciales"
+      quantity_in: "Entradas"
+      quantity_out: "Salidas"
+      closing: "Existencias finales"
+      value: "Valor"
+      total: "Total"
+    errors:
+      rights:
+        denied: "No tiene permiso para escribir en este almacén."
+        profile_unknown: "Perfil desconocido."
+        access_invalid: "Permiso desconocido (lectura o escritura)."
+        repository_unknown: "Almacén desconocido (%{id})."
+      repository:
+        name_required: "El nombre del almacén es obligatorio."
+        name_too_long: "El nombre del almacén tiene como máximo %{max} caracteres."
+        name_taken: "El almacén %{name} ya existe."
+        country_invalid: "El país es un código de dos letras."
+        too_long: "Este campo tiene como máximo %{max} caracteres."
+        in_use: "Este almacén tiene movimientos: no se puede eliminar."
+      settings:
+        repository_unknown: "Almacén desconocido (%{id})."
+      item:
+        card_unknown: "Ficha desconocida (%{id})."
+        not_an_item: "La ficha %{code} no es un artículo."
+        too_long: "El código de existencias tiene como máximo %{max} caracteres."
+        invalid: "El código de existencias no contiene espacios."
+      change:
+        repository_unknown: "Almacén desconocido (%{id})."
+        closed_period: "La fecha %{date} está en un periodo cerrado."
+        too_long: "El comentario tiene como máximo %{max} caracteres."
+        lines_required: "Introduzca al menos un artículo."
+        quantity_zero: "La cantidad no puede ser cero."
+        quantity_scale: "La cantidad tiene como máximo %{max} decimales."
+        not_tracked: "Este artículo no tiene control de existencias (%{id})."
+        cost_on_exit: "Una salida no tiene coste unitario."
+        cost_negative: "El coste unitario no puede ser negativo."
+        cost_scale: "El coste unitario tiene como máximo %{max} decimales."
+      inventory:
+        lines_required: "Introduzca al menos un artículo contado."
+        code_twice: "El código de existencias %{code} se ha contado dos veces."
+        counted_negative: "La cantidad contada no puede ser negativa."

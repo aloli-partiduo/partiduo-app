@@ -36,21 +36,13 @@ module Partiduo
         text = decimals ? plain(value) : value.round(0, mode: :ties_away).to_s.split('.').first
         negative = text.starts_with?('-')
         integer, _, fraction = text.lchop('-').partition('.')
-        thousands, decimal = case I18n.locale
-                             when "en" then {",", "."}
-                             when "nl" then {".", ","}
-                             else           {" ", ","}
-                             end
+        thousands, decimal = Partiduo::LocaleFormats.separators(I18n.locale)
         grouped = integer.reverse.scan(/\d{1,3}/).map(&.[0]).join(thousands).reverse
         "#{negative ? "-" : ""}#{grouped}#{fraction.empty? ? "" : decimal + fraction}"
       end
 
       def self.date(value : Time) : String
-        case I18n.locale
-        when "en" then value.to_s("%Y-%m-%d")
-        when "nl" then value.to_s("%d-%m-%Y")
-        else           value.to_s("%d/%m/%Y")
-        end
+        Partiduo::LocaleFormats.date(value, I18n.locale)
       end
 
       def self.protect(text : String) : String

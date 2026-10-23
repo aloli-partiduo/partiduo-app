@@ -17,6 +17,17 @@ describe "Libellés et messages du socle (ADR-005 D7)" do
       I18n.t("core.settings.session_duration", count: 1).should eq("1 minuut")
       I18n.t("core.settings.session_duration", count: 2).should eq("2 minuten")
     end
+    # Allemand, espagnol, italien, portugais : `one` pour 1 seulement.
+    %w[de es it pt].each do |locale|
+      I18n.with_locale(locale) do
+        one = I18n.t("core.settings.session_duration", count: 1)
+        other = I18n.t("core.settings.session_duration", count: 2)
+        one.should start_with("1 ")
+        other.should start_with("2 ")
+        I18n.t("core.settings.session_duration", count: 0).should eq(other.sub("2", "0"))
+        one.should_not eq(other.sub("2", "1"))
+      end
+    end
   end
 
   it "traduit régimes, méthodes et niveaux d'authentification, champs de la société" do

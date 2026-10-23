@@ -40,7 +40,7 @@ private def translated_everywhere(keys : Enumerable(String)) : Array(String)
 end
 
 describe "Traductions (ADR-005 D7)" do
-  it "fournit les mêmes clés, aux mêmes interpolations, en fr, en et nl dans chaque application" do
+  it "fournit les mêmes clés, aux mêmes interpolations, dans chaque langue livrée et chaque application" do
     src = File.expand_path("../../src", __DIR__)
     failures = [] of String
     Dir.glob(File.join(src, "*", "locales")).sort.each do |dir|
@@ -50,7 +50,7 @@ describe "Traductions (ADR-005 D7)" do
         {locale.to_s, leaves(YAML.parse(File.read(path))[locale.to_s])}
       end
       reference = values["fr"]
-      %w[en nl].each do |locale|
+      Partiduo::LOCALES.reject("fr").each do |locale|
         other = values[locale]
         (reference.keys - other.keys).each { |key| failures << "#{dir} : #{locale} n'a pas #{key}" }
         (other.keys - reference.keys).each { |key| failures << "#{dir} : #{locale} a #{key}, absente en fr" }
@@ -64,7 +64,7 @@ describe "Traductions (ADR-005 D7)" do
     failures.should eq([] of String)
   end
 
-  it "traduit en fr, en et nl toute clé passée à I18n.t" do
+  it "traduit dans chaque langue livrée toute clé passée à I18n.t" do
     root = File.expand_path("../..", __DIR__)
     cited = Dir.glob(File.join(root, "src", "**", "*.cr")).flat_map do |path|
       File.read_lines(path).reject(&.lstrip.starts_with?('#')).flat_map do |line|

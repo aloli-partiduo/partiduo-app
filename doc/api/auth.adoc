@@ -140,6 +140,19 @@ Partiduo::Api::Auth.elevate_with_totp(anonymous, cookie, code)
 
 Les octets passent en base64url, tels que les renvoie le navigateur.
 
+=== Langue tenue par connect (0.19.0, D-UI-082)
+
+À chaque connexion par connect, le claim `locale` de l'id_token (langue de
+base, si elle est livrée) devient la langue de la session
+(`auth_session.locale`, migration auth 0006) et celle de l'utilisateur.
+`SessionView#locale_from_connect` : la langue de la session vient de
+connect ; `SessionView#locale` vaut alors celle du compte connect, ou une
+chaîne vide s'il n'en a pas (l'interface suit le navigateur, puis la langue
+du dossier). Pour une autre session, `locale` reste la langue de
+l'utilisateur et `locale_from_connect` est faux.
+`Api::Auth.connect_account_url : String?` : page du compte connect, où se
+règle la langue ; `nil` si connect n'est pas réglé.
+
 === Authentification forte récente (0.17.0, A-SEPA-3)
 
 `Actor#strong_auth_at` (et `SessionView#strong_auth_at`) : heure de la

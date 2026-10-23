@@ -1,0 +1,80 @@
+it:
+  followup:
+    module:
+      name: "Attività"
+    permissions:
+      action:
+        read: "Consultare le attività di follow-up"
+        write: "Creare e modificare le attività di follow-up"
+      settings:
+        write: "Configurare i tipi di attività e le etichette"
+    menu:
+      fup_actions: "Attività"
+      fup_reminders: "Promemoria"
+      fup_types: "Tipi di attività"
+      fup_tags: "Etichette"
+    states:
+      todo: "Da fare"
+      follow: "Da seguire"
+      closed: "Chiusa"
+      abandoned: "Abbandonata"
+    priorities:
+      p1: "Alta"
+      p2: "Normale"
+      p3: "Bassa"
+    columns:
+      reference: "Riferimento"
+      date: "Data"
+      hour: "Ora"
+      type: "Tipo"
+      title: "Titolo"
+      card: "Destinatario"
+      state: "Stato"
+      priority: "Priorità"
+      remind_on: "Promemoria"
+      tags: "Etichette"
+    default_types:
+      di: "Documento interno"
+      bcl: "Ordine cliente"
+      bfo: "Ordine fornitore"
+      fac: "Fattura"
+      rap: "Lettera di sollecito"
+      co: "Lettera"
+      prp: "Proposta"
+      el: "E-mail"
+      ds: "Varie"
+      nfr: "Nota spese"
+      rfo: "Ricevimento ordine fornitore"
+      rcl: "Ricevimento ordine cliente"
+      rmg: "Ricevimento in magazzino"
+    errors:
+      action_type:
+        code_required: "Il prefisso è obbligatorio."
+        code_too_long: "Il prefisso ha al massimo %{max} caratteri."
+        code_invalid: "Il prefisso contiene solo lettere e cifre."
+        code_taken: "Il prefisso %{code} è già utilizzato."
+        label_required: "La descrizione è obbligatoria."
+        label_too_long: "La descrizione ha al massimo %{max} caratteri."
+        next_number_invalid: "Il numero successivo vale almeno 1."
+        in_use: "Questo tipo di attività è utilizzato: impossibile eliminarlo."
+      tag:
+        label_required: "Il nome dell'etichetta è obbligatorio."
+        label_too_long: "Il nome dell'etichetta ha al massimo %{max} caratteri."
+        label_taken: "L'etichetta %{label} esiste già."
+        color_invalid: "Il colore è un numero da 1 a 10."
+      action:
+        type_unknown: "Tipo di attività sconosciuto (%{id})."
+        title_too_long: "Il titolo ha al massimo %{max} caratteri."
+        hour_invalid: "Ora non valida (HH:MM)."
+        priority_invalid: "Priorità non valida."
+        state_invalid: "Stato non valido."
+        profile_unknown: "Profilo sconosciuto: l'attività non può essergli riservata."
+        card_unknown: "Scheda sconosciuta (%{id})."
+        tag_unknown: "Etichetta sconosciuta (%{id})."
+      comment:
+        text_required: "Il commento è vuoto."
+        text_too_long: "Il commento ha al massimo %{max} caratteri."
+      link:
+        invalid: "Riferimento di operazione non valido (ad esempio entry:42)."
+      relation:
+        self: "Un'attività non può essere collegata a se stessa."

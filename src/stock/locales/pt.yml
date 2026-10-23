@@ -1,0 +1,76 @@
+pt:
+  stock:
+    module:
+      name: "Existências"
+    permissions:
+      movement:
+        read: "Consultar as existências"
+        write: "Registar os movimentos manuais e os inventários"
+      settings:
+        write: "Configurar os armazéns e os artigos com controlo de existências"
+    menu:
+      stock_changes: "Movimentos de existências"
+      stock_inventory: "Inventário"
+      stock_state: "Estado das existências"
+      stock_history: "Histórico das existências"
+      stock_valuation: "Valorização das existências"
+      stock_repositories: "Armazéns"
+      stock_items: "Artigos com controlo de existências"
+    directions:
+      in: "Entrada"
+      out: "Saída"
+    change_kinds:
+      change: "Movimento manual"
+      inventory: "Inventário"
+    columns:
+      date: "Data"
+      repository: "Armazém"
+      stock_code: "Código de existências"
+      card: "Ficha"
+      card_name: "Artigo"
+      direction: "Sentido"
+      quantity: "Quantidade"
+      unit_cost: "Custo unitário"
+      source: "Origem"
+      comment: "Comentário"
+      opening: "Existência inicial"
+      quantity_in: "Entradas"
+      quantity_out: "Saídas"
+      closing: "Existência final"
+      value: "Valor"
+      total: "Total"
+    errors:
+      rights:
+        denied: "Não tem permissão para escrever neste armazém."
+        profile_unknown: "Perfil desconhecido."
+        access_invalid: "Permissão desconhecida (leitura ou escrita)."
+        repository_unknown: "Armazém desconhecido (%{id})."
+      repository:
+        name_required: "O nome do armazém é obrigatório."
+        name_too_long: "O nome do armazém tem no máximo %{max} caracteres."
+        name_taken: "O armazém %{name} já existe."
+        country_invalid: "O país é um código de duas letras."
+        too_long: "Este campo tem no máximo %{max} caracteres."
+        in_use: "Este armazém tem movimentos: não é possível eliminá-lo."
+      settings:
+        repository_unknown: "Armazém desconhecido (%{id})."
+      item:
+        card_unknown: "Ficha desconhecida (%{id})."
+        not_an_item: "A ficha %{code} não é um artigo."
+        too_long: "O código de existências tem no máximo %{max} caracteres."
+        invalid: "O código de existências não contém espaços."
+      change:
+        repository_unknown: "Armazém desconhecido (%{id})."
+        closed_period: "A data %{date} pertence a um período encerrado."
+        too_long: "O comentário tem no máximo %{max} caracteres."
+        lines_required: "Introduza pelo menos um artigo."
+        quantity_zero: "A quantidade não pode ser nula."
+        quantity_scale: "A quantidade tem no máximo %{max} casas decimais."
+        not_tracked: "Este artigo não tem controlo de existências (%{id})."
+        cost_on_exit: "Uma saída não tem custo unitário."
+        cost_negative: "O custo unitário não pode ser negativo."
+        cost_scale: "O custo unitário tem no máximo %{max} casas decimais."
+      inventory:
+        lines_required: "Introduza pelo menos um artigo contado."
+        code_twice: "O código de existências %{code} foi contado duas vezes."
+        counted_negative: "A quantidade contada não pode ser negativa."

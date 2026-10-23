@@ -1,0 +1,156 @@
+de:
+  micro:
+    module:
+      name: "Kleinstunternehmen (micro-entreprise)"
+    permissions:
+      register:
+        read: "Register, URSSAF-Hilfe und Schwellenwerte ansehen"
+        write: "Einnahmen und Einkäufe erfassen, ändern, löschen und gegenbuchen, Erklärungen vermerken"
+      settings:
+        write: "Kleinstunternehmen einrichten (Arten, Sätze, Schwellenwerte, Wechsel)"
+    menu:
+      micro_receipts: "Einnahmen"
+      micro_purchases: "Einkäufe"
+      micro_urssaf: "URSSAF"
+      micro_tax_return: "Einkommensteuererklärung (2042-C-PRO)"
+      micro_thresholds: "Schwellenwerte"
+      micro_settings: "Kleinstunternehmen"
+    categories:
+      sale_bic: "Warenverkäufe (BIC)"
+      service_bic: "Dienstleistungen (BIC)"
+      bnc: "Dienstleistungen (BNC)"
+      goods: "Weiterverkaufte Waren"
+      other: "Sonstige Einkäufe"
+    scopes:
+      goods: "Verkäufe und gemischte Tätigkeit"
+      services: "Dienstleistungen"
+    methods:
+      transfer: "Überweisung"
+      card: "Bankkarte"
+      cheque: "Scheck"
+      cash: "Bargeld"
+      direct_debit: "Lastschrift"
+      other: "Sonstiges"
+    periodicities:
+      monthly: "Monatlich"
+      quarterly: "Vierteljährlich"
+    declaration_statuses:
+      upcoming: "Bevorstehend"
+      open: "Laufende Periode"
+      due: "Zu erklären"
+      late: "Überfällig"
+      declared: "Erklärt"
+    threshold_statuses:
+      ok: "Unter dem Schwellenwert"
+      approaching: "Schwellenwert nahe"
+      exceeded: "Schwellenwert überschritten"
+      tolerance_exceeded: "Erhöhter Schwellenwert überschritten"
+      not_applicable: "Wechsel erfolgt"
+      unknown: "Schwellenwert nicht eingerichtet"
+    default_natures:
+      sale: "Warenverkäufe"
+      service: "Gewerbliche oder handwerkliche Dienstleistungen"
+      fee: "Freiberufliche Dienstleistungen"
+      goods: "Wareneinkauf"
+      supplies: "Sonstige Einkäufe"
+    reversal_label: "Stornierung von %{number}"
+    export:
+      filename:
+        receipt: "einnahmenbuch"
+        purchase: "einkaufsregister"
+    columns:
+      number: "Nr."
+      date: "Datum"
+      party: "Kunde oder Lieferant"
+      label: "Art des Vorgangs"
+      nature: "Kategorie"
+      method: "Zahlung"
+      reference: "Beleg"
+      amount: "Betrag"
+      vat_amount: "Davon USt."
+    reports:
+      receipt: "Einnahmenbuch"
+      purchase: "Einkaufsregister"
+      period: "Vom %{from} bis %{to}"
+      total: "Summe"
+      total_nature: "Summe %{nature}"
+      page: "Seite %{page} von %{count}"
+    todo:
+      declaration_due: "Umsatz vom %{from} bis %{to} vor dem %{due_on} bei der URSSAF erklären"
+      declaration_late: "URSSAF-Erklärung vom %{from} bis %{to} überfällig (Fälligkeit am %{due_on})"
+    alerts:
+      vat:
+        approaching: "Umsatz bei %{ratio} % des Schwellenwerts der USt.-Befreiung (%{limit} €)"
+        exceeded: "Schwellenwert der USt.-Befreiung überschritten (%{limit} €): USt. ab dem folgenden 1. Januar geschuldet"
+        tolerance_exceeded: "Erhöhter Schwellenwert der USt.-Befreiung überschritten: USt. ab dem Tag der Überschreitung geschuldet"
+      micro:
+        approaching: "Umsatz bei %{ratio} % des Schwellenwerts des Micro-Regimes (%{limit} €)"
+        exceeded: "Schwellenwert des Micro-Regimes überschritten (%{limit} €): Wechsel zur Regelbesteuerung einplanen"
+    errors:
+      line:
+        nature:
+          unknown: "Unbekannte Art"
+          disabled: "Diese Art wird nicht mehr verwendet"
+        amount:
+          not_positive: "Der Betrag muss positiv sein"
+          scale: "Der Betrag wird auf den Cent genau angegeben"
+        vat_amount:
+          invalid: "Ungültige USt. (positiv, auf den Cent genau)"
+          exceeds: "Die USt. darf den vereinnahmten oder gezahlten Betrag nicht erreichen"
+        method:
+          invalid: "Unbekannte Zahlungsart"
+        card:
+          unknown: "Unbekannter Stammsatz"
+        attachment:
+          unknown: "Unbekannter Anhang"
+        date:
+          future: "Datum in der Zukunft: nur einen ausgeführten Vorgang erfassen"
+          closed_period: "Die Periode dieses Datums ist abgeschlossen: durch eine Gegenbuchung in einer offenen Periode korrigieren"
+          declared_period: "Die URSSAF-Periode dieses Datums ist bereits erklärt: durch eine Gegenbuchung in einer nicht erklärten Periode korrigieren"
+        reversal:
+          is_reversal: "Eine Gegenbuchung kann nicht gegengebucht werden"
+          already: "Diese Zeile ist bereits gegengebucht"
+          before_line: "Die Gegenbuchung darf nicht vor der Zeile liegen"
+        change:
+          from_invoicing: "Zeile aus der Fakturierung: in der Fakturierung korrigieren oder gegenbuchen"
+          is_reversal: "Eine Gegenbuchung kann nicht geändert werden: sie löschen und dann erneut gegenbuchen"
+          reversed: "Zeile gegengebucht: zuerst ihre Gegenbuchung löschen"
+          closed_period: "Periode abgeschlossen: Die Zeile ist unveränderlich, sie in einer offenen Periode gegenbuchen"
+          declared_period: "Periode bereits bei der URSSAF erklärt: Die Zeile ist unveränderlich, sie in einer nicht erklärten Periode gegenbuchen"
+        too_long: "Höchstens %{max} Zeichen"
+      parameter:
+        code:
+          unknown: "Unbekannter Parameter"
+        text:
+          required: "Das Feld angeben"
+        value:
+          invalid: "Ungültiger Wert (positiv, höchstens sechs Dezimalstellen)"
+      settings:
+        periodicity:
+          invalid: "Unbekannte Periodizität"
+      nature:
+        in_use: "Art bereits verwendet: Nur Bezeichnung und Aktivierung können geändert werden"
+        code:
+          invalid: "Code aus Großbuchstaben, Ziffern und _, höchstens 24 Zeichen"
+          taken: "Code bereits vergeben"
+        label:
+          blank: "Eine Bezeichnung angeben"
+        kind:
+          invalid: "Unbekannte Richtung"
+        category:
+          invalid: "Kategorie passt nicht zur Richtung"
+      item:
+        not_item: "Dieser Stammsatz ist kein Artikel"
+      declaration:
+        period:
+          invalid: "Dies ist nicht der Beginn einer Erklärungsperiode"
+        before_end: "Die Erklärung folgt auf das Ende der Periode"
+        future: "Die Erklärung darf nicht in der Zukunft datiert sein"
+        already: "Periode bereits erklärt"
+      switch:
+        vat:
+          rate_invalid: "Einen aktiven USt.-Satz wählen, ungleich null, außerhalb der Befreiung"
+          already: "Der Wechsel zur USt. ist bereits erfolgt"
+          item_refused: "Artikel %{code} nicht geändert (%{error})"
+        real:
+          already: "Der Wechsel zur Regelbesteuerung ist bereits erfolgt"

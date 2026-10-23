@@ -1,0 +1,276 @@
+it:
+  liberal:
+    module:
+      name: "Libera professione (2035)"
+    permissions:
+      register:
+        read: "Consultare il libro giornale, le immobilizzazioni e la 2035"
+        write: "Registrare, modificare ed eliminare in un esercizio aperto, stornare entrate, uscite e immobilizzazioni, annotare riprese e deduzioni"
+      settings:
+        write: "Configurare la libera professione (nature, righe della 2035)"
+    menu:
+      liberal_journal: "Libro giornale"
+      liberal_assets: "Immobilizzazioni"
+      liberal_tax_return: "Dichiarazione 2035"
+      liberal_settings: "Libera professione"
+    kinds:
+      receipt: "Entrata"
+      expense: "Uscita"
+    headings:
+      receipts: "Entrate incassate"
+      financial_income: "Proventi finanziari"
+      other_gains: "Proventi diversi"
+      contribution: "Apporto personale (escluso dalla 2035)"
+      loan_received: "Prestito ricevuto (escluso dalla 2035)"
+      disbursements: "Spese anticipate per conto dei clienti"
+      fees_retroceded: "Onorari retrocessi"
+      purchases: "Acquisti"
+      salaries: "Salari netti e benefici in natura"
+      staff_social_charges: "Oneri sociali sui salari"
+      vat_paid: "IVA pagata"
+      cet: "Contribution économique territoriale (imposta locale francese)"
+      other_taxes: "Altre imposte"
+      deductible_csg: "CSG deducibile"
+      rent: "Affitti e oneri locativi"
+      equipment_rental: "Noleggio di attrezzature e mobili"
+      maintenance: "Manutenzione e riparazioni"
+      temporary_staff: "Personale interinale"
+      small_tools: "Piccola attrezzatura"
+      utilities: "Riscaldamento, acqua, gas, elettricità"
+      fees: "Onorari che non costituiscono retrocessioni"
+      insurance: "Premi assicurativi"
+      vehicle: "Spese per veicoli"
+      travel: "Altre spese di viaggio"
+      personal_social_mandatory: "Contributi previdenziali personali obbligatori"
+      personal_social_optional: "Contributi previdenziali personali facoltativi"
+      reception: "Spese di ricevimento, di rappresentanza e di congressi"
+      office: "Forniture per ufficio, documentazione, corrispondenza e telefono"
+      legal_costs: "Spese per atti e contenzioso"
+      professional_dues: "Quote sindacali e professionali"
+      other_management: "Altre spese generali di gestione"
+      financial_costs: "Oneri finanziari"
+      other_losses: "Perdite diverse"
+      withdrawal: "Prelievo personale (escluso dalla 2035)"
+      loan_repayment: "Rimborso del capitale di un prestito (escluso dalla 2035)"
+    items:
+      net_receipts: "Importo netto delle entrate"
+      total_receipts: "Totale delle entrate"
+      works_total: "Totale lavori, forniture e servizi esterni"
+      transport_total: "Totale trasporti e spostamenti"
+      personal_social_total: "Contributi previdenziali personali"
+      management_total: "Totale spese generali di gestione"
+      total_expenses: "Totale delle uscite"
+      excess: "Eccedenza"
+      short_term_gains: "Plusvalenze a breve termine"
+      reintegrations: "Varie da riprendere"
+      scm_profit: "Utile di SCM o di SCP"
+      total_additions: "Totale delle righe da aggiungere"
+      shortfall: "Insufficienza"
+      establishment_costs: "Spese di costituzione"
+      depreciation: "Quota di ammortamento"
+      provision: "Accantonamenti"
+      short_term_losses: "Minusvalenze a breve termine"
+      deductions: "Varie da dedurre"
+      scm_loss: "Perdita di SCM o di SCP"
+      total_subtractions: "Totale delle righe da dedurre"
+      profit: "Utile"
+      loss: "Perdita"
+      assets_cost: "Immobilizzazioni: valore d'origine"
+      assets_prior_depreciation: "Ammortamenti precedenti"
+      assets_year_depreciation: "Ammortamenti dell'anno"
+      disposals_price: "Prezzo di cessione delle immobilizzazioni"
+      long_term_gains: "Plusvalenze a lungo termine"
+      long_term_losses: "Minusvalenze a lungo termine"
+    asset_categories:
+      intangible: "Immobilizzazione immateriale"
+      goodwill: "Clientela, diritto di presentazione"
+      land: "Terreno"
+      building: "Fabbricato"
+      fittings: "Sistemazioni e impianti"
+      equipment: "Attrezzatura professionale"
+      vehicle: "Veicolo"
+      office: "Macchine d'ufficio e informatiche"
+      furniture: "Mobili"
+      other: "Altra immobilizzazione"
+    adjustment_kinds:
+      reintegration: "Varie da riprendere"
+      deduction: "Varie da dedurre"
+      scm_profit: "Utile di SCM o di SCP"
+      scm_loss: "Perdita di SCM o di SCP"
+      establishment_costs: "Spese di costituzione"
+      provision: "Accantonamento"
+    methods:
+      transfer: "Bonifico"
+      card: "Carta di pagamento"
+      cheque: "Assegno"
+      cash: "Contanti"
+      direct_debit: "Addebito diretto"
+      other: "Altro"
+    severities:
+      error: "Bloccante"
+      warning: "Da verificare"
+    controls:
+      siren_missing: "Il SIREN della società manca o non è ben formato: la 2035 non può essere trasmessa"
+      profession_missing: "Professione esercitata non indicata"
+      mapping_missing: "«%{item}» non ha una riga nella tabella dell'anno %{year}"
+      box_missing: "«%{item}» non ha una casella nella tabella dell'anno %{year}: non verrebbe trasmesso"
+      box_manual: "«%{item}» (%{year}) non ha una casella trasmessa: da riportare a mano nel prospetto %{line} della 2035"
+      heading_negative: "La voce «%{heading}» è negativa"
+      box_duplicate: "Le voci %{items} sono riportate nella stessa casella %{box} del modulo %{form}: ne verrebbe trasmessa una sola"
+      vehicle_depreciation_ceiling: "Veicolo %{number}: la sua base supera %{ceiling} €, il più basso dei massimali di ammortamento delle autovetture (da 9.900 a 30.000 € secondo le emissioni di CO2). Riprenda la parte eccedente con una rettifica"
+      asset_over_depreciated: "Immobilizzazione %{number} ammortizzata oltre la sua base"
+      no_receipts: "Nessuna riga nel libro giornale per l'anno"
+      no_fiscal_year: "Nessun esercizio del dossier copre il %{year}"
+      year_open: "L'esercizio %{year} non è chiuso: la 2035 può ancora cambiare; chiuderlo prima di trasmetterla"
+      frozen_changed: "La 2035 del %{year} è cambiata da quando l'esercizio è stato bloccato (dati identificativi modificati?): verificare prima di qualsiasi deposito"
+      asset_register_ignored: "Le immobilizzazioni della 2035 provengono da %{source}: le %{lines} righe del registro del modulo non sono riprese"
+    reversal_label: "Annullamento di %{number}"
+    export:
+      filename:
+        journal: "libro-giornale"
+        tax_return: "2035-controllo-%{year}"
+    columns:
+      number: "N."
+      date: "Data"
+      kind: "Verso"
+      party: "Cliente o fornitore"
+      label: "Descrizione"
+      heading: "Voce"
+      method: "Pagamento"
+      reference: "Documento"
+      amount: "Importo"
+      nondeductible: "Non deducibile"
+      form: "Modulo"
+      line: "Riga"
+      box: "Casella"
+      item: "Voce"
+      category: "Categoria"
+      acquired_on: "Acquisizione"
+      service_on: "Entrata in funzione"
+      rate: "Aliquota %"
+      prior: "Amm. precedenti"
+      year_amount: "Quota"
+      net_value: "Valore residuo"
+      price: "Prezzo di cessione"
+      gain: "Plus o minusvalenza"
+      short_term: "Breve termine"
+      long_term: "Lungo termine"
+      severity: "Livello"
+      control: "Controllo"
+    reports:
+      journal: "Libro giornale delle entrate e delle uscite"
+      tax_return: "Dichiarazione 2035 dei redditi %{year} — stampa di controllo"
+      period: "Dal %{from} al %{to}"
+      total: "Totale"
+      total_receipts: "Totale delle entrate"
+      total_expenses: "Totale delle uscite"
+      balance: "Saldo"
+      identity: "%{name} — SIREN %{siren}"
+      profession: "Professione: %{profession}"
+      fingerprint: "Impronta: %{fingerprint}"
+      form: "Modulo %{form}"
+      assets: "Immobilizzazioni e ammortamenti"
+      disposals: "Plusvalenze e minusvalenze"
+      adjustments: "Riprese e deduzioni"
+      controls: "Controlli di coerenza"
+      no_control: "Nessuna anomalia"
+      page: "Pagina %{page} di %{count}"
+    errors:
+      year:
+        invalid: "Anno non valido"
+        close:
+          future: "L'esercizio %{year} non è iniziato: non si chiude"
+          already: "L'esercizio %{year} è già chiuso"
+          locked: "La 2035 del %{year} è trasmessa: l'esercizio è bloccato"
+        reopen:
+          locked: "La 2035 del %{year} è trasmessa: l'esercizio è bloccato e non si riapre più; correggere con uno storno in un esercizio aperto"
+          core_closed: "L'esercizio %{year} è chiuso con l'esercizio del dossier (periodi chiusi): non si riapre qui"
+          open: "L'esercizio %{year} è aperto: niente da riaprire"
+      line:
+        nature:
+          unknown: "Natura sconosciuta"
+          disabled: "Questa natura non è più utilizzata"
+        amount:
+          not_positive: "L'importo deve essere positivo"
+          scale: "L'importo si esprime al centesimo"
+        nondeductible:
+          receipt: "Un'entrata non ha parte non deducibile"
+          invalid: "Parte non deducibile non valida (positiva, al centesimo)"
+          exceeds: "La parte non deducibile non può superare l'importo"
+          excluded: "Una voce esclusa dalla 2035 non ha parte non deducibile"
+        method:
+          invalid: "Modalità di pagamento sconosciuta"
+        card:
+          unknown: "Scheda sconosciuta"
+        attachment:
+          unknown: "Allegato sconosciuto"
+        date:
+          future: "Data futura: registrare solo un'operazione effettuata"
+          closed_period: "Il periodo di questa data è chiuso: correggere con uno storno in un periodo aperto"
+          transmitted: "La 2035 del %{year} è trasmessa, l'esercizio è bloccato: correggere con uno storno in un esercizio aperto"
+          year_closed: "L'esercizio %{year} è chiuso: riaprirlo per registrarvi una riga, oppure datare la riga in un esercizio aperto"
+        reversal:
+          is_reversal: "Uno storno non si storna"
+          already: "Questa riga è già stornata"
+          before_line: "Lo storno non può precedere la riga"
+        change:
+          from_invoicing: "Entrata proveniente da una fattura incassata: correggerla nella Fatturazione, oppure stornarla"
+          is_reversal: "Uno storno non si modifica: eliminarlo, poi inserire la riga corretta"
+          reversed: "Riga stornata: eliminare prima il suo storno"
+          closed_period: "Esercizio chiuso o periodo chiuso: la riga è intangibile, correggerla con uno storno"
+          transmitted: "La 2035 del %{year} è trasmessa: la riga è intangibile, correggerla con uno storno"
+          year_closed: "L'esercizio %{year} è chiuso: riaprirlo per modificare la riga, oppure correggerla con uno storno"
+        too_long: "Al massimo %{max} caratteri"
+      nature:
+        in_use: "Natura già utilizzata: cambiano solo la descrizione e l'attivazione"
+        code:
+          invalid: "Codice in maiuscole, cifre e _, al massimo 32 caratteri"
+          taken: "Codice già utilizzato"
+        label:
+          blank: "Indicare una descrizione"
+        kind:
+          invalid: "Verso sconosciuto"
+        heading:
+          invalid: "Voce incompatibile con il verso"
+      asset:
+        label:
+          blank: "Indicare una descrizione"
+        category:
+          invalid: "Categoria di immobilizzazione sconosciuta"
+        service_before_acquisition: "L'entrata in funzione non può precedere l'acquisizione"
+        duration:
+          invalid: "Durata di ammortamento da 0 a 50 anni"
+          not_depreciable: "Questa categoria non si ammortizza: durata 0"
+        reversal:
+          disposed: "Immobilizzazione ceduta: non si storna più"
+          other_year: "Un'immobilizzazione si storna solo nell'anno della sua acquisizione; dopo, cederla"
+        change:
+          disposed: "Immobilizzazione ceduta: eliminare prima la cessione"
+          later_year_frozen: "Un anno bloccato successivo conta questa immobilizzazione nella sua 2035: non cambia più"
+      disposal:
+        none: "Questa immobilizzazione non è ceduta"
+        asset:
+          unknown: "Immobilizzazione sconosciuta o annullata"
+          already: "Immobilizzazione già ceduta"
+        before_acquisition: "La cessione non può precedere l'acquisizione"
+        price:
+          invalid: "Prezzo non valido (positivo o zero, al centesimo)"
+      adjustment:
+        year:
+          invalid: "Anno non valido"
+          closed: "Questo anno è chiuso, bloccato o contiene un periodo chiuso"
+        kind:
+          invalid: "Tipo sconosciuto"
+        label:
+          blank: "Indicare una descrizione"
+      form_line:
+        year:
+          closed: "Annualità bloccata: un anno chiuso la utilizza; aggiunga una riga all'annualità successiva"
+        box:
+          taken: "Casella già occupata da «%{item}» in questo modulo"
+        item:
+          unknown: "Voce sconosciuta"
+        form:
+          unknown: "Modulo sconosciuto (2035, 2035-A, 2035-B)"
+        millesime:
+          invalid: "Annualità non valida"

@@ -1,0 +1,95 @@
+de:
+  analytic:
+    module:
+      name: "Kostenrechnung"
+    permissions:
+      plan:
+        read: "Kostenstellenpläne ansehen"
+        write: "Kostenstellenpläne bearbeiten"
+      operation:
+        write: "Buchungen aufteilen und sonstige Kostenrechnungsbuchungen erfassen"
+      report:
+        read: "Auswertungen der Kostenrechnung ansehen"
+    menu:
+      ana_plans: "Pläne und Kostenstellen"
+      ana_keys: "Verteilungsschlüssel"
+      ana_misc: "Sonstige Kostenrechnungsbuchungen"
+      ana_reports: "Auswertungen Kostenrechnung"
+      ana_settings: "Einstellungen Kostenrechnung"
+    reports:
+      total: "Summe"
+      side:
+        debit: "Soll"
+        credit: "Haben"
+      columns:
+        post: "Kostenstelle"
+        description: "Beschreibung"
+        group: "Gruppe"
+        debit: "Soll"
+        credit: "Haben"
+        balance: "Saldo"
+        side: "Richtung"
+        other_post: "Kostenstelle (2. Plan)"
+        other_description: "Beschreibung (2. Plan)"
+        date: "Datum"
+        ledger: "Journal"
+        internal_code: "Interner Code"
+        receipt: "Beleg"
+        account: "Konto"
+        card: "Stammsatz"
+        label: "Buchungstext"
+        running: "Laufender Saldo"
+    errors:
+      plan:
+        name_required: "Der Name des Plans ist ein Pflichtfeld."
+        name_too_long: "Der Name des Plans hat höchstens %{max} Zeichen."
+        name_taken: "Der Plan %{name} existiert bereits."
+        limit: "Die Höchstzahl an Kostenstellenplänen (%{max}) ist erreicht."
+        unknown: "Unbekannter Kostenstellenplan."
+        closed_period: "Löschen nicht möglich: Eine Kostenstelle dieses Plans wird in einer abgeschlossenen Periode verwendet."
+      group:
+        code_required: "Der Code der Gruppe ist ein Pflichtfeld."
+        code_too_long: "Der Code der Gruppe hat höchstens %{max} Zeichen."
+        code_taken: "Die Gruppe %{code} existiert in diesem Plan bereits."
+        unknown: "Unbekannte Kostenstellengruppe."
+      post:
+        code_required: "Der Name der Kostenstelle darf nicht leer sein."
+        code_too_long: "Der Name der Kostenstelle hat höchstens %{max} Zeichen."
+        code_taken: "Der Name %{code} muss innerhalb eines Kostenstellenplans eindeutig sein."
+        group_plan: "Die Gruppe muss zum Plan der Kostenstelle gehören."
+        unknown: "Unbekannte Kostenstelle (%{id})."
+        closed_period: "Löschen nicht möglich: Die Kostenstelle wird in einer abgeschlossenen Periode verwendet."
+      settings:
+        filter_invalid: "Nur durch Kommas getrennte Ziffern."
+      key:
+        name_required: "Der Name darf nicht leer sein."
+        unknown: "Unbekannter Verteilungsschlüssel."
+        incomplete: "Der Schlüssel %{name} ist unvollständig (Summe ungleich 100 % oder Zeile ohne Kostenstelle): Korrigieren Sie ihn, bevor Sie ihn anwenden."
+        name_too_long: "Der Name hat höchstens %{max} Zeichen."
+        rows_required: "Keine Verteilung."
+        percent_invalid: "Der Prozentsatz muss größer als 0 und höchstens 100 sein."
+        percent_scale: "Der Prozentsatz hat höchstens vier Dezimalstellen."
+        post_required: "Wählen Sie mindestens eine Kostenstelle in der Zeile."
+        total: "Die Summe beträgt nicht 100, berechnete Summe = %{total}."
+        ledger_unknown: "Unbekanntes Journal (%{id})."
+      distribution:
+        amount_invalid: "Der Betrag muss positiv sein."
+        cancelled_entry: "Stornierte Buchung oder Storno: Ihre Aufteilung folgt der der ursprünglichen Buchung und kann nicht mehr geändert werden."
+        amount_scale: "Der Betrag hat höchstens %{max} Dezimalstellen."
+        post_required: "Wählen Sie mindestens eine Kostenstelle in der Zeile."
+        plan_twice: "Nur eine Kostenstelle je Plan in derselben Zeile."
+        post_inactive: "Die Kostenstelle %{code} ist inaktiv."
+        no_plan: "Es ist kein Kostenstellenplan definiert."
+        closed_period: "Die Periode ist abgeschlossen: Die Kostenstellenzuordnung kann nicht mehr geändert werden."
+        line_unknown: "Diese Zeile gehört nicht zur Buchung."
+        line_twice: "Die Zeile ist doppelt aufgeteilt."
+        account_not_analytic: "Das Konto %{account} unterliegt nicht der Kostenrechnung."
+        required: "Die Kostenstellenzuordnung ist für diese Zeile verpflichtend."
+        exceeds: "Plan %{plan}: Die aufgeteilte Summe (%{total}) übersteigt den Betrag der Zeile (%{amount})."
+        incomplete: "Plan %{plan}: Die aufgeteilte Summe (%{total}) muss dem Betrag der Zeile (%{amount}) entsprechen."
+      misc:
+        description_required: "Kommentar leer."
+        no_period: "Keine Periode umfasst dieses Datum."
+        rows_required: "Erfassen Sie mindestens eine Zeile."
+        card_unknown: "Unbekannter Stammsatz: %{code}."
+        unbalanced: "Buchung im Plan %{plan} nicht ausgeglichen (Differenz %{difference})."

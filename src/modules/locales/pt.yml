@@ -1,0 +1,12 @@
+pt:
+  modules:
+    module:
+      name: "Módulos"
+    errors:
+      activation:
+        socle: "%{module} faz parte da base: está sempre ativo."
+        missing_dependency: "%{module} requer %{dependency}, que não está ativo."
+        required_by: "%{dependent} requer %{module}: desative primeiro %{dependent}."
+        incompatible: "%{module} é incompatível com esta instância: %{detail}"
+        incompatible_with: "%{module} é incompatível com %{other}, ativo neste dossier: desative primeiro %{other}."
+        excluded_kind: "%{module} não pode estar ativo num dossier deste tipo (%{kind})."
